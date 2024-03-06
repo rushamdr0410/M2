@@ -1,19 +1,17 @@
 <?php
-print_r($_POST);
 
 include('security.php');
-$connection=mysqli_connect("localhost","root","","moviemagic");
 
 if(isset($_POST['registerbtn']))
 {
-    $username= $_POST['username'];
-    $email= $_POST['email'];
-    $password= $_POST['password'];
-    $cpassword= $_POST['confirmpassword'];
-    $usertype=$_POST["usertype"];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $cpassword = $_POST['confirmpassword'];
+    $usertype=$_POST['usertype'];
 
-    $email_query = "SELECT * FROM register WHERE email='$email' ";
-    $email_query_run = mysqli_query($connection, $email_query);
+    $emailquery = "SELECT * FROM register WHERE email='$email' ";
+    $email_query_run = mysqli_query($connection, $emailquery);
     if(mysqli_num_rows($email_query_run) > 0)
     {
         $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
@@ -24,14 +22,13 @@ if(isset($_POST['registerbtn']))
     {
         if($password === $cpassword)
         {
-            $query = "INSERT INTO register VALUES ('$username','$email','$password',$usertype)";
-            $query_run = mysqli_query($connection, $query);
+            $query = "INSERT INTO register (username,email,password,usertype) VALUES ('$username','$email','$password','$usertype')";
+            $result = mysqli_query($connection, $query);
             
-            if($query_run)
+            if($result)
             {
                 // echo "Saved";
-                $_SESSION['status'] = "Admin Profile Added";
-                $_SESSION['status_code'] = "success";
+                $_SESSION['success'] = "Admin Profile Added";
                 header('Location: register.php');
             }
             else 
@@ -44,11 +41,13 @@ if(isset($_POST['registerbtn']))
         else 
         {
             $_SESSION['status'] = "Password and Confirm Password Does Not Match";
-            $_SESSION['status_code'] = "warning";
             header('Location: register.php');  
         }
     }
-}  
+
+}
+
+ 
 
 if(isset($_POST['updatebtn']))
 {
