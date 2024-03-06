@@ -29,7 +29,7 @@
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                                 <?php
                                                     
-                                                    $query="SELECT id from register ORDER BY id";
+                                                    $query="SELECT id from register WHERE usertype='admin' ORDER BY id ";
                                                     $result= mysqli_query($connection, $query);
 
                                                     $row=mysqli_num_rows($result);
