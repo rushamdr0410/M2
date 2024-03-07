@@ -269,7 +269,7 @@
     <header>
 		<h2 class="logo">MovieMagic</h2>
 		<nav class="navigation">
-			<a href="file:///C:/xampp/htdocs/MovieMagic/HomePage.html">Home</a>
+			<a href="#">Home</a>
 			<a href="#">About</a>
 			<a href="#">Services</a>
 			<a href="#">Contact</a>
@@ -282,22 +282,28 @@
 		</span>
 		<div class="form-box login">
 			<h2>Welcome Back!</h2>
-			<form action="connect.php" method="POST">
+			<?php
+            	if(isset($_SESSION['status'])&& $_SESSION['status']!='') { 
+                    echo'<h4 class="bg-danger text-white">'.$_SESSION['status'].'</h4>';
+                    unset($_SESSION['status']);
+                }
+            ?>
+			<form class="user" action="logincode.php" method="POST">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
-					<input type="email" required>
+					<input type="email" name="u_email" required>
 					<label >E-mail</label>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input type="password" required>
+					<input type="password" name="u_password" required>
 					<label >Password</label>
 				</div>
 				<div class="remember-forgot">
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" class="btn">Sign In</button>
+				<button type="submit" name="userloginbtn" class="btn btn-primary btn-user btn-block" class="btn">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
