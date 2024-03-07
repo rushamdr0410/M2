@@ -90,7 +90,36 @@ if(isset($_POST['delete_btn']))
     }
 }
 
+if(isset($_POST['userregistration']))
+{
+    $username=$_POST['u_username'];
+    $email=$_POST['u_email'];
+    $password=$_POST['u_password'];
+    $cpassword=$_POST['u_cpassword'];
+    $usertype=$_POST['u_usertype'];
 
+    if($password === $cpassword)
+    {
+        $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$password','$usertype')";
+        $result=mysqli_query($connection,$query);
+
+        if($result)
+        {
+            //echo "Saved";
+            $_SESSION[ 'success' ] = "User Registered Successfully!";
+            header("location: userlogin.php");
+        }
+        else{
+            $_SESSION[ 'status' ] = "User Not Registered";
+            header("location: userlogin.php");
+        }
+    }
+    else{
+        $_SESSION[ 'status' ] = "Password and Confirm Password Does Not Match";
+        header("location: userlogin.php");
+    }
+    
+}
 
 
 ?>
