@@ -93,7 +93,7 @@
 			background: transparent;
 			background-color: rgba(0, 0, 0, .5);
 			backdrop-filter: blur(20px);
-			border: 2px solid rgba(0, 0, 0, .5);
+			border: none;
 			border-radius: 20px;
 			box-shadow: 0 0 30px rgba(0, 0, 0, .5);
 			display: flex;
@@ -146,42 +146,59 @@
 			cursor: pointer;
 			z-index: 1;
 		}
+        .form-box {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 0 2rem;
+			overflow: visible;
+		}
 		.form-box h2{
 			font-size: 2em;
 			color: #fff;
 			text-align: center;
+            margin-bottom: 5px;
 		}
 		.input-box{
 			position: relative;
 			width: 100%;
-			height: 50px;
+			height: 65px;
 			border-bottom: 2px solid #d8d2d2;
-			margin: 30px 0;
+			margin-bottom: 1rem;
+			margin-top: -5px;
 		}
 		.input-box label{
 			position: absolute;
 			top: 50%;
-			left: 5px;
+			left: 15px;
 			transform: translateY(-50%);
 			font-size: 1em;
 			color: #d8d2d2;
 			font-weight: 500;
 			pointer-events: none;
 			transition: .5s;
+            overflow: hidden;
+			height: 45px;
 		}
 		.input-box input:focus~label, .input-box input:valid~label{
 			top: -5px;
+            height: 0;
+ 		 	overflow: visible;
 		}
 		.input-box input{
 			width: 100%;
-			height: 100%;
+			height: 65px;
 			background: transparent;
 			border: none;
 			outline: none;
-			font-size: 1em;
+			font-size: 1.1em;
 			color: #3cb2e9;
-			font-weight: 600;
-			padding: 0 35px 0 5px;
+			font-weight: 500;
+			padding: 10px 15px 0;
 		}
 		.input-box .icon{
 			position: absolute;
@@ -220,13 +237,23 @@
 			font-size: 1em;
 			color: #0a0a0a;
 			font-weight: 500;
+            font-size: 1.1em;
+			margin-bottom: 1rem;
 		}
 		.signin-register{
 			font-size: .9em;
 			color: #d8d2d2;
 			text-align: center;
 			font-weight: 500;
-			margin: 25px 0 10px;
+			
+            margin-bottom: 1rem;
+            display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+		}
+        .signin-register p {
+			width: 100%;
 		}
 		.signin-register p a{
 			color: #3cb2e9;
@@ -270,9 +297,7 @@
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" class="btn">
-					<a href="HomePage.html">Sign In</a>
-				</button>
+				<button type="submit" class="btn">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -280,7 +305,7 @@
 		</div>
 		<div class="form-box register">
 			<h2>Ready to Watch?</h2>
-			<form action="connect.php" method="POST">
+			<form action="#" method="#">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
 					<input type="text" name="username" required>
@@ -296,14 +321,20 @@
 					<input type="password" name="password" required>
 					<label >Password</label>
 				</div>
+                <div class="input-box">
+					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" class="form-control" name="u_cpassword" required>
+					<label >Confirm Password</label>
+				</div>
 				<div class="remember-forgot">
 					<label><input type="checkbox"> I agree to the terms &conditions</label>
 				</div>
-				<button type="submit" class="btn">
-					<a href="Login_user.php">Sign Up</a>
-				</button>
+				<button type="submit" class="btn">Sign Up</button>
 				<div class="signin-register">
 					<p>Already have account<a href="#" class="signin-link"> Sign In</a></p>
+				</div>
+                <div class="user-type" hidden>
+					<input type="text" name="u_usertype" value="user">
 				</div>
 			</form>
 		</div>
