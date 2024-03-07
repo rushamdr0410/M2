@@ -109,27 +109,24 @@
 		.wrapper.active{
 			height: 500px;
 		}
-		.wrapper .form-box {
-			border: 2px solid transparent; 
+		.wrapper .form-box{
+			width: 100%;
+			padding: 40px;
 		}
-
-		.wrapper .form-box.login {
+		.wrapper .form-box.login{
 			transition: transform .18s ease;
 			transform: translateX(0);
 		}
-
-		.wrapper.active .form-box.login {
+		.wrapper.active .form-box.login{
 			transition: none;
 			transform: translateX(-400px);
 		}
-
-		.wrapper .form-box.register {
+		.wrapper .form-box.register{
 			position: absolute;
 			transition: none;
 			transform: translateX(400px);
 		}
-
-		.wrapper.active .form-box.register {
+		.wrapper.active .form-box.register{
 			transition: transform .18s ease;
 			transform: translateX(0);
 		}
@@ -149,7 +146,7 @@
 			cursor: pointer;
 			z-index: 1;
 		}
-		.form-box {
+        .form-box {
 			position: relative;
 			width: 100%;
 			height: 100%;
@@ -164,12 +161,13 @@
 			font-size: 2em;
 			color: #fff;
 			text-align: center;
-			margin-bottom: 5px;
+            margin-bottom: 5px;
 		}
 		.input-box{
 			position: relative;
 			width: 100%;
 			height: 65px;
+			border-bottom: 2px solid #d8d2d2;
 			margin-bottom: 1rem;
 			margin-top: -5px;
 		}
@@ -183,27 +181,24 @@
 			font-weight: 500;
 			pointer-events: none;
 			transition: .5s;
-			height: 20px;
-  			overflow: hidden;
+            overflow: hidden;
 			height: 45px;
 		}
 		.input-box input:focus~label, .input-box input:valid~label{
 			top: -5px;
-			height: 0;
+            height: 0;
  		 	overflow: visible;
 		}
 		.input-box input{
 			width: 100%;
 			height: 65px;
-			padding: 10px 15px 0;
 			background: transparent;
 			border: none;
 			outline: none;
 			font-size: 1.1em;
 			color: #3cb2e9;
 			font-weight: 500;
-			border-bottom: 2px solid #3cb2e9;
-			box-sizing: border-box;
+			padding: 10px 15px 0;
 		}
 		.input-box .icon{
 			position: absolute;
@@ -216,11 +211,9 @@
 			font-size: .9em;
 			color: #3cb2e9;
 			font-weight: 500;
-			margin-bottom: 1rem;
+			margin: -15px 0 15px;
 			display: flex;
 			justify-content: space-between;
-			align-items: center;
-			width: 100%;
 		}
 		.remember-forgot label input{
 			accent-color: #3cb2e9;
@@ -244,20 +237,22 @@
 			font-size: 1em;
 			color: #0a0a0a;
 			font-weight: 500;
+            font-size: 1.1em;
 			margin-bottom: 1rem;
 		}
 		.signin-register{
 			font-size: .9em;
 			color: #d8d2d2;
-			font-weight: 500;
-			margin-bottom: 1rem;
 			text-align: center;
-			display: flex;
+			font-weight: 500;
+			
+            margin-bottom: 1rem;
+            display: flex;
 			justify-content: center;
 			align-items: center;
 			width: 100%;
 		}
-		.signin-register p {
+        .signin-register p {
 			width: 100%;
 		}
 		.signin-register p a{
@@ -267,14 +262,6 @@
 		}
 		.signin-register p a:hover{
 			text-decoration: underline;
-		}
-		.user-type {
-			width: 100%;
-			text-align: center;
-			margin-top: 2rem;
-		}
-		.wrapper.active .user-type {
-			display: block;
 		}
 	</style>
 </head>
@@ -298,21 +285,19 @@
 			<form action="connect.php" method="POST">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="email" required>
+					<input type="email" required>
 					<label >E-mail</label>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;"; type="password" required>
+					<input type="password" required>
 					<label >Password</label>
 				</div>
 				<div class="remember-forgot">
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" class="btn">
-					<a href="HomePage.html">Sign In</a>
-				</button>
+				<button type="submit" class="btn">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -320,39 +305,36 @@
 		</div>
 		<div class="form-box register">
 			<h2>Ready to Watch?</h2>
-			<form action="connect.php" method="POST">
+			<form action="#" method="#">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="text" id="username" class="form-control" name="username" required>
+					<input type="text" name="username" required>
 					<label >Name</label>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="email" id="email" class="form-control" name="email" required>
+					<input type="email" name="email" required>
 					<label >E-mail</label>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="password" class="form-control" name="password" required>
+					<input type="password" name="password" required>
 					<label >Password</label>
 				</div>
-				<div class="input-box">
+                <div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="cpassword" id="cpassword" class="form-control" name="cpassword" required>
+					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" class="form-control" name="u_cpassword" required>
 					<label >Confirm Password</label>
 				</div>
-				
 				<div class="remember-forgot">
 					<label><input type="checkbox"> I agree to the terms &conditions</label>
 				</div>
-				<button type="submit" class="btn">
-					<a href="#">Sign Up</a>
-				</button>
+				<button type="submit" class="btn">Sign Up</button>
 				<div class="signin-register">
 					<p>Already have account<a href="#" class="signin-link"> Sign In</a></p>
 				</div>
-				<div class="user-type" hidden>
-					<input type="hidden" name="usertype" value="user">
+                <div class="user-type" hidden>
+					<input type="text" name="u_usertype" value="user">
 				</div>
 			</form>
 		</div>
