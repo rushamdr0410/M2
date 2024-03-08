@@ -19,7 +19,7 @@ if(isset($_POST['login_btn']))
     else if($usertype['usertype']=='user')
     {
         $_SESSION[ 'username' ] = $email_login;
-        header('Location: ../Login_user.php');
+        header('Location: userlogin.php');
     }
     else
     {
