@@ -29,42 +29,47 @@
 
 <!-- Nav Item - Pages Collapse Menu -->
 <li class="nav-item">
-    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-        aria-expanded="true" aria-controls="collapseTwo">
-        <i class="fas fa-fw fa-cog"></i>
-        <span>Contents</span>
-    </a>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Categories:</h6>
-            <a class="collapse-item" href="buttons.html">Movies</a>
-            <a class="collapse-item" href="cards.html">TV-Shows</a>
-            <a class="collapse-item" href="cards.html">Genres</a>
-        </div>
-    </div>
-</li>
-<li class="nav-item">
     <a class="nav-link collapsed" href="register.php">
         <i class="fa fa-user-secret" aria-hidden="true"></i>
-        <span>Register</span>
+        <span>Credentials</span>
     </a>
 </li>
-
-<!-- Nav Item - Utilities Collapse Menu -->
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
         aria-expanded="true" aria-controls="collapseUtilities">
         <i class="fas fa-fw fa-wrench"></i>
-        <span>Uploads</span>
+        <span>Content Management</span>
     </a>
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Analytics:</h6>
+            <h6 class="collapse-header">Uploads</h6>
             <a class="collapse-item" href="utilities-color.html">Movies</a>
             <a class="collapse-item" href="utilities-border.html">TV-Shows</a>
             <a class="collapse-item" href="utilities-animation.html">Trailers</a>
-            <a class="collapse-item" href="utilities-other.html">Otherz</a>
+            <a class="collapse-item" href="utilities-other.html">MetaData</a>
+        </div>
+    </div>
+</li>
+
+
+
+<!-- Nav Item - Utilities Collapse Menu -->
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+        aria-expanded="true" aria-controls="collapseTwo">
+        <i class="fas fa-fw fa-cog"></i>
+        <span>Log Activities</span>
+    </a>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Up;oads:</h6>
+            <a class="collapse-item" href="buttons.html">Identity Validation</a>
+            <a class="collapse-item" href="cards.html">Streaming Content</a>
+            <a class="collapse-item" href="cards.html">Search and Discovery</a>
+            <a class="collapse-item" href="cards.html">User Interactions</a>
+            <a class="collapse-item" href="cards.html">Subscription and Billing</a>
         </div>
     </div>
 </li>
