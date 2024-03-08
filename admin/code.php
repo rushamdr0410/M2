@@ -98,6 +98,14 @@ if(isset($_POST['userregistration']))
     $cpassword=$_POST['u_cpassword'];
     $usertype=$_POST['u_usertype'];
 
+    $queryemail = "SELECT * FROM register WHERE email='$email' ";
+    $emailqueryrun = mysqli_query($connection, $queryemail);
+    if(mysqli_num_rows($emailqueryrun) > 0)
+    {
+        $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
+        header('Location: userlogin.php');  
+    }
+
     if($password === $cpassword)
     {
         $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$password','$usertype')";
