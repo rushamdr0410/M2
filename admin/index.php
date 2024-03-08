@@ -53,11 +53,21 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Earnings (Annual)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                                Total Registered Users</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <?php
+                                                    
+                                                    $query="SELECT id from register WHERE usertype='user' ORDER BY id ";
+                                                    $result= mysqli_query($connection, $query);
+
+                                                    $row=mysqli_num_rows($result);
+                                                    echo '<h3>'.$row.'</h3>';
+
+                                                ?>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>

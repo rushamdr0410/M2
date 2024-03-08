@@ -311,31 +311,35 @@
 		</div>
 		<div class="form-box register">
 			<h2>Ready to Watch?</h2>
-			<form action="code.php" method="POST">
+			<form action="code.php" method="POST" class="form" id="form">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
-					<input type="text" name="u_username" required>
+					<input type="text" id="username" name="u_username" required>
 					<label >Name</label>
+					
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
-					<input type="email" name="u_email" required>
+					<input type="email" id="email" name="u_email" required>
 					<label >E-mail</label>
+					
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input type="password" name="u_password" required>
+					<input type="password" id="password" name="u_password" required>
 					<label >Password</label>
+					
 				</div>
                 <div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-					<input style="border-bottom: 2px solid #d8d2d2;" type="password" name="u_cpassword" required>
+					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" name="u_cpassword" required>
 					<label >Confirm Password</label>
+					
 				</div>
 				<div class="remember-forgot">
-					<label><input type="checkbox"> I agree to the terms &conditions</label>
+					<label><input type="checkbox" id="terms"> I agree to the terms &conditions</label>
 				</div>
-				<button type="submit" name="userregistration" class="btn btn-primary" class="btn">Sign Up</button>
+				<button type="submit" value="submit" name="userregistration" class="btn btn-primary" class="btn">Sign Up</button>
 				<div class="signin-register">
 					<p>Already have account<a href="#" class="signin-link"> Sign In</a></p>
 				</div>
