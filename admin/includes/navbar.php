@@ -47,7 +47,8 @@
             <a class="collapse-item" href="utilities-color.html">Movies</a>
             <a class="collapse-item" href="utilities-border.html">TV-Shows</a>
             <a class="collapse-item" href="utilities-animation.html">Trailers</a>
-            <a class="collapse-item" href="utilities-other.html">MetaData</a>
+            <a class="collapse-item" href="movie_info.php">MetaData</a>
+            <a class="collapse-item" href="genre_info.php">GENRE</a>
         </div>
     </div>
 </li>

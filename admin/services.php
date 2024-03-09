@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>MovieMagic | Where Every Story tells a Story</title>
-        <link rel="preconnect" href="http://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <title>MovieMagic | Where Every Frame tells a Story</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wgt@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
         <style>
+            @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
             *{
-                padding: 0;
-                margin: 0;
-                font-family: 'Josefin Sans', sans-serif;
+                margin:0;
+                padding:0;
                 box-sizing: border-box;
+                font-family: 'Josefin Sans', sans-serif;
             }
             body{
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
-                background-color: #191919;
+                background: #191919;
                 background-size: cover;
                 background-position: center;
 
@@ -49,6 +50,19 @@
                 font-weight: 500;
                 margin-left: 40px;
             }
+            .navigation .btnLogin-popup{
+                height: 50px;
+                background: transparent;
+                border: .5px solid #3cb2e9;
+                outline: none;
+                border-radius: 40px;
+                cursor: pointer;
+                font-size: 1.1em;
+                color: #3cb2e9;
+                font-weight: 500;
+                margin-left: 40px;
+                transition: .5s;
+            }
             .navigation a::after{
                 content: '';
                 position: absolute;
@@ -64,46 +78,58 @@
             .navigation a:hover:after{
                 transform: scaleX(1);
             }
-            .about{
-                width: 100%;
-                background-size: cover;
-                padding: 78px 0px;
-                background-color: #191919;
+            .navigation .btnLogin-popup:hover{
+                background: #3cb2e9;
+                color: #162938;
             }
-            .about img{
-                height: auto;
-                width: 420px;
-            }
-            .about-text{
-                width: 550px;
-            }
-            .main{
-                width: 1130px;
-                max-width: 95%;
-                margin: 0 auto;
-                display: flex;
-                align-items: center;
-                justify-content: space-around;
-            }
-            .about-text h1{
+            .title h1{
+                text-align: center;
+                padding-top: 50px;
                 color: #01939c;
-                font-size: 80px;
+                font-size: 42px;
                 text-transform: capitalize;
                 margin-bottom: 20px;
             }
-            .about-text h5{
-                color: #01939c;
-                font-size: 20px;
-                text-transform: capitalize;
-                margin-bottom: 25px;
-                letter-spacing: 2px;
+            .title h1::after{
+                content:"";
+                height:4px;
+                width:230px;
+                background-color: #01939c;
+                display: block;
+                margin: auto;
             }
-            .about-text p{
-                color: white;
-                letter-spacing: 1px;
-                line-height: 28px;
-                font-size: 18px;
-                margin-bottom: 45px;
+            .services{
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items:ceter;
+                margin: 75px auto;
+                text-align: center;
+            }
+            .card{
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-direction: column;
+                margin: 0px 10px;
+                padding: 20px 20px;
+                background: transparent;
+			    background-color: rgba(59, 57, 57, 0.5);
+                border-radius: 10px;
+                cursor: pointer;
+            }
+            .card h2{
+                font-size: 28px;
+                color: #01939c;
+                margin-bottom: 20px;
+            }
+            .card p{
+                text-align:left;
+                font-size: 17px;
+                margin-bottom: 30px;
+                line-height:1.5;
+                color: #fff;           
             }
             button{
                 background: transparent;
@@ -120,7 +146,6 @@
                 color:#162938;
                 cursor: pointer;
             }
-            
         </style>
     </head>
     <body>
@@ -134,44 +159,41 @@
 			<button onclick="redirectToUserLogin()" style="height: 50px;background: transparent;border: .5px solid #3cb2e9;outline: none;border-radius: 40px;cursor: pointer;font-size: 1.1em;color: #3cb2e9;font-weight: 500;margin-left: 40px;transition: .5s;">Sign In</button>
 		</nav>
 	</header>
-        <section class="about">
-            <div class="main">
-                <img src="Images%20and%20Videos/mainlogo.jpeg">
-                <div class="about-text">
-                    <?php
-                        include( "database/dbconfig.php" ); // Connect
-
-                        $query = "SELECT * FROM about";
-                        $query_run = mysqli_query($connection,$query);
-                        
-                        if(mysqli_num_rows($query_run)>0)
-                        {
-                            foreach($query_run as $row)
-                            {
-                    ?>
- 
-                    <h1><?php echo $row['title'];?></h1>
-                    <h5><?php echo $row['subtitle'];?></h5>
-                    <p><?php echo $row['description'];?></p>
-                    <button onclick="redirectToHomePage()" class="btn btn-primary">Shall we explore MovieMagic for our movie night?</button>
-                    <?php
-                            }
-                        }
-                        else{
-                            echo "No Record Found";
-                        }
-                    ?>
-                </div>
+        <div class="section">
+            <div class="title">
+                <h1>Our Services</h1>
             </div>
-        </section>
+            <div class="services">
+            <?php
+                include( "database/dbconfig.php" ); // Connect
+
+                $query = "SELECT * FROM service";
+                $query_run = mysqli_query($connection,$query);
+                        
+                if(mysqli_num_rows($query_run)>0)
+                {
+                    foreach($query_run as $row)
+                    {
+            ?>
+                <div class="card">
+                    <h2><?php echo $row['title']; ?></h2>
+                    <p><?php echo $row['description']; ?></p>
+                    <button class="btn btn-primary">Read More</button>
+                    <h2>
+                </div>
+                <?php
+                        }
+                    }
+                    else{
+                        echo "No Record Found";
+                    }
+                ?>
+            </div>
+        </div>
         <script>
         function redirectToUserLogin() {
             // Redirect to the userlogin page
             window.location.href = 'userlogin.php';
-        }
-        function redirectToHomePage() {
-            // Replace 'home.html' with the actual file name or path of your home page
-            window.location.href = '<?php echo $row['links'];?>';
         }
     </script>
     </body>
