@@ -315,6 +315,9 @@
           width: 85%;
         }
       }
+      .swiper-wrapper .swiper-slide .swiper-slide--one{
+        background-image: url("file:///C:/xampp/htdocs/MovieMagic/admin/ImagesandVideos/MoviePosters/kungfupanda4.jpg");
+      }
     </style>
 </head>
 <body>
@@ -357,17 +360,17 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper-slide--one">
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+              <p style="font-weight: bold; font-size: 95%;"> ⭐6.9 | 2024 |94 min | Animation | Adventure | Action<br></p>
+              <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
           <div class="swiper-slide swiper-slide--two">
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Dune: Part One</h2>
+              <p style="font-weight: bold; font-size: 95%;"> ⭐8 | 2021 | 155 min | Drama | Adventure | Action<br></p>
+              <p>A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
@@ -375,9 +378,9 @@
           <div class="swiper-slide swiper-slide--three">
     
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Dune: Part Two</h2>
+              <p style="font-weight: bold; font-size: 95%;"> ⭐9 | 2024 | 166 min | Drama | Adventure | Action <br></p>
+              <p>Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
@@ -385,9 +388,9 @@
           <div class="swiper-slide swiper-slide--four">
     
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Halo</h2>
+              <p style="font-weight: bold; font-size: 95%;">⭐7.2 | 2022 |  Sci-Fi | Adventure | Action <br></p>
+              <p>Aliens threaten human existence in an epic 26th-century showdown.</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
@@ -395,9 +398,9 @@
           <div class="swiper-slide swiper-slide--five">
     
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">The Gentlemen</h2>
+              <p style="font-weight: bold; font-size: 95%;"> 2024 |  Comedy | Crime | Action <br></p>
+              <p>Eddie Horniman inherits a family estate, initially unaware its home to a drug empire run by a syndicate that has no plans to vacate.</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
