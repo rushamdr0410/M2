@@ -200,41 +200,24 @@ if(isset($_POST['about_save'])) {
     }
 }
 
-if(isset($_POST['serviceupdate_btn'])) {
-    // Assuming $connection is your database connection
-    
-    // Get the values from the form
+if(isset($_POST['serviceupdate_btn']))
+{
     $id = $_POST['edit_id'];
     $title = $_POST['edit_title'];
     $description = $_POST['edit_description'];
     $links = $_POST['edit_links'];
-
-    // Prepare the SQL statement with placeholders
-    $query = "UPDATE service SET title=?, description=?, links=? WHERE id=?";
-    
-    // Prepare the statement
-    $stmt = mysqli_prepare($connection, $query);
-
-    // Bind parameters to the prepared statement
-    mysqli_stmt_bind_param($stmt, "ssssi", $title, $description, $links, $id);
-
-    // Execute the statement
-    $query_run = mysqli_stmt_execute($stmt);
-
-    // Check if the query was successful
-    if ($query_run) {
-        $_SESSION['success'] = "Your Data is updated";
-    } else {
-        // Query failed, handle the error
-        $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
+    $query=  "UPDATE service SET title='$title', description='$description', links='$links' WHERE id ='$id'";
+    $result=mysqli_query($connection, $query);
+    if($result)
+    {
+        $_SESSION['success']="Your Data is Updated";
+        header('Location: service.php');
     }
-
-    // Close the statement
-    mysqli_stmt_close($stmt);
-
-    // Redirect back to about.php
-    header('Location: service.php');
-    exit();
+    else
+    {
+        $_SESSION['status']="Your Data is not Updated";
+        header('Location: service.php');
+    }
 }
 
 if(isset($_POST['delete_btn'])) {
