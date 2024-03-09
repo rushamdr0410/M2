@@ -27,6 +27,7 @@
       body{
         overflow-x: hidden;
         background-color: #131418;
+        overflow-y: scroll;
       }
       nav{
         height: 4.5rem;

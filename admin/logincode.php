@@ -24,7 +24,7 @@ if(isset($_POST['login_btn']))
     else
     {
         $_SESSION[ 'status' ] = "Email or Password is invalid";
-        header('Location: userlogin.php');
+        header('Location: login.php');
     }
 }
 
