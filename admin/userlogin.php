@@ -269,8 +269,8 @@
     <header>
 		<h2 class="logo">MovieMagic</h2>
 		<nav class="navigation">
-			<a href="#">Home</a>
-			<a href="#">About</a>
+			<a href="HomePage.php">Home</a>
+			<a href="aboutus.php">About</a>
 			<a href="#">Services</a>
 			<a href="#">Contact</a>
 			<button class="btnLogin-popup">Sign In</button>
@@ -311,7 +311,7 @@
 		</div>
 		<div class="form-box register">
 			<h2>Ready to Watch?</h2>
-			<form action="code.php" method="POST" class="form" id="form">
+			<form action="code.php" method="POST">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
 					<input type="text" id="username" name="u_username" required>

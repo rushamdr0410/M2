@@ -129,6 +129,147 @@ if(isset($_POST['userregistration']))
     
 }
 
+if(isset($_POST['update_btn'])) {
+    // Assuming $connection is your database connection
+    
+    // Get the values from the form
+    $id = $_POST['edit_id'];
+    $title = $_POST['edit_title'];
+    $subtitle = $_POST['edit_subtitle'];
+    $description = $_POST['edit_description'];
+    $links = $_POST['edit_links'];
+
+    // Prepare the SQL statement with placeholders
+    $query = "UPDATE about SET title=?, subtitle=?, description=?, links=? WHERE id=?";
+    
+    // Prepare the statement
+    $stmt = mysqli_prepare($connection, $query);
+
+    // Bind parameters to the prepared statement
+    mysqli_stmt_bind_param($stmt, "ssssi", $title, $subtitle, $description, $links, $id);
+
+    // Execute the statement
+    $query_run = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
+    if ($query_run) {
+        $_SESSION['success'] = "Your Data is updated";
+    } else {
+        // Query failed, handle the error
+        $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
+    }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+
+    // Redirect back to about.php
+    header('Location: about.php');
+    exit();
+}
+
+if(isset($_POST['delete_btn'])) {
+
+    $id= $_POST['delete_id'];
+    $query = "DELETE FROM about where id='$id' ";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Your Data is deleted";
+        header('Location: about.php');
+    } else {
+        $_SESSION['status'] = "Your data is not deleted ";
+        header('Location: about.php');
+    }
+}
+
+if(isset($_POST['about_save'])) {
+    $title = mysqli_real_escape_string($connection, $_POST['title']);
+    $subtitle = mysqli_real_escape_string($connection, $_POST['subtitle']);
+    $description = mysqli_real_escape_string($connection, $_POST['description']);
+    $links = mysqli_real_escape_string($connection, $_POST['links']);
+
+    $query = "INSERT INTO about(title, subtitle, description, links) VALUES ('$title', '$subtitle', '$description', '$links')";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "About Us Added";
+        header('Location: about.php');
+    } else {
+        $_SESSION['status'] = "About Us Not Added: " . mysqli_error($connection);
+        header('Location: about.php');
+    }
+}
+
+if(isset($_POST['serviceupdate_btn'])) {
+    // Assuming $connection is your database connection
+    
+    // Get the values from the form
+    $id = $_POST['edit_id'];
+    $title = $_POST['edit_title'];
+    $description = $_POST['edit_description'];
+    $links = $_POST['edit_links'];
+
+    // Prepare the SQL statement with placeholders
+    $query = "UPDATE service SET title=?, description=?, links=? WHERE id=?";
+    
+    // Prepare the statement
+    $stmt = mysqli_prepare($connection, $query);
+
+    // Bind parameters to the prepared statement
+    mysqli_stmt_bind_param($stmt, "ssssi", $title, $description, $links, $id);
+
+    // Execute the statement
+    $query_run = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
+    if ($query_run) {
+        $_SESSION['success'] = "Your Data is updated";
+    } else {
+        // Query failed, handle the error
+        $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
+    }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+
+    // Redirect back to about.php
+    header('Location: service.php');
+    exit();
+}
+
+if(isset($_POST['delete_btn'])) {
+
+    $id= $_POST['delete_id'];
+    $query = "DELETE FROM about where id='$id' ";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Your Data is deleted";
+        header('Location: about.php');
+    } else {
+        $_SESSION['status'] = "Your data is not deleted ";
+        header('Location: about.php');
+    }
+}
+
+if(isset($_POST['service_save'])) {
+    $title = mysqli_real_escape_string($connection, $_POST['title']);
+    $description = mysqli_real_escape_string($connection, $_POST['description']);
+    $links = mysqli_real_escape_string($connection, $_POST['links']);
+
+    $query = "INSERT INTO service(title, description, links) VALUES ('$title', '$description', '$links')";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Service Added";
+        header('Location: service.php');
+    } else {
+        $_SESSION['status'] = "Service Not Added: " . mysqli_error($connection);
+        header('Location: service.php');
+    }
+}
+
+
 
 
 ?>
