@@ -14,38 +14,3 @@
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
-
-<?php
-$connection=mysqli_connect("localhost", "root","","moviemagic");  //Connect to server
-
-if(isset($_POST['registerbtn']))
-{   
-	$username = $_SESSION['username'];
-    $email = $_SESSION['email'];
-    $password = $_SESSION['password'];
-    $confirm_password = $_SESSION['confirmpassword'];
-    if($password===$cpassword)
-    {
-        $query="INSERT INTO register(username,email,password) VALUES ('$username','$email','$password')";
-        $query_run=mysqli_query($connection, $query);
-
-        if($query_run)
-        {
-            
-            $_SESSION['success']="Admin Profile Added";
-            header('Location: register.php');
-        }
-        else
-        {
-            
-            $_SESSION['status']="Admin Profile Not Added";
-            header('Location: register.php');
-        }
-    }
-    else
-    {
-        $_SESSION['status']="Password and Confirm Password does not match";
-        header('Location: register.php');
-    }
-}
-?>

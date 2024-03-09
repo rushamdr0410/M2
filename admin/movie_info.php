@@ -1,99 +1,152 @@
-    <?php
+<?php
 
 include('security.php');
 include('includes/header.php');
 include('includes/navbar.php');
 ?>
 
-<div class="modal fade" id="aboutus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addadminprofile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title" id="exampleModalLabel">Modal Title</h1>
+        <h5 class="modal-title" id="exampleModalLabel">Add Movie Details</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
-</div>
-</div>
-</div>
-<?php
-
-if(isset($_POST['submit'])) {
-    $title = $_POST['title'];
-        $genre_id = $_POST['genre_id'];
-        $release_year = $_POST['release_year'];
-        $duration = $_POST['duration'];
-        $description = isset($_POST['description']) ? $_POST['description'] : '';
-        $poster_image = isset($_FILES['image']['name']) ? $_FILES['image']['name'] : '';
-        $trailer_url = isset($_POST['trailer_url']) ? $_POST['trailer_url'] : '';
-        $quality = isset($_POST['quality']) ? $_POST['quality'] : '';
-        $link = isset($_POST['link']) ? $_POST['link'] : '';
-
-
-    // Check if the file upload was successful
-    if(move_uploaded_file($tempname, $folder.$movie_info)) {
-        // Prepare and bind
-        $stmt = $conn->prepare("INSERT INTO movie_info (title, genre_id, release_year, duration, description, poster_image, trailer_url, quality, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siissssss", $title, $genre_id, $release_year, $duration, $description, $poster_image, $trailer_url, $quality, $link);
-
-    
-        // Execute the prepared statement
-        if($stmt->execute()) {
-            echo "<h2>Movie information uploaded successfully</h2>";
-        } else {
-            echo "<h2>Error: " . $stmt->error . "</h2>";
-        }
-
-        // Close the prepared statement
-        $stmt->close();
-    } else {
-        echo "<h2>File not uploaded.</h2>";
-    }
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-    <title>Upload</title>
-</head>
-<body>
-    <form method="post" enctype="multipart/form-data">
-        <label for="title">Title: </label>
-        <input type="text" name="title"/><br>
-        <label for="Genre_id">Genre_id: </label>
-        <input type="text" name="genre_id"/><br>
-        <label for="release_year">Release_year: </label>
-        <input type="varchar" name="release_year"/><br>
-        <label for="duration">Duration: </label>
-        <input type="varchar" name="duration"/><br>
-        <label for="Description">Description: </label>
-        <input type="text" name="Description"/><br>
-        <label for="poster_image">Poster_image: </label>
-        <input type="file" name="image"/><br>
-        <label for="Trailer_url">Trailer_url: </label>
-        <input type="text" name="Trailer_url"/><br>
-        <label for="quality">Quality: </label>
-        <input type="text" name="quality"/><br>
-        <label for="link">Link: </label>
-        <input type="text" name="Link"/><br>
-        
-        <br/><br/>
-        <button type="submit" name="submit">Submit</button>
-        <div>
-            <?php
-            $res= mysqli_query($conn,"select * from movie_info");
-            
-            while($row=mysqli_fetch_assoc($res)){
-            ?>
-            <img src="Images/<?php echo $row['file']?>"/>
-            <?php } ?>
+      <form action="code.php" method="POST">
+      <div class="modal-body">
+        <div class="form-group">
+            <label> Title </label>
+            <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
         </div>
+        <div class="form-group">
+            <label> Genre ID: </label>
+            <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
+        </div>
+        <div class="form-group">
+            <label> Release Year: </label>
+            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year">
+        </div>
+        <div class="form-group">
+            <label> Duration </label>
+            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration">
+        </div>
+        <div class="form-group">
+            <label>Poster Image</label>
+            <input type="file" name="m_img" class="form-control" placeholder="Enter Duration">
+        </div>
+        <div class="form-group">
+            <label> Trailer URL </label>
+            <input type="text" name="m_trailer" class="form-control" placeholder="Enter Duration">
+        </div>
+        <div class="form-group">
+            <label> Quality </label>
+            <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration">
+        </div>
+        <div class="form-group">
+            <label> Link </label>
+            <input type="text" name="m_link" class="form-control" placeholder="Enter Duration">
+        </div>
+        <input type="hidden" name="usertype" value="admin">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" name="m_insertbtn" class="btn btn-primary">Save</button>
+      </div>
     </form>
-</body>
-</html>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Movie Details
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addadminprofile">
+                Add Movie Details
+            </button>
+        </h6>
+</div>
+<div class="card-body">
+    <?php
+    if(isset($_SESSION['success']) &&  $_SESSION['success'] !=''){
+        echo '<h2 class="bg-primary text-white">'.$_SESSION['success'].'</h2>';
+        unset($_SESSION['success']);
+    }
+    if(isset($_SESSION['status']) &&  $_SESSION['status'] !=''){
+        echo '<h2 class="bg_danger text-white">'.$_SESSION['status'].'</h2>';
+        unset($_SESSION['status']);
+    }
+    ?>
+    <div class="table-responsive">
+    
+    <?php
+        
+        $query="SELECT* FROM moviedetails";
+        $result=mysqli_query($connection, $query);
+    
+    ?>
+        <table class="table table-bordered" id="dataTable" with="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>TITLE</th>
+                    <th>GENRE ID</th>
+                    <th>RELEASE YEAR</th>
+                    <th>DURATION</th>
+                    <th>DESCRIPTION</th>
+                    <th>POSTER IMAGE</th>
+                    <th>TRAILER URL</th>
+                    <th>LINK</th>
+                    <th>EDIT</th>
+                    <th>DELETE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    if(mysqli_num_rows($result)>0)
+                    {
+                        while($row=mysqli_fetch_assoc($result))
+                        { 
+                            ?>
+                            
+                            <tr>
+                                <td><?php echo $row['id']; ?></td>
+                                <td><?php echo $row['title']; ?></td>
+                                <td><?php echo $row['genre_id']; ?></td>
+                                <td><?php echo $row['release_year']; ?></td>
+                                <td><?php echo $row['duration']; ?></td>
+                                <td><?php echo $row['DESCRIPTION']; ?></td>
+                                <td><?php echo $row['poster_image']; ?></td>
+                                <td><?php echo $row['trailer_url']; ?></td>
+                                <td><?php echo $row['link']; ?></td>
+                                <td>
+                                    <form action="moviedetails.php" method="POST">
+                                        <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
+                                        <button type="submit" name="edit_btn" class="btn btn-success">EDIT</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="code.php" method="POST">
+                                    <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
+                                        <button type="submit" name="delete_btn" class="btn btn-danger">DELETE</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    else
+                    {
+                        echo "No Records Found!";
+                    }
+                ?>
+            </tbody>
+        </table>
+   
+    </div>
+</div>
+</div>
 <?php
 include('includes/scripts.php');
 include('includes/footer.php');
