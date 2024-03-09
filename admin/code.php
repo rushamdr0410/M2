@@ -206,18 +206,29 @@ if(isset($_POST['serviceupdate_btn']))
     $title = $_POST['edit_title'];
     $description = $_POST['edit_description'];
     $links = $_POST['edit_links'];
-    $query=  "UPDATE service SET title='$title', description='$description', links='$links' WHERE id ='$id'";
-    $result=mysqli_query($connection, $query);
-    if($result)
-    {
-        $_SESSION['success']="Your Data is Updated";
-        header('Location: service.php');
+    // Assuming $connection is your database connection
+    $stmt = mysqli_prepare($connection, "UPDATE service SET title=?, description=?, links=? WHERE id=?");
+
+    // Assuming $title, $subtitle, $description, $links, and $id are your variables
+    mysqli_stmt_bind_param($stmt, "sssi", $title, $description, $links, $id);
+
+    // Execute the statement
+    mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
+    if ($stmt) {
+        $_SESSION['success'] = "Your Data is updated";
+    } else {
+        // Query failed, handle the error
+        $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
     }
-    else
-    {
-        $_SESSION['status']="Your Data is not Updated";
-        header('Location: service.php');
-    }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+
+    // Redirect back to about.php
+    header('Location: service.php');
+    exit();
 }
 
 if(isset($_POST['delete_btn'])) {
