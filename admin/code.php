@@ -234,15 +234,15 @@ if(isset($_POST['serviceupdate_btn']))
 if(isset($_POST['delete_btn'])) {
 
     $id= $_POST['delete_id'];
-    $query = "DELETE FROM about where id='$id' ";
+    $query = "DELETE FROM service where id='$id' ";
     $query_run = mysqli_query($connection, $query);
 
     if($query_run) {
         $_SESSION['success'] = "Your Data is deleted";
-        header('Location: about.php');
+        header('Location: service.php');
     } else {
         $_SESSION['status'] = "Your data is not deleted ";
-        header('Location: about.php');
+        header('Location: service.php');
     }
 }
 
@@ -263,6 +263,60 @@ if(isset($_POST['service_save'])) {
     }
 }
 
+if(isset($_POST['genreaddbtn']))
+{
+    $genre = $_POST['genre'];
+    $query = "INSERT INTO genre_info(genre_name) VALUES ('$genre')";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Genre Added";
+        header('Location: genre_info.php');
+    } else {
+        $_SESSION['status'] = "Genre Not Added: " . mysqli_error($connection);
+        header('Location: genre_info.php');
+    }
+}
+
+ 
+
+if(isset($_POST['genreupdatebtn']))
+{
+    $id=$_POST['edit_id'];
+    $genre=$_POST['genre'];
+    $query=  "UPDATE genre_info SET genre_name='$genre' WHERE genre_id  ='$id'";
+    $result=mysqli_query($connection, $query);
+    if($result)
+    {
+        $_SESSION['success']="Your Data is Updated";
+        header('Location: genre_info.php');
+    }
+    else
+    {
+        $_SESSION['status']="Your Data is not Updated";
+        header('Location: genre_info.php');
+    }
+}
+
+if(isset($_POST['delete_btn']))
+{
+    $id = $_POST['delete_id'];
+    $query="DELETE FROM register WHERE id='$id'";
+    $result= mysqli_query($connection, $query);
+
+    if($result)
+    {
+        $_SESSION['success']="Your Data is Deleted";
+        $_SESSION['success_code'] = "success";
+        header('Location: register.php');
+    }
+    else
+    {
+        $_SESSION['status']="Your Data is not Deleted";
+        $_SESSION['status_code'] = "error";
+        header('Location: register.php');
+    }
+}
 
 
 

@@ -1,95 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieMagic | Where Every Frame tells a Story</title>
-</head>
+include('security.php');
+include('includes/header.php');
+include('includes/navbar.php');
+?>
 
-<body>
-    <?php include('security.php'); ?>
-    <?php include('includes/header.php'); ?>
-    <?php include('includes/navbar.php'); ?>
 
-    <div class="modal fade" id="aboutus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title" id="exampleModalLabel">Modal Title</h1>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Admin Profile</h6>
         </div>
-    </div>
-
-    <form method="post" enctype="multipart/form-data">
-        <table>
-            <tr>
-                <td><label for="title">Title:</label></td>
-                <td><input type="text" name="title"></td>
-            </tr>
-
-            <tr>
-                <td><label for="genre_id">Genre ID:</label></td>
-                <td><input type="text" name="genre_id"></td>
-            </tr>
-
-            <tr>
-                <td><label for="release_year">Release Year:</label></td>
-                <td><input type="text" name="release_year"></td>
-            </tr>
-
-            <tr>
-                <td><label for="duration">Duration:</label></td>
-                <td><input type="text" name="duration"></td>
-            </tr>
-
-            <tr>
-                <td><label for="description">Description:</label></td>
-                <td><input type="text" name="description"></td>
-            </tr>
-
-            <tr>
-                <td><label >Poster Image:</label></td>
-                <td><input type="file" name="image"></td>
-            </tr>
-
-            <tr>
-                <td><label for="trailer_url">Trailer URL:</label></td>
-                <td><input type="text" name="trailer_url"></td>
-            </tr>
-
-            <tr>
-                <td><label for="quality">Quality:</label></td>
-                <td><input type="text" name="quality"></td>
-            </tr>
-
-            <tr>
-                <td><label for="link">Link:</label></td>
-                <td><input type="text" name="link"></td>
-            </tr>
-        </table>
-
-        <br><br>
-
-        <button type="submit" name="submit">Submit</button>
-
-        <div>
+        <div class="card-body">
             <?php
-            $res = mysqli_query($connection, "SELECT * FROM moviedetails");
-            while ($row = mysqli_fetch_assoc($res)) {
+            //$connection = mysqli_connect("localhost", "root", "", "moviemagic");
+            if (!$connection) {
+                die("Database connection failed: " . mysqli_connect_error());
+            }
+
+            if (isset($_POST['edit_btn'])) {
+                $id = $_POST['edit_id'];
+                $query = "SELECT * FROM register WHERE id='$id'";
+                $run = mysqli_query($connection, $query);
+                if (!$run) {
+                    die("Query failed: " . mysqli_error($connection));
+                }
+                $result = mysqli_query($connection, $query);
+
+                if ($result && $row = mysqli_fetch_assoc($result)) {
+                    
             ?>
-                <img src="Images/<?php echo $row['file'] ?>" alt="Movie Poster">
-            <?php } ?>
-        </div>
-    </form>
+                    <form action="code.php" method="POST">
+                        <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
 
-    <?php include('includes/scripts.php'); ?>
-    <?php include('includes/footer.php'); ?>
-</body>
+                        <div class="form-group">
+                            <label> Username </label>
+                            <input type="text" name="edit_username" value="<?php echo $row['username']; ?>" class="form-control" placeholder="Enter Username">
+                        </div>
+                        <div class="form-group">
+                            <label> Email </label>
+                            <input type="email" name="edit_email" value="<?php echo $row['email']; ?>" class="form-control" placeholder="Enter Email">
+                        </div>
+                        <div class="form-group">
+                            <label> Password </label>
+                            <input type="password" name="edit_password" value="<?php echo $row['password']; ?>" class="form-control" placeholder="Enter Password">
+                        </div>
+                        <div class="form-group">
+                            <label> User-Type </label>
+                            <select name="update_usertype" class="form-control">
+                                <option value="admin" <?php echo ($row['usertype'] == 'admin') ? 'selected' : ''; ?>>Admin</option>
+                                <option value="user" <?php echo ($row['usertype'] == 'user') ? 'selected' : ''; ?>>User</option>
+                            </select>
+                        </div>
+                        <a href="register.php" class="btn btn-danger">CANCEL</a>
+                        <button type="submit" name="updatebtn" class="btn btn-primary">Update</button>
+                    </form>
+            <?php
+                } 
+                else 
+                {
+                    echo "Error: " . mysqli_error($connection);
+                }
+            }
+            ?>
+</div>
+</div>
+</div>
 
-</html>
+<?php
+include('includes/scripts.php');
+include('includes/footer.php');
+?>
