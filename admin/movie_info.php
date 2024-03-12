@@ -21,11 +21,11 @@ include('includes/navbar.php');
             <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
         </div>
         <div class="form-group">
-            <label> Genre ID: </label>
+            <label> Genre ID </label>
             <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
         </div>
         <div class="form-group">
-            <label> Release Year: </label>
+            <label> Release Year </label>
             <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year">
         </div>
         <div class="form-group">
@@ -45,7 +45,7 @@ include('includes/navbar.php');
             <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration">
         </div>
         <div class="form-group">
-            <label> Link </label>
+            <label> Movie Link </label>
             <input type="text" name="m_link" class="form-control" placeholder="Enter Duration">
         </div>
         <input type="hidden" name="usertype" value="admin">

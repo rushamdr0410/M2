@@ -298,26 +298,46 @@ if(isset($_POST['genreupdatebtn']))
     }
 }
 
-if(isset($_POST['delete_btn']))
+if(isset($_POST['genredelete_btn']))
 {
     $id = $_POST['delete_id'];
-    $query="DELETE FROM register WHERE id='$id'";
+    $query="DELETE FROM genre_info WHERE genre_id ='$id'";
     $result= mysqli_query($connection, $query);
 
     if($result)
     {
-        $_SESSION['success']="Your Data is Deleted";
+        $_SESSION['success']="Genre is Deleted";
         $_SESSION['success_code'] = "success";
-        header('Location: register.php');
+        header('Location: genre_info.php');
     }
     else
     {
-        $_SESSION['status']="Your Data is not Deleted";
+        $_SESSION['status']="Genre is not Deleted";
         $_SESSION['status_code'] = "error";
-        header('Location: register.php');
+        header('Location: genre_info.php');
     }
 }
 
+if(isset($_POST['m_insertbtn'])) {
+    $title = mysqli_real_escape_string($connection, $_POST['m_title']);
+    $genreid = mysqli_real_escape_string($connection, $_POST['m_genreid']);
+    $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
+    $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
+    $poster_img= mysqli_real_escape_string($connection, $_POST['m_img']);
+    $trailer_url = mysqli_real_escape_string($connection, $_POST['m_trailer']);
+    $quality = mysqli_real_escape_string($connection, $_POST['m_quality']);
+    $movie_link = mysqli_real_escape_string($connection, $_POST['m_link']);
 
+    $query = "INSERT INTO moviedetails VALUES ('$title', '$genreid', '$release_year', '$duration', '$poster_img', '$trailer_url', '$quality', '$movie_link')";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Movie Details Added";
+        header('Location: movie_info.php');
+    } else {
+        $_SESSION['status'] = "Movie Details Not Added: " . mysqli_error($connection);
+        header('Location: movie_info.php');
+    }
+}
 
 ?>

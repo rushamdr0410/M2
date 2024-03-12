@@ -136,7 +136,7 @@
 	</header>
         <section class="about">
             <div class="main">
-                <img src="Images%20and%20Videos/mainlogo.jpeg">
+                <img src="ImagesandVideos/mainlogo.jpeg">
                 <div class="about-text">
                     <?php
                         include( "database/dbconfig.php" ); // Connect
