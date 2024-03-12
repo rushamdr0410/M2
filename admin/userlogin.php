@@ -272,7 +272,7 @@
 			<a href="HomePage.php">Home</a>
 			<a href="aboutus.php">About</a>
 			<a href="services.php">Services</a>
-			<a href="#">Contact</a>
+			<a href="contact.php">Contact</a>
 			<button class="btnLogin-popup">Sign In</button>
 		</nav>
 	</header>

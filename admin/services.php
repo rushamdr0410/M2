@@ -155,7 +155,7 @@
 			<a href="HomePage.php">Home</a>
 			<a href="aboutus.php">About</a>
 			<a href="services.php">Services</a>
-			<a href="#">Contact</a>
+			<a href="contact.php">Contact</a>
 			<button onclick="redirectToUserLogin()" style="height: 50px;background: transparent;border: .5px solid #3cb2e9;outline: none;border-radius: 40px;cursor: pointer;font-size: 1.1em;color: #3cb2e9;font-weight: 500;margin-left: 40px;transition: .5s;">Sign In</button>
 		</nav>
 	</header>
