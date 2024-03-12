@@ -87,7 +87,7 @@ include('includes/navbar.php');
                                 <td>
                                     <form action="code.php" method="POST">
                                     <input type="hidden" name="delete_id" value="<?php echo $row['genre_id']; ?>">
-                                        <button type="submit" name="servicedelete_btn" class="btn btn-danger">DELETE</button>
+                                        <button type="submit" name="genredelete_btn" class="btn btn-danger">DELETE</button>
                                     </form>
                                 </td>
                             </tr>

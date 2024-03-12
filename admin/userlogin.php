@@ -19,7 +19,7 @@
 			justify-content: center;
 			align-items: center;
 			min-height: 100vh;
-			background: url("Images%20and%20Videos/Backgroud_Images/BG7.jpg") no-repeat;
+			background: url("ImagesandVideos/Backgroud_Images/BG7.jpg") no-repeat;
 			background-size: cover;
 			background-position: center;
 
