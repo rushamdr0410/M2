@@ -1,3 +1,6 @@
+<?php
+    include("security.php")
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -75,17 +78,19 @@
                 margin:0 auto;
             }
             .container h2{
+                margin-top: 24px;
                 font-size: 36px;
                 margin-bottom: 40px;
                 color: #01939c;
             }
-            .contact-wrapper{
+            /*.contact-wrapper{
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 grid-gap:  30px;
-            }
+            }*/
             .contact-form{
                 text-align: left;
+                
             }
             .contact-form h3{
                 font-size: 24px;
@@ -135,6 +140,19 @@
                 color: #01939c;
                 margin-right: 10px;
             }
+            .card{
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-direction: column;
+                margin: 0px 10px;
+                padding: 20px 20px;
+                background: transparent;
+			    background-color: rgba(59, 57, 57, 0.5);
+                border-radius: 10px;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
@@ -150,28 +168,30 @@
         </header>
         <section class="contact">
             <div class="container">
-                <h2>Contact US</h2>
-                <div class="contact-wrapper">
-                    <div class="contact-form">
-                        <h3>Send US a Message</h3>
-                        <form>
-                            <div class="form-group">
-                                <input type="text" name="name" placeholder="Your Name">
-                            </div>
-                            <div class="form-group">
-                                <input type="email" name="email" placeholder="Your Email Address">
-                            </div>
-                            <div class="form-group">
-                                <textarea name="message" placeholder="Your Message"></textarea>
-                            </div>
-                            <button type="submit">Send Message</button>
-                        </form>
-                    </div>
-                    <div class="contact-info">
-                        <h3>Our Contact Information</h3>
-                        <p><i class="fas fa-phone"></i>+977-9810031424<br>+977-9847398065</p>
-                        <p><i class="fas fa-envelope"></i>moviemagic02@gmail.com</p>
-                        <p><i class="fas fa-map-marker-alt"></i>Paknajol Marg, Kathmandu 21010</p>
+                <div class="card">
+                    <h2>Contact US</h2>
+                    <div class="contact-wrapper">
+                        <div class="contact-form">
+                            <h3>Send US a Message</h3>
+                            <form action="code.php" method="POST">
+                                <div class="form-group">
+                                    <input type="text" name="name" placeholder="Your Name">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" placeholder="Your Email Address">
+                                </div>
+                                <div class="form-group">
+                                    <textarea name="message" placeholder="Your Message"></textarea>
+                                </div>
+                                <button type="submit" name="messagebtn">Send Message</button><br>
+                            </form>
+                        </div><br>
+                        <div class="contact-info">
+                            <h3>Our Contact Information</h3>
+                            <p><i class="fas fa-phone"></i>+977-9810031424<br>+977-9847398065</p>
+                            <p><i class="fas fa-envelope"></i>moviemagic02@gmail.com</p>
+                            <p><i class="fas fa-map-marker-alt"></i>Paknajol Marg, Kathmandu 21010</p>
+                        </div>
                     </div>
                 </div>
             </div>

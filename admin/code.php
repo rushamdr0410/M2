@@ -340,4 +340,27 @@ if(isset($_POST['m_insertbtn'])) {
     }
 }
 
+if(isset($_POST['messagebtn']))
+{
+    $name=$_POST['name'];
+    $email=$_POST['email'];
+    $message=$_POST['message'];
+
+    //$email = "SELECT * FROM message";
+    $query = "INSERT INTO message(name,email,message) VALUES ('$name','$email','$message')";
+    $result=mysqli_query($connection,$query);
+
+    if($result)
+    {
+            //echo "Saved";
+        $_SESSION[ 'success' ] = "Message Successfully Sent!";
+            header("location: contact.php");
+    }
+    else{
+        $_SESSION[ 'status' ] = "Message Not Sent";
+        header("location: contact.php");
+    }
+    
+}
+
 ?>
