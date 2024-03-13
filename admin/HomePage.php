@@ -27,7 +27,6 @@
       body{
         overflow-x: hidden;
         background-color: #131418;
-        overflow-y: scroll;
       }
       nav{
         height: 4.5rem;
@@ -39,6 +38,7 @@
         z-index: 10;
       }
       .logo{
+        flex: 1;
         padding:1vh 1vw;
         text-align: center;
       }
@@ -48,6 +48,7 @@
       }
       .nav-links{
         display: flex;
+        flex: 8;
         list-style: none;
         width: 88vw;
         padding: 0 0.7vw;
@@ -142,6 +143,15 @@
 
       .dropdown:hover .dropdown-content {
         display: block;
+      }
+      .profile{
+        flex: 2;
+      }
+      .profile-picture{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
       }
       main {
         position: relative;
@@ -319,12 +329,12 @@
     </style>
 </head>
 <body>
-    <nav>
+<nav>
         <div class="logo" style="display: flex;align-items: center;">
          <span style="color:#01939c; font-size:26px; font-weight:bold; letter-spacing: 1px;margin-left: 20px;">MovieMagic</span>
         </div>
         <ul class="nav-links">
-          <li><a href="file:///C:/xampp/htdocs/MovieMagic/HomePage.html#">Home</a></li>
+          <li><a href="#">Home</a></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle">Genre <i class="fas fa-caret-down"></i></a>
             <ul class="dropdown-content">
@@ -351,6 +361,12 @@
             </form>
           </li>
         </ul>
+        <div class="profile" style="display: flex;align-items: center;">
+            <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
+            <div class="profile-text-container">
+                <span class="profile-text">Profile</span>
+            </div>
+        </div>
     </nav>
     <main>
 
