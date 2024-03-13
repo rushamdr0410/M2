@@ -186,7 +186,7 @@
     .profile-text-container ul li ul {
       display: none;
       position: absolute;
-      width: 250px;
+      width: 220px;
       background-color: #131418;
       box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
       top: 100%;
@@ -210,7 +210,7 @@
       color: #f2f5f7;
       text-decoration: none;
       margin-left: 10px;
-      font-size:14px;
+      font-size: 14px;
     }
 
     .profile-text-container ul li ul li a i {
@@ -227,7 +227,35 @@
       color: #61DAFB;
       border-bottom: 2px solid #61DAFB;
     }
+    .dropdown-btn {
+      text-decoration: none;
+      color: #f2f5f7;
+      background-color: transparent;
+      border: none;
+      padding: 12px 16px; /* Adjust padding to match other list items */
+      margin: 0 0.7vw; /* Adjust margin to match other list items */
+      cursor: pointer;
+      transition: color 0.3s;
+      text-align: left;
+      display: block;
+      width: 100%;
+    }
+    .profile-text-container .dropdown-btn {
+      text-decoration: none;
+      color: #f2f5f7;
+      background-color: transparent;
+      border: none;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: color 0.3s;
+      text-align: left;
+      display: block;
+      width: 100%;
+    }
 
+    .profile-text-container .dropdown-btn:hover {
+      color: #61DAFB;
+    }
     main {
       position: relative;
       width: calc(min(90rem, 90%));
@@ -446,7 +474,13 @@
                 <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
                 <li><a href="#" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
                 <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
-                <li><a href="#" class="genre-link"><i class="fas fa-arrow-right-from-bracket"></i>Logout</a></li>
+                <li>
+                  <form action="logout.php" method="POST">
+                    <button type="submit" name="userlogout_btn" class="dropdown-btn">
+                      <i class="fas fa-arrow-right-from-bracket"></i> Logout
+                    </button>
+                  </form>
+                </li>
               </ul>
             </li>
           </ul>
