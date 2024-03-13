@@ -8,5 +8,11 @@ if(isset($_POST[ 'logout_btn']))
     header("location: login.php");
 }
 
+if(isset($_POST[ 'userlogout_btn']))
+{
+    session_destroy();
+    unset($_SESSION['username']);
+    header("location: userlogin.php");
+}
 
 ?>
