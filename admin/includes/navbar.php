@@ -96,7 +96,7 @@
             <a class="collapse-item" href="login.html">HOME</a>
             <a class="collapse-item" href="about.php">ABOUT</a>
             <a class="collapse-item" href="service.php">SERVICES</a>
-            <a class="collapse-item" href="forgot-password.html">CONTACT</a>
+            <a class="collapse-item" href="contactus.php">CONTACT</a>
             <div class="collapse-divider"></div>
             <h6 class="collapse-header">Other Pages:</h6>
             <a class="collapse-item" href="404.html">404 Page</a>
