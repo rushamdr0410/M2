@@ -337,7 +337,7 @@
 					
 				</div>
 				<div class="remember-forgot">
-					<label><input type="checkbox" id="terms"> I agree to the terms &conditions</label>
+					<label><input type="checkbox" id="terms" required> I agree to the terms &conditions</label>
 				</div>
 				<button type="submit" value="submit" name="userregistration" class="btn btn-primary" class="btn">Sign Up</button>
 				<div class="signin-register">
