@@ -26,6 +26,7 @@
       background-color: #131418;
     }
     body{
+      overflow-y: scroll;
       overflow-x: hidden;
       background-color: #131418;
     }
@@ -56,6 +57,7 @@
       justify-content: space-evenly;
       align-items: center;
       text-transform: uppercase;
+      font-size: 15px;
     }
     .nav-links li a{
       text-decoration: none;
@@ -148,6 +150,7 @@
     .profile{
       flex: 2;
       justify-content: flex-end;
+      margin-right: 20px;
     }
     .profile-picture{
       width: 32px;
@@ -428,6 +431,29 @@
         width: 85%;
       }
     }
+    .featured-content{
+      height: 50vh;
+
+    }
+    .swiper-slide--one {
+      background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+    }
+
+    .swiper-slide--two {
+      background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+    }
+
+    .swiper-slide--three {
+      background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+    }
+
+    .swiper-slide--four {
+      background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+    }
+
+    .swiper-slide--five {
+      background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+    }
 
     </style>
   </head>
@@ -487,33 +513,36 @@
         </div>
         <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
       </div>
+      <div class="container">
+    </div>
     </nav>
+    
   <main>
 
     <div class="swiper">
       <div class="swiper-wrapper">
         <div class="swiper-slide swiper-slide--one">
           <div>
-            <h2 style="font-weight: bold; font-size: x-large;"></h2>
-            <p style="font-weight: bold; font-size: 95%;"><br></p>
-            <p></p>
+            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
             <a href="#" target="_blank">Watch Now</a>
           </div>
         </div>
           <div class="swiper-slide swiper-slide--two">
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+              <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+              <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
           <div class="swiper-slide swiper-slide--three">
 
             <div>
-              <h2 style="font-weight: bold; font-size: x-large;"></h2>
-              <p style="font-weight: bold; font-size: 95%;"><br></p>
-              <p></p>
+              <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+              <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+              <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
               <a href="#" target="_blank">Watch Now</a>
             </div>
           </div>
@@ -521,9 +550,9 @@
         <div class="swiper-slide swiper-slide--four">
 
         <div>
-          <h2 style="font-weight: bold; font-size: x-large;"></h2>
-          <p style="font-weight: bold; font-size: 95%;"><br></p>
-          <p></p>
+          <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+          <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+          <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
           <a href="#" target="_blank">Watch Now</a>
         </div>
       </div>
@@ -531,16 +560,15 @@
       <div class="swiper-slide swiper-slide--five">
 
         <div>
-          <h2 style="font-weight: bold; font-size: x-large;"></h2>
-          <p style="font-weight: bold; font-size: 95%;"><br></p>
-          <p></p>
+          <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+          <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+          <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
           <a href="#" target="_blank">Watch Now</a>
         </div>
       </div>
     </div>
     <div class="swiper-pagination"></div>
     </div>
-
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
