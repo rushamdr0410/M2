@@ -454,15 +454,43 @@
       .swiper-slide--five {
         background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
       }
+
+      .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-left: auto; /* add this line */
+        margin-right: auto;
+        max-width: 968px; /* add this line */
+        padding: 1rem 0;
+      }
       .heading{
         max-width: 968px;
-        margin-left: auto;
+        margin-left: 0;
         margin-right: auto;
         font-size: 2.2rem;
         font-weight: bold;
         text-transform: uppercase;
         /*border-bottom: 2px solid #61DAFB;*/
         color: #01939c;
+        display: flex;
+        align-items: center;
+        margin:0;
+      }
+      .titlebtn {
+        width: 110px;
+        height: 40px;
+        background: transparent;
+        border: .5px solid rgba(255, 255, 255, 0.5);
+        outline: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1em;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 500;
+        margin-left: auto;
+        transition: .5s;
+        
       }
       .movies-container{
         max-width: 968px;
@@ -476,6 +504,7 @@
         margin-top: 2rem;
         font-size: 12px;
       }
+      
       .box .box-img{
         width: 100%;
         height: 270px;
@@ -483,12 +512,29 @@
       .box .box-img img{
         width: 100%;
         height: 100%;
+        margin-bottom: 4px;
+        padding-bottom: 4px;
         object-fit: cover;
         border-radius: 6px; 
+      }
+      .box .box-img img:hover{
+        transform: translateY(-10px);
+        transition: 0.2s all linear;
       }
       .date_min{ 
         display: flex;
         justify-content: space-between;
+      }
+      .box h3{
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+      .box span{
+        font-size: 12px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        color: rgba(255, 255, 255, 0.5);
+
       }
     </style>
   </head>
@@ -598,7 +644,13 @@
     </div>
   </main>
   <section class="movies" id="movies">
-    <h2 class="heading">recommended</h2>
+    <div class="title">
+      <h2 class="heading">recommended</h2>
+      <form>
+        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
+      </form>
+    </div>
+      
     <div class="movies-container">
       <div class="box">
         <div class="box-img">
@@ -607,6 +659,7 @@
         <div class="poster">
           <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
           
@@ -619,6 +672,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -629,6 +683,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -639,6 +694,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -649,6 +705,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -659,6 +716,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -669,6 +727,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -679,13 +738,19 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
     </section>
     <section class="movies" id="movies">
-    <h2 class="heading">latest movies</h2>
+    <div class="title">
+      <h2 class="heading">latest movies</h2>
+      <form>
+        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
+      </form>
+    </div>
     <div class="movies-container">
       <div class="box">
         <div class="box-img">
@@ -694,6 +759,7 @@
         <div class="poster">
           <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
           
@@ -706,6 +772,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -716,6 +783,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -726,6 +794,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -736,6 +805,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -746,6 +816,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -756,6 +827,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -766,13 +838,19 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
     </section>
     <section class="movies" id="movies">
-    <h2 class="heading">latest tv-shows</h2>
+    <div class="title">
+      <h2 class="heading">latest tv-shows</h2>
+      <form>
+        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
+      </form>
+    </div>
     <div class="movies-container">
       <div class="box">
         <div class="box-img">
@@ -781,6 +859,7 @@
         <div class="poster">
           <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
           
@@ -793,6 +872,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -803,6 +883,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -813,6 +894,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -823,6 +905,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -833,6 +916,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -843,6 +927,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
@@ -853,6 +938,7 @@
         </div>
         <div class="date_min">
           <span>2024</span>
+          <span>MOVIE</span>
           <span>94min</span>
           </div>
         <h3>Kung Fu Panda 4</h3>
