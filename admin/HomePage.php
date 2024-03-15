@@ -484,6 +484,10 @@
         object-fit: cover;
         border-radius: 6px;
       }
+      .date_min{ 
+        display: flex;
+        justify-content: space-between;
+      }
     </style>
   </head>
   <body>
@@ -599,7 +603,11 @@
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
         <div class="poster">
-          <span>2024 | 94min</span>
+          <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
+          
           <h3>Kung Fu Panda 4</h3>
         </div>
       </div>
@@ -607,49 +615,70 @@
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
       <div class="box">
         <div class="box-img">
           <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
         </div>
-        <span>2024 | 94 min</span>
+        <div class="date_min">
+          <span>2024</span>
+          <span>94min</span>
+          </div>
         <h3>Kung Fu Panda 4</h3>
       </div>
     </section>
