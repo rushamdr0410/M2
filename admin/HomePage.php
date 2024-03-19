@@ -455,6 +455,19 @@
         background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
       }
 
+      .coming{
+        max-width: 968px;
+        margin-right: auto;
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #01939c;
+        display: flex;
+        align-items: center;
+        margin:0;
+        margin-left: -104px;
+      }
+
       .title {
         display: flex;
         justify-content: space-between;
@@ -464,6 +477,7 @@
         max-width: 968px; /* add this line */
         padding: 1rem 0;
       }
+      
       .heading{
         max-width: 968px;
         margin-left: 0;
@@ -536,6 +550,7 @@
         color: rgba(255, 255, 255, 0.5);
 
       }
+      
     </style>
   </head>
   <body>
@@ -643,6 +658,79 @@
       <div class="swiper-pagination"></div>
     </div>
   </main>
+  <section class="coming" id="coming">
+  <div class="title">
+      <h2 class="coming">coming soon!</h2>
+    </div>
+    <div class="coming-container swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide box">
+            <div class="box-img">
+              <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
+            </div>
+            <div class="poster">
+              <div class="date_min">
+                <span>2024</span>
+                <span>MOVIE</span>
+                <span>94min</span>
+              </div>
+              <h3>Kung Fu Panda 4</h3>
+            </div>
+          </div>
+          <div class="swiper-slide box">
+            <div class="box-img">
+              <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
+            </div>
+            <div class="poster">
+              <div class="date_min">
+                <span>2024</span>
+                <span>MOVIE</span>
+                <span>94min</span>
+              </div>
+              <h3>Kung Fu Panda 4</h3>
+            </div>
+          </div>
+          <div class="swiper-slide box">
+            <div class="box-img">
+              <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
+            </div>
+            <div class="poster">
+              <div class="date_min">
+                <span>2024</span>
+                <span>MOVIE</span>
+                <span>94min</span>
+              </div>
+              <h3>Kung Fu Panda 4</h3>
+            </div>
+          </div>
+          <div class="swiper-slide box">
+            <div class="box-img">
+              <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
+            </div>
+            <div class="poster">
+              <div class="date_min">
+                <span>2024</span>
+                <span>MOVIE</span>
+                <span>94min</span>
+              </div>
+              <h3>Kung Fu Panda 4</h3>
+            </div>
+          </div>
+          <div class="swiper-slide box">
+            <div class="box-img">
+              <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
+            </div>
+            <div class="poster">
+              <div class="date_min">
+                <span>2024</span>
+                <span>MOVIE</span>
+                <span>94min</span>
+              </div>
+              <h3>Kung Fu Panda 4</h3>
+            </div>
+          </div>
+        </div>
+  </section>
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">recommended</h2>
