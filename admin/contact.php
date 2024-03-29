@@ -1,5 +1,5 @@
 <?php
-    include("security.php")
+    include("database/dbconfig.php")
 ?>
 <!DOCTYPE html>
 <html>
