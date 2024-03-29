@@ -170,6 +170,16 @@
             <div class="container">
                 <div class="card">
                     <h2>Contact US</h2>
+                    <?php
+                        if(isset($_SESSION['success']) &&  $_SESSION['success'] !=''){
+                            echo '<h2 class="bg-#191919 text-#01939c">'.$_SESSION['success'].'</h2>';
+                            unset($_SESSION['success']);
+                        }
+                        if(isset($_SESSION['status']) &&  $_SESSION['status'] !=''){
+                            echo '<h2 class="bg_danger text-white">'.$_SESSION['status'].'</h2>';
+                            unset($_SESSION['status']);
+                        }
+                    ?>
                     <div class="contact-wrapper">
                         <div class="contact-form">
                             <h3>Send US a Message</h3>

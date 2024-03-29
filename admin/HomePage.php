@@ -655,14 +655,14 @@
           </div>
         </div>
       </div>
-      <div class="swiper-pagination"></div>
+      <!--<div class="swiper-pagination"></div>!-->
     </div>
   </main>
   <section class="coming" id="coming">
-  <div class="title">
+    <div class="title">
       <h2 class="coming">coming soon!</h2>
     </div>
-    <div class="coming-container swiper">
+    <!--<div class="coming-container swiper">
         <div class="swiper-wrapper">
           <div class="swiper-slide box">
             <div class="box-img">
@@ -729,7 +729,7 @@
               <h3>Kung Fu Panda 4</h3>
             </div>
           </div>
-        </div>
+        </div>!-->
   </section>
   <section class="movies" id="movies">
     <div class="title">
