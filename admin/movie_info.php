@@ -37,16 +37,8 @@ include('includes/navbar.php');
             <input type="file" name="m_img" class="form-control" placeholder="Enter Duration">
         </div>
         <div class="form-group">
-            <label> Trailer URL </label>
-            <input type="text" name="m_trailer" class="form-control" placeholder="Enter Duration">
-        </div>
-        <div class="form-group">
             <label> Quality </label>
             <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration">
-        </div>
-        <div class="form-group">
-            <label> Movie Link </label>
-            <input type="text" name="m_link" class="form-control" placeholder="Enter Duration">
         </div>
         <input type="hidden" name="usertype" value="admin">
       </div>
@@ -96,8 +88,6 @@ include('includes/navbar.php');
                     <th>DURATION</th>
                     <th>DESCRIPTION</th>
                     <th>POSTER IMAGE</th>
-                    <th>TRAILER URL</th>
-                    <th>LINK</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -118,8 +108,6 @@ include('includes/navbar.php');
                                 <td><?php echo $row['duration']; ?></td>
                                 <td><?php echo $row['DESCRIPTION']; ?></td>
                                 <td><?php echo $row['poster_image']; ?></td>
-                                <td><?php echo $row['trailer_url']; ?></td>
-                                <td><?php echo $row['link']; ?></td>
                                 <td>
                                     <form action="moviedetails.php" method="POST">
                                         <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">

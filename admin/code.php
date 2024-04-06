@@ -130,39 +130,21 @@ if(isset($_POST['userregistration']))
 }
 
 if(isset($_POST['update_btn'])) {
-    // Assuming $connection is your database connection
-    
-    // Get the values from the form
     $id = $_POST['edit_id'];
     $title = $_POST['edit_title'];
     $subtitle = $_POST['edit_subtitle'];
     $description = $_POST['edit_description'];
     $links = $_POST['edit_links'];
-
-    // Prepare the SQL statement with placeholders
     $query = "UPDATE about SET title=?, subtitle=?, description=?, links=? WHERE id=?";
-    
-    // Prepare the statement
     $stmt = mysqli_prepare($connection, $query);
-
-    // Bind parameters to the prepared statement
     mysqli_stmt_bind_param($stmt, "ssssi", $title, $subtitle, $description, $links, $id);
-
-    // Execute the statement
     $query_run = mysqli_stmt_execute($stmt);
-
-    // Check if the query was successful
     if ($query_run) {
         $_SESSION['success'] = "Your Data is updated";
     } else {
-        // Query failed, handle the error
         $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
     }
-
-    // Close the statement
     mysqli_stmt_close($stmt);
-
-    // Redirect back to about.php
     header('Location: about.php');
     exit();
 }
@@ -206,27 +188,15 @@ if(isset($_POST['serviceupdate_btn']))
     $title = $_POST['edit_title'];
     $description = $_POST['edit_description'];
     $links = $_POST['edit_links'];
-    // Assuming $connection is your database connection
     $stmt = mysqli_prepare($connection, "UPDATE service SET title=?, description=?, links=? WHERE id=?");
-
-    // Assuming $title, $subtitle, $description, $links, and $id are your variables
     mysqli_stmt_bind_param($stmt, "sssi", $title, $description, $links, $id);
-
-    // Execute the statement
     mysqli_stmt_execute($stmt);
-
-    // Check if the query was successful
     if ($stmt) {
         $_SESSION['success'] = "Your Data is updated";
     } else {
-        // Query failed, handle the error
         $_SESSION['status'] = "Your data is not updated: " . mysqli_error($connection);
     }
-
-    // Close the statement
     mysqli_stmt_close($stmt);
-
-    // Redirect back to about.php
     header('Location: service.php');
     exit();
 }
@@ -319,16 +289,15 @@ if(isset($_POST['genredelete_btn']))
 }
 
 if(isset($_POST['m_insertbtn'])) {
+    $id= mysqli_real_escape_string($connection, $_POST['m_title']);
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
     $genreid = mysqli_real_escape_string($connection, $_POST['m_genreid']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
     $poster_img= mysqli_real_escape_string($connection, $_POST['m_img']);
-    $trailer_url = mysqli_real_escape_string($connection, $_POST['m_trailer']);
     $quality = mysqli_real_escape_string($connection, $_POST['m_quality']);
-    $movie_link = mysqli_real_escape_string($connection, $_POST['m_link']);
 
-    $query = "INSERT INTO moviedetails VALUES ('$title', '$genreid', '$release_year', '$duration', '$poster_img', '$trailer_url', '$quality', '$movie_link')";
+    $query = "INSERT INTO moviedetails VALUES ('$id','$title', '$genreid', '$release_year', '$duration', '$poster_img', '$quality')";
     $query_run = mysqli_query($connection, $query);
 
     if($query_run) {
@@ -358,9 +327,23 @@ if(isset($_POST['messagebtn']))
     }
     else{
         $_SESSION[ 'status' ] = "Message Not Sent";
-        header("location: contact.php");
+        header("location: contactus.php");
     }
-    
+}
+
+if(isset($_POST['delete_btn'])) {
+
+    $id= $_POST['delete_id'];
+    $query = "DELETE FROM message where id='$id' ";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run) {
+        $_SESSION['success'] = "Your Data is deleted";
+        header('Location: contactus.php');
+    } else {
+        $_SESSION['status'] = "Your data is not deleted ";
+        header('Location: contactus.php');
+    }
 }
 
 ?>
