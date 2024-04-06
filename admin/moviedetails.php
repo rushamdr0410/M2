@@ -21,7 +21,7 @@ include('includes/navbar.php');
 
             if (isset($_POST['edit_btn'])) {
                 $id = $_POST['edit_id'];
-                $query = "SELECT * FROM register WHERE id='$id'";
+                $query = "SELECT * FROM moviedetails WHERE id='$id'";
                 $run = mysqli_query($connection, $query);
                 if (!$run) {
                     die("Query failed: " . mysqli_error($connection));
@@ -35,16 +35,28 @@ include('includes/navbar.php');
                         <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
 
                         <div class="form-group">
-                            <label> Username </label>
-                            <input type="text" name="edit_username" value="<?php echo $row['username']; ?>" class="form-control" placeholder="Enter Username">
+                            <label> Title </label>
+                            <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
                         </div>
                         <div class="form-group">
-                            <label> Email </label>
-                            <input type="email" name="edit_email" value="<?php echo $row['email']; ?>" class="form-control" placeholder="Enter Email">
+                            <label> Genre ID </label>
+                            <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
                         </div>
                         <div class="form-group">
-                            <label> Password </label>
-                            <input type="password" name="edit_password" value="<?php echo $row['password']; ?>" class="form-control" placeholder="Enter Password">
+                            <label> Release Year </label>
+                            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year">
+                        </div>
+                        <div class="form-group">
+                            <label> Duration </label>
+                            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration">
+                        </div>
+                        <div class="form-group">
+                            <label>Poster Image</label>
+                            <input type="file" name="m_img" class="form-control" placeholder="Enter Duration">
+                        </div>
+                        <div class="form-group">
+                            <label> Quality </label>
+                            <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration">
                         </div>
                         <div class="form-group">
                             <label> User-Type </label>

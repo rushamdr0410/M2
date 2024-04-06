@@ -44,7 +44,7 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Uploads</h6>
-            <a class="collapse-item" href="utilities-color.html">Movies</a>
+            <a class="collapse-item" href="movie_info.php">Movies</a>
             <a class="collapse-item" href="utilities-border.html">TV-Shows</a>
             <a class="collapse-item" href="utilities-animation.html">Trailers</a>
             <a class="collapse-item" href="movie_info.php">MetaData</a>
