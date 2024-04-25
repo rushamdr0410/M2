@@ -22,38 +22,7 @@ include('includes/navbar.php');
         </div>
         <div class="form-group">
             <label>Select Genre</label>
-            <td>
-                        <select name="genre_info">
-
-                            <?php
-                            $sql = "SELECT * FROM genre_info WHERE active='Yes'";
-                            $res = mysqli_query($conn, $sql);
-                            $count = mysqli_num_rows($res);
-
-                            if($count>0)
-                            {
-                                while($row=mysqli_fetch_assoc($res))
-                                {
-                                    // get details of category
-                                    $id = $row['id'];
-                                    $title = $row['title'];
-                                    ?>
-                                    <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
-                                    <?php
-                                }
-                            }
-                            else
-                            {
-                                // No category message
-                                ?>
-                                <option value="0">No Category Found</option>
-                                <?php
-                            }
-
-                            // display the dropdown
-                            ?>
-                        </select>
-                    </td>
+            <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
         </div>
         <div class="form-group">
             <label> Release Year </label>
