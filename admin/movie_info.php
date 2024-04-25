@@ -21,8 +21,39 @@ include('includes/navbar.php');
             <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
         </div>
         <div class="form-group">
-            <label> Genre ID </label>
-            <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
+            <label>Select Genre</label>
+            <td>
+                        <select name="genre_info">
+
+                            <?php
+                            $sql = "SELECT * FROM genre_info WHERE active='Yes'";
+                            $res = mysqli_query($conn, $sql);
+                            $count = mysqli_num_rows($res);
+
+                            if($count>0)
+                            {
+                                while($row=mysqli_fetch_assoc($res))
+                                {
+                                    // get details of category
+                                    $id = $row['id'];
+                                    $title = $row['title'];
+                                    ?>
+                                    <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
+                                    <?php
+                                }
+                            }
+                            else
+                            {
+                                // No category message
+                                ?>
+                                <option value="0">No Category Found</option>
+                                <?php
+                            }
+
+                            // display the dropdown
+                            ?>
+                        </select>
+                    </td>
         </div>
         <div class="form-group">
             <label> Release Year </label>

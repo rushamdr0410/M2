@@ -20,6 +20,11 @@ include('includes/navbar.php');
             <label> Genre Name </label>
             <input type="text" name="genre" class="form-control" placeholder="Enter Genre">
         </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <input type="checkbox" name="active" readonly>Active
+            </div>
+        </div>
         <input type="hidden" name="usertype" value="admin">
       </div>
       <div class="modal-footer">
@@ -63,6 +68,7 @@ include('includes/navbar.php');
                 <tr>
                     <th>ID</th>
                     <th>GENRE</th>
+                    <th>Active</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -78,6 +84,9 @@ include('includes/navbar.php');
                             <tr>
                                 <td><?php echo $row['genre_id']; ?></td>
                                 <td><?php echo $row['genre_name']; ?></td>
+                                <td>
+                                    <input type="checkbox"<?= $row['active']=='1'?'checked':''?> readonly/>
+                                </td>
                                 <td>
                                     <form action="genre_edit.php" method="POST">
                                         <input type="hidden" name="edit_id" value="<?php echo $row['genre_id']; ?>">

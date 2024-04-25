@@ -236,7 +236,8 @@ if(isset($_POST['service_save'])) {
 if(isset($_POST['genreaddbtn']))
 {
     $genre = $_POST['genre'];
-    $query = "INSERT INTO genre_info(genre_name) VALUES ('$genre')";
+    $active = isset($_POST['active']) ? '1' : '0';
+    $query = "INSERT INTO genre_info(genre_name, active) VALUES ('$genre', '$active')";
     $query_run = mysqli_query($connection, $query);
 
     if($query_run) {
@@ -248,13 +249,14 @@ if(isset($_POST['genreaddbtn']))
     }
 }
 
- 
+$edit_active = isset($_POST['active']) ? $_POST['active'] : '';
 
 if(isset($_POST['genreupdatebtn']))
 {
     $id=$_POST['edit_id'];
     $genre=$_POST['genre'];
-    $query=  "UPDATE genre_info SET genre_name='$genre' WHERE genre_id  ='$id'";
+    $active = $edit_active == true ? '1' : '0';
+    $query=  "UPDATE genre_info SET genre_name='$genre', active='$active' WHERE genre_id  ='$id'";
     $result=mysqli_query($connection, $query);
     if($result)
     {
