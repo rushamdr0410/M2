@@ -14,7 +14,6 @@ include('includes/navbar.php');
         </div>
         <div class="card-body">
             <?php
-            //$connection = mysqli_connect("localhost", "root", "", "moviemagic");
             if (!$connection) {
                 die("Database connection failed: " . mysqli_connect_error());
             }
@@ -37,6 +36,9 @@ include('includes/navbar.php');
                         <div class="form-group">
                             <label> Genre </label>
                             <input type="text" name="genre" value="<?php echo $row['genre_name']; ?>" class="form-control" placeholder="Enter Username">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="active" <?= $row['active'] == "1" ? 'checked' : ''; ?>>Active
                         </div>
                         <a href="register.php" class="btn btn-danger">CANCEL</a>
                         <button type="submit" name="genreupdatebtn" class="btn btn-primary">Update</button>

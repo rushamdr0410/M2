@@ -21,7 +21,7 @@ include('includes/navbar.php');
             <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
         </div>
         <div class="form-group">
-            <label> Genre ID </label>
+            <label>Select Genre</label>
             <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
         </div>
         <div class="form-group">
