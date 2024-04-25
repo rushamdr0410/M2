@@ -83,11 +83,8 @@ include('includes/navbar.php');
                 <tr>
                     <th>ID</th>
                     <th>TITLE</th>
-                    <th>GENRE ID</th>
                     <th>RELEASE YEAR</th>
                     <th>DURATION</th>
-                    <th>DESCRIPTION</th>
-                    <th>POSTER IMAGE</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -103,11 +100,8 @@ include('includes/navbar.php');
                             <tr>
                                 <td><?php echo $row['id']; ?></td>
                                 <td><?php echo $row['title']; ?></td>
-                                <td><?php echo $row['genre_id']; ?></td>
                                 <td><?php echo $row['release_year']; ?></td>
                                 <td><?php echo $row['duration']; ?></td>
-                                <td><?php echo $row['DESCRIPTION']; ?></td>
-                                <td><?php echo $row['poster_image']; ?></td>
                                 <td>
                                     <form action="moviedetails.php" method="POST">
                                         <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
