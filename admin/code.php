@@ -291,9 +291,9 @@ if(isset($_POST['genredelete_btn']))
 }
 
 if(isset($_POST['m_insertbtn'])) {
-    $id= mysqli_real_escape_string($connection, $_POST['m_title']);
+    $id= mysqli_real_escape_string($connection, $_POST['id']);
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
-    $genreid = mysqli_real_escape_string($connection, $_POST['m_genreid']);
+    $genreid = mysqli_real_escape_string($connection, $_POST['gid']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
     $poster_img= mysqli_real_escape_string($connection, $_POST['m_img']);
@@ -307,6 +307,75 @@ if(isset($_POST['m_insertbtn'])) {
         header('Location: movie_info.php');
     } else {
         $_SESSION['status'] = "Movie Details Not Added: " . mysqli_error($connection);
+        header('Location: movie_info.php');
+    }
+}
+
+if(isset($_POST['updatebtn']))
+{
+    $id=$_POST['edit_id'];
+    $m_title=$_POST['m_title'];
+    $gid=$_POST['gid'];
+    $m_year=$_POST['m_year'];
+    $m_duration=$_POST['m_duration'];
+    $m_img=$_POST['m_img'];
+    $m_quality=$_POST['m_quality'];
+    if(isset($_FILES['image']['name']))
+    {
+        $image_name = $_FILES['m_img']['name'];
+
+        if($image_name != "")
+        {
+
+            $ext = end(explode('.', $image_name));
+            $image_name = "Movie-Title-".rand(0000, 9999).'.'.$ext;
+
+            $src_path = $_FILES['image']['tmp_name'];
+            $dest_path = "../ImagesandVideos/MoviePosters/".$image_name;
+
+            $upload = move_uploaded_file($src_path, $dest_path);
+
+            if($upload==false)
+            {
+                $_SESSION['upload'] = "<div class='error'>Failed to Upload New Image</div>";
+                header('location:'.SITEURL.'admin/manage-food.php');
+                die();
+             }
+
+            if($current_image != "")
+            {
+
+                $remove_path = "../ImagesandVideos/MoviePosters/".$current_image;
+
+                $remove = unlink($remove_path);
+
+                if($remove==false)
+                {
+                    header('location:'.SITEURL.'movie_info.php');
+                    die();
+                }
+
+            }
+        }
+        else
+        {
+            $image_name = $current_image; //Deafult image when image is not selected
+        }
+    }
+    else
+    {
+        $image_name = $current_image; //Deafult image when button is not clicked
+    }
+    $query=  "UPDATE moviedetails SET 	title='$m_title', genreid='$gid', release_year='$m_year', duration='$m_duration', poster_img='$m_img', quality='$m_quality' WHERE 	id='$id'";
+    $result=mysqli_query($connection, $query);
+    if($result)
+    {
+        $_SESSION['success']="Your Data is Updated";
+        header('Location: movie_info.php');
+    }
+    else
+    {
+        $_SESSION['status']="Your Data is not Updated";
         header('Location: movie_info.php');
     }
 }
