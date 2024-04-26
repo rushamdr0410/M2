@@ -22,7 +22,23 @@ include('includes/navbar.php');
         </div>
         <div class="form-group">
             <label>Select Genre</label>
-            <input type="text" name="m_genreid" class="form-control checking_email" placeholder="Enter Genre ID">
+            <?php
+                $query = "SELECT * FROM genre_info";
+                $query_run = mysqli_query($connection, $query);
+                if(mysqli_num_rows($query_run)>0)
+                {
+            ?>
+            <select name="edit_id" class="form-control">
+                <?php
+                    foreach($query_run as $row)
+                    {
+                ?>
+                <option value=""><?= $row['genre_name']?></option>
+                <?php }?>
+            </select>
+            <?php
+                }   
+            ?>
         </div>
         <div class="form-group">
             <label> Release Year </label>
