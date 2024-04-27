@@ -60,7 +60,10 @@ include('includes/navbar.php');
                                         $genre_id = $row['genre_id'];
                                         ?>
                                         
-                                        <option <?php if($current_genre == $genre_id) {echo "selected";} ?> value="<?php echo $genre_id; ?>"><?php echo $genre_title; ?></option>
+                                        <option 
+                                            <?php if($current_genre == $genre_id) {echo "selected";} ?> value="<?php echo $genre_id; ?>">
+                                            <?php echo $genre_title; ?>
+                                        </option>
 
                                         <?php
                                     }
@@ -86,15 +89,15 @@ include('includes/navbar.php');
                             <td>
                                 <!-- Display image if available -->
                                 <?php 
-                                if($current_image == "")
-                                {
-                                    echo "<h6>Image not Available</h6>";
-                                }
-                                else
-                                {
-                                    ?>
+                                    if($current_image == "")
+                                    {
+                                        echo "<h6>Image not Available</h6>";
+                                    }
+                                    else
+                                    {
+                                ?>
                                     <img src="<?php echo SITEURL; ?>/ImagesandVideos/MoviePosters/<?php echo $current_image; ?>" width="150px">
-                                    <?php
+                                <?php
                                 }
                                 ?>
                             </td>
