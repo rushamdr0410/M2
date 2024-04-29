@@ -43,7 +43,7 @@ include('includes/navbar.php');
 
                                 <?php
                                 
-                                $sql = "SELECT * FROM genre_info WHERE active='Yes'";
+                                $sql = "SELECT * FROM genre_info WHERE active='No'";
 
                                 // execute the queries
                                 $res = mysqli_query($connection, $sql);
