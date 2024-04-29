@@ -14,11 +14,11 @@ include('includes/navbar.php');
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="code.php" method="POST">
+      <form action="code.php" method="POST" enctype="multipart/form-data">
       <div class="modal-body">
         <div class="form-group">
             <label> Title </label>
-            <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title">
+            <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title" required>
         </div>
         <div class="form-group">
             <label>Select Genre</label>
@@ -28,7 +28,7 @@ include('includes/navbar.php');
                 if(mysqli_num_rows($query_run)>0)
                 {
             ?>
-            <select name="edit_id" class="form-control">
+            <select name="g_id" class="form-control">
                 <?php
                     foreach($query_run as $row)
                     {
@@ -42,21 +42,20 @@ include('includes/navbar.php');
         </div>
         <div class="form-group">
             <label> Release Year </label>
-            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year">
+            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year" required>
         </div>
         <div class="form-group">
             <label> Duration </label>
-            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration">
+            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" required>
         </div>
         <div class="form-group">
             <label>Poster Image</label>
-            <input type="file" name="m_img" class="form-control" placeholder="Enter Duration">
+            <input type="file" name="m_img" id="m_img" class="form-control" required>
         </div>
         <div class="form-group">
             <label> Quality </label>
-            <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration">
+            <input type="text" name="m_quality" class="form-control" placeholder="Enter Quality" required>
         </div>
-        <input type="hidden" name="usertype" value="admin">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

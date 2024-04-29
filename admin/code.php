@@ -291,23 +291,32 @@ if(isset($_POST['genredelete_btn']))
 }
 
 if(isset($_POST['m_insertbtn'])) {
-    $id= mysqli_real_escape_string($connection, $_POST['id']);
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
-    $genreid = mysqli_real_escape_string($connection, $_POST['gid']);
+    $genreid = mysqli_real_escape_string($connection, $_POST['g_id']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
-    $poster_img= mysqli_real_escape_string($connection, $_POST['m_img']);
+    $poster_img= $_FILES['m_img']['name'];
     $quality = mysqli_real_escape_string($connection, $_POST['m_quality']);
 
-    $query = "INSERT INTO moviedetails VALUES ('$id','$title', '$genreid', '$release_year', '$duration', '$poster_img', '$quality')";
-    $query_run = mysqli_query($connection, $query);
+    if(file_exists("upload/".$_FILES["m_img"]["name"]))
+    {
+        $store = $_FILES["m_img"]["name"];
+        $_SESSION['status']= "Image already exists. '.$store.'";
+        header('Location: movie_info.php');
+    }
+    else
+    {
+        $query = "INSERT INTO moviedetails VALUES ('$id','$title', '$genreid', '$release_year', '$duration', '$poster_img', '$quality')";
+        $query_run = mysqli_query($connection, $query);
 
-    if($query_run) {
-        $_SESSION['success'] = "Movie Details Added";
-        header('Location: movie_info.php');
-    } else {
-        $_SESSION['status'] = "Movie Details Not Added: " . mysqli_error($connection);
-        header('Location: movie_info.php');
+        if($query_run) {
+            move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]);
+            $_SESSION['success'] = "Movie Details Added";
+            header('Location: movie_info.php');
+        } else {
+            $_SESSION['status'] = "Movie Details Not Added: " . mysqli_error($connection);
+            header('Location: movie_info.php');
+        }
     }
 }
 
