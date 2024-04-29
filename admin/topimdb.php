@@ -331,20 +331,20 @@ h2{
 <li class="dropdown">
 <a href="#" class="dropdown-toggle">Genre</a>
 <ul class="dropdown-content">
-<li><a href="#" class="genre-link">Action</a></li>
-<li><a href="#" class="genre-link">Adventure</a></li>
-<li><a href="#" class="genre-link">Biography</a></li>
-<li><a href="#" class="genre-link">Comedy</a></li>
-<li><a href="#" class="genre-link">Documentary</a></li>
-<li><a href="#" class="genre-link">Drama</a></li>
-<li><a href="#" class="genre-link">Fantasy</a></li>
-<li><a href="#" class="genre-link">Horror</a></li>
-<li><a href="#" class="genre-link">Romance</a></li>
-<li><a href="#" class="genre-link">Sci-Fi</a></li>
-<li><a href="#" class="genre-link">Thriller</a></li>
+<li><a href="action.php" class="genre-link">Action</a></li>
+<li><a href="adventure.php" class="genre-link">Adventure</a></li>
+<li><a href="biography.php" class="genre-link">Biography</a></li>
+<li><a href="comedy.php" class="genre-link">Comedy</a></li>
+<li><a href="documentary.php" class="genre-link">Documentary</a></li>
+<li><a href="drama.php" class="genre-link">Drama</a></li>
+<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+<li><a href="horror.php" class="genre-link">Horror</a></li>
+<li><a href="romance.php" class="genre-link">Romance</a></li>
+<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+<li><a href="thriller.php" class="genre-link">Thriller</a></li>
 </ul>
 </li>
-<li><a href="TopIMDB.php">Top IMdb</a></li>
+<li><a href="topimdb.php">Top IMdb</a></li>
 <li><a href="movies.php">Movies</a></li>
 <li><a href="tvshows.php">TV-Shows</a></li>
 <li class="search-bar">
@@ -393,16 +393,17 @@ h2{
     <div class="dropdown">
         <button class="dropdown-button">Genre</button>
         <div class="dropdown-content">
-            <a href="#" class="genre-link">Action</a></a>
-            <a href="#" class="genre-link">Biography</a>
-            <a href="#" class="genre-link">Comedy</a>
-            <a href="#" class="genre-link">Documentary</a>
-            <a href="#" class="genre-link">Drama</a>
-            <a href="#" class="genre-link">Fantasy</a>
-            <a href="#" class="genre-link">Horror</a>
-            <a href="#" class="genre-link">Romance</a>
-            <a href="#" class="genre-link">Sci-Fi</a>
-            <a href="#" class="genre-link">Thriller</a>
+        <li><a href="action.php" class="genre-link">Action</a></li>
+<li><a href="adventure.php" class="genre-link">Adventure</a></li>
+<li><a href="biography.php" class="genre-link">Biography</a></li>
+<li><a href="comedy.php" class="genre-link">Comedy</a></li>
+<li><a href="documentary.php" class="genre-link">Documentary</a></li>
+<li><a href="drama.php" class="genre-link">Drama</a></li>
+<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+<li><a href="horror.php" class="genre-link">Horror</a></li>
+<li><a href="romance.php" class="genre-link">Romance</a></li>
+<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+<li><a href="thriller.php" class="genre-link">Thriller</a></li>
         </div>
     </div>
 
