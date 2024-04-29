@@ -9,7 +9,7 @@ include('includes/navbar.php');
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Admin Data</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Genre</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -17,27 +17,19 @@ include('includes/navbar.php');
       <form action="code.php" method="POST">
       <div class="modal-body">
         <div class="form-group">
-            <label> Username </label>
-            <input type="text" name="username" class="form-control" placeholder="Enter Username">
+            <label> Genre Name </label>
+            <input type="text" name="genre" class="form-control" placeholder="Enter Genre">
         </div>
-        <div class="form-group">
-            <label> Email </label>
-            <input type="email" name="email" class="form-control checking_email" placeholder="Enter Email">
-            <small class="error_email" style="color: red;"></small>
-        </div>
-        <div class="form-group">
-            <label> Password </label>
-            <input type="password" name="password" class="form-control" placeholder="Enter Password">
-        </div>
-        <div class="form-group">
-            <label> Confirm Password </label>
-            <input type="password" name="confirmpassword" class="form-control" placeholder="Confirm Password">
+        <div class="col-md-6">
+            <div class="form-group">
+                <input type="checkbox" name="active" readonly>Active
+            </div>
         </div>
         <input type="hidden" name="usertype" value="admin">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" name="registerbtn" class="btn btn-primary">Save</button>
+        <button type="submit" name="genreaddbtn" class="btn btn-primary">Save</button>
       </div>
     </form>
     </div>
@@ -46,9 +38,9 @@ include('includes/navbar.php');
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Admin Profile
+        <h6 class="m-0 font-weight-bold text-primary">Genre
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addadminprofile">
-                Add Admin Profile
+                Add Genre
             </button>
         </h6>
 </div>
@@ -67,7 +59,7 @@ include('includes/navbar.php');
     
     <?php
         
-        $query="SELECT* FROM register";
+        $query="SELECT* FROM genre_info";
         $result=mysqli_query($connection, $query);
     
     ?>
@@ -75,10 +67,8 @@ include('includes/navbar.php');
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>USERNAME</th>
-                    <th>EMAIL</th>
-                    <th>PASSWORD</th>
-                    <th>User-Type</th>
+                    <th>GENRE</th>
+                    <th>Active</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -92,21 +82,21 @@ include('includes/navbar.php');
                             ?>
                             
                             <tr>
-                                <td><?php echo $row['id']; ?></td>
-                                <td><?php echo $row['username']; ?></td>
-                                <td><?php echo $row['email']; ?></td>
-                                <td><?php echo $row['password']; ?></td>
-                                <td><?php echo $row['usertype']; ?></td>
+                                <td><?php echo $row['genre_id']; ?></td>
+                                <td><?php echo $row['genre_name']; ?></td>
                                 <td>
-                                    <form action="register_edit.php" method="POST">
-                                        <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
+                                    <input type="checkbox"<?= $row['active']=='1'?'checked':''?> readonly/>
+                                </td>
+                                <td>
+                                    <form action="genre_edit.php" method="POST">
+                                        <input type="hidden" name="edit_id" value="<?php echo $row['genre_id']; ?>">
                                         <button type="submit" name="edit_btn" class="btn btn-success">EDIT</button>
                                     </form>
                                 </td>
                                 <td>
                                     <form action="code.php" method="POST">
-                                    <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit" name="delete_btn" class="btn btn-danger">DELETE</button>
+                                    <input type="hidden" name="delete_id" value="<?php echo $row['genre_id']; ?>">
+                                        <button type="submit" name="genredelete_btn" class="btn btn-danger">DELETE</button>
                                     </form>
                                 </td>
                             </tr>
