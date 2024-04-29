@@ -292,7 +292,7 @@ if(isset($_POST['genredelete_btn']))
 
 if(isset($_POST['m_insertbtn'])) {
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
-    $genreid = mysqli_real_escape_string($connection, $_POST['g_id']);
+    $genreid = mysqli_real_escape_string($connection, $_POST['gid']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
     $poster_img= $_FILES['m_img']['name'];
@@ -345,8 +345,7 @@ if(isset($_POST['updatebtn']))
     }
 }
 
-if(isset($_POST['delete_btn'])) {
-
+if(isset($_POST['movie_delete_btn'])) {
     $id= $_POST['delete_id'];
     $query = "DELETE FROM moviedetails where id='$id' ";
     $query_run = mysqli_query($connection, $query);
