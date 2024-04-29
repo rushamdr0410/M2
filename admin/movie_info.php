@@ -101,6 +101,7 @@ include('includes/navbar.php');
                     <th>TITLE</th>
                     <th>RELEASE YEAR</th>
                     <th>DURATION</th>
+                    <th>IMAGE</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -118,6 +119,7 @@ include('includes/navbar.php');
                                 <td><?php echo $row['title']; ?></td>
                                 <td><?php echo $row['release_year']; ?></td>
                                 <td><?php echo $row['duration']; ?></td>
+                                <td><?php echo $row['poster_img']; ?></td>
                                 <td>
                                     <form action="moviedetails.php" method="POST">
                                         <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
