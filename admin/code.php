@@ -256,7 +256,7 @@ if(isset($_POST['genreupdatebtn']))
     $id=$_POST['edit_id'];
     $genre=$_POST['genre'];
     $active = $edit_active == true ? '1' : '0';
-    $query=  "UPDATE genre_info SET genre_name='$genre', active='$active' WHERE genre_id  ='$id'";
+    $query=  "UPDATE genre_info SET genre_name='$genre', active='$active' WHERE genreid  ='$id'";
     $result=mysqli_query($connection, $query);
     if($result)
     {
@@ -273,7 +273,7 @@ if(isset($_POST['genreupdatebtn']))
 if(isset($_POST['genredelete_btn']))
 {
     $id = $_POST['delete_id'];
-    $query="DELETE FROM genre_info WHERE genre_id ='$id'";
+    $query="DELETE FROM genre_info WHERE genreid ='$id'";
     $result= mysqli_query($connection, $query);
 
     if($result)
