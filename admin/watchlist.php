@@ -331,17 +331,17 @@ h2{
 <li class="dropdown">
 <a href="#" class="dropdown-toggle">Genre</a>
 <ul class="dropdown-content">
-<li><a href="#" class="genre-link">Action</a></li>
-<li><a href="#" class="genre-link">Adventure</a></li>
-<li><a href="#" class="genre-link">Biography</a></li>
-<li><a href="#" class="genre-link">Comedy</a></li>
-<li><a href="#" class="genre-link">Documentary</a></li>
-<li><a href="#" class="genre-link">Drama</a></li>
-<li><a href="#" class="genre-link">Fantasy</a></li>
-<li><a href="#" class="genre-link">Horror</a></li>
-<li><a href="#" class="genre-link">Romance</a></li>
-<li><a href="#" class="genre-link">Sci-Fi</a></li>
-<li><a href="#" class="genre-link">Thriller</a></li>
+<li><a href="action.php" class="genre-link">Action</a></li>
+<li><a href="adventure.php" class="genre-link">Adventure</a></li>
+<li><a href="biography.php" class="genre-link">Biography</a></li>
+<li><a href="comedy.php" class="genre-link">Comedy</a></li>
+<li><a href="documentary.php" class="genre-link">Documentary</a></li>
+<li><a href="drama.php" class="genre-link">Drama</a></li>
+<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+<li><a href="horror.php" class="genre-link">Horror</a></li>
+<li><a href="romance.php" class="genre-link">Romance</a></li>
+<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+<li><a href="thriller.php" class="genre-link">Thriller</a></li>
 </ul>
 </li>
 <li><a href="topimdb.php">Top IMdb</a></li>
@@ -380,52 +380,44 @@ h2{
 </nav>
 
 
-<h2>Movies</h2>
-<div class="dropdown-filter-container">
-    <div class="dropdown">
-        <button class="dropdown-button">Type</button>
-        <div class="dropdown-content">
-            <a href="#">Movies</a>
-            <a href="#">TV shows</a>
-        </div>
-    </div>
+<section id="watchlist-section">
+    <h2>My Watchlist</h2>
+    <ul id="watchlist">
+        <?php
+        // Include your PHP functions file
+        include 'functions.php';
 
-    <div class="dropdown">
-        <button class="dropdown-button">Genre</button>
-        <div class="dropdown-content">
-        <li><a href="action.php" class="genre-link">Action</a></li>
-<li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
-        </div>
-    </div>
+        // Get the user ID from the session (you need to set this up based on your application)
+        $id = $_SESSION['id'];
 
-    <div class="dropdown">
-        <button class="dropdown-button">Quality</button>
-        <div class="dropdown-content">
-            <a href="#">HD</a>
-            <a href="#">CAM</a>
-        </div>
-    </div>
+        // Get the watchlist for the user
+        $watchlist = getWatchlist($id);
 
-    <div class="dropdown">
-        <button class="dropdown-button">Year</button>
-        <div class="dropdown-content">
-            <a href="#"></a>
-            <a href="#"></a>
-        </div>
-    </div>
+        // Display the watchlist items
+        foreach ($watchlist as $item) {
+            // Assuming you have a function to get movie details by ID
+            $movie = getMovieDetails($item['movie_id']);
 
-    <!-- Add the filter button -->
-    <button id="filter-button" class="filter-button">Filter</button>
-</div>
+            echo '<li>';
+            echo 'Movie Title: ' . htmlspecialchars($movie['title']) . ' ';
+            
+            // Add form for removing item from watchlist
+            echo '<form action="remove_from_watchlist.php" method="POST" style="display:inline;">';
+            echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($item['movie_id']) . '">';
+            echo '<button type="submit">Remove from Watchlist</button>';
+            echo '</form>';
+
+            echo '</li>';
+        }
+        ?>
+    </ul>
+</section>
+
+<!-- Example form for adding a movie to the watchlist -->
+<form action="add_to_watchlist.php" method="POST">
+    <input type="hidden" name="movie_id" value="1"> <!-- Specify the movie ID -->
+    <button type="submit">Add to Watchlist</button>
+</form>
 
 
 
@@ -435,9 +427,3 @@ h2{
 <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-

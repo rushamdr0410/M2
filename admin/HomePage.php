@@ -550,20 +550,20 @@
         <li class="dropdown">
         <a href="#" class="dropdown-toggle">Genre</a>
           <ul class="dropdown-content">
-            <li><a href="#" class="genre-link">Action</a></li>
-            <li><a href="#" class="genre-link">Adventure</a></li>
-            <li><a href="#" class="genre-link">Biography</a></li>
-            <li><a href="#" class="genre-link">Comedy</a></li>
-            <li><a href="#" class="genre-link">Documentary</a></li>
-            <li><a href="#" class="genre-link">Drama</a></li>
-            <li><a href="#" class="genre-link">Fantasy</a></li>
-            <li><a href="#" class="genre-link">Horror</a></li>
-            <li><a href="#" class="genre-link">Romance</a></li>
-            <li><a href="#" class="genre-link">Sci-Fi</a></li>
-            <li><a href="#" class="genre-link">Thriller</a></li>
+          <li><a href="action.php" class="genre-link">Action</a></li>
+<li><a href="adventure.php" class="genre-link">Adventure</a></li>
+<li><a href="biography.php" class="genre-link">Biography</a></li>
+<li><a href="comedy.php" class="genre-link">Comedy</a></li>
+<li><a href="documentary.php" class="genre-link">Documentary</a></li>
+<li><a href="drama.php" class="genre-link">Drama</a></li>
+<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+<li><a href="horror.php" class="genre-link">Horror</a></li>
+<li><a href="romance.php" class="genre-link">Romance</a></li>
+<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+<li><a href="thriller.php" class="genre-link">Thriller</a></li>
           </ul>
         </li>
-        <li><a href="TopIMDB.php">Top IMdb</a></li>
+        <li><a href="topimdb.php">Top IMdb</a></li>
         <li><a href="movies.php">Movies</a></li>
         <li><a href="tvshows.php">TV-Shows</a></li>
         <li class="search-bar">
@@ -581,7 +581,7 @@
             <ul class="dropdown-content">
               <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
               <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
-              <li><a href="#" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+              <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
               <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
               <li>
                 <form action="logout.php" method="POST">
