@@ -380,7 +380,7 @@ h2{
 </nav>
 
 
-<h2>Tv Shows</h2>
+<h2>TOP IMDB</h2>
 <div class="dropdown-filter-container">
     <div class="dropdown">
         <button class="dropdown-button">Type</button>

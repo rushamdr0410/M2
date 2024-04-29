@@ -563,7 +563,7 @@
             <li><a href="#" class="genre-link">Thriller</a></li>
           </ul>
         </li>
-        <li><a href="TopIMDB.php">Top IMdb</a></li>
+        <li><a href="topimdb.php">Top IMdb</a></li>
         <li><a href="movies.php">Movies</a></li>
         <li><a href="tvshows.php">TV-Shows</a></li>
         <li class="search-bar">
