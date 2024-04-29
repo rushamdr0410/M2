@@ -22,23 +22,31 @@ include('includes/navbar.php');
         </div>
         <div class="form-group">
             <label>Select Genre</label>
-            <?php
-                $query = "SELECT * FROM genre_info";
-                $query_run = mysqli_query($connection, $query);
-                if(mysqli_num_rows($query_run)>0)
-                {
-            ?>
-            <select name="g_id" class="form-control">
+            <select name="gid" class="form-control">
                 <?php
-                    foreach($query_run as $row)
+                    $sql = "SELECT * FROM genre_info WHERE active='1'";
+                    $res = mysqli_query($connection, $sql);
+                    $count = mysqli_num_rows($res);
+                    if($count>0)
                     {
+                        while($row=mysqli_fetch_assoc($res)) 
+                        {
+                            $genre_title = $row['genre_name'];
+                            $genreid = $row['genreid'];
+                            ?>
+                                            
+                            <option value="<?php echo $genreid; ?>"><?= $row['genre_name']?></option>
+
+                            <?php
+                        }
+                    }
+                    else
+                    {
+                        echo "<option value='0'>Category Not Available</option>";
+                    }
+
                 ?>
-                <option value=""><?= $row['genre_name']?></option>
-                <?php }?>
             </select>
-            <?php
-                }   
-            ?>
         </div>
         <div class="form-group">
             <label> Release Year </label>
@@ -118,7 +126,7 @@ include('includes/navbar.php');
                                 <td><?php echo $row['title']; ?></td>
                                 <td><?php echo $row['release_year']; ?></td>
                                 <td><?php echo $row['duration']; ?></td>
-                                <td><?php echo $row['poster_img']; ?></td>
+                                <td><?php echo '<img src="upload/'.$row['poster_img'].'" width="100px;" height="100px;" alt="Movie Poster">'?></td>
                                 <td>
                                     <form action="moviedetails.php" method="POST">
                                         <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
