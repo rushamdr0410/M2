@@ -59,11 +59,11 @@ include('includes/constants/constant.php');
                                     while($row=mysqli_fetch_assoc($res)) 
                                     {
                                         $genre_title = $row['genre_name'];
-                                        $genre_id = $row['genre_id'];
+                                        $genreid = $row['genreid'];
                                         ?>
                                         
                                         <option 
-                                            <?php if($current_genre == $genre_id) {echo "selected";} ?> value="<?php echo $genre_id; ?>">
+                                            <?php if($current_genre == $genreid) {echo "selected";} ?> value="<?php echo $genreid; ?>">
                                             <?php echo $genre_title; ?>
                                         </option>
 
