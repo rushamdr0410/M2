@@ -2,6 +2,8 @@
 include('security.php');
 include('includes/header.php');
 include('includes/navbar.php');
+include('includes/constants/constant.php');
+
 ?>
 
 <div class="container-fluid">
@@ -43,7 +45,7 @@ include('includes/navbar.php');
 
                                 <?php
                                 
-                                $sql = "SELECT * FROM genre_info WHERE active='No'";
+                                $sql = "SELECT * FROM genre_info WHERE active='1'";
 
                                 // execute the queries
                                 $res = mysqli_query($connection, $sql);
@@ -78,11 +80,12 @@ include('includes/navbar.php');
                         </div>
                         <div class="form-group">
                             <label>Release Year</label>
-                            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year" value="<?php echo $row['release_year']; ?>">
+                            
+                            <input type="text" name="m_year" class="form-control" placeholder="Enter Released Year" value="<?php echo $row['release_year'] ?? ''; ?>">
                         </div>
                         <div class="form-group">
                             <label>Duration</label>
-                            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" value="<?php echo $row['duration']; ?>">
+                            <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" value="<?php echo $row['duration'] ?? ''; ?>">
                         </div>
                         <div class="form-group">
                             <label> Current Poster Image</label>
@@ -108,7 +111,7 @@ include('includes/navbar.php');
                         </div>
                         <div class="form-group">
                             <label>Quality</label>
-                            <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration" value="<?php echo $row['quality']; ?>">
+                            <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration" value="<?php echo $row['quality'] ?? ''; ?>">
                         </div>
                         <a href="register.php" class="btn btn-danger">CANCEL</a>
                         <button type="submit" name="updatebtn" class="btn btn-primary">Update</button>
