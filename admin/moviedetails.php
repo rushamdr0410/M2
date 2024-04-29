@@ -113,7 +113,7 @@ include('includes/constants/constant.php');
                             <label>Quality</label>
                             <input type="text" name="m_quality" class="form-control" placeholder="Enter Duration" value="<?php echo $row['quality'] ?? ''; ?>">
                         </div>
-                        <a href="register.php" class="btn btn-danger">CANCEL</a>
+                        <a href="movie_info.php" class="btn btn-danger">CANCEL</a>
                         <button type="submit" name="updatebtn" class="btn btn-primary">Update</button>
                     </form>
             <?php
