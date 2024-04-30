@@ -292,6 +292,7 @@ if(isset($_POST['genredelete_btn']))
 
 if(isset($_POST['m_insertbtn'])) {
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
+    $description = mysqli_real_escape_string($connection, $_POST['description']);
     $genreid = mysqli_real_escape_string($connection, $_POST['gid']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
@@ -311,7 +312,7 @@ if(isset($_POST['m_insertbtn'])) {
         }
         else
         {
-            $query = "INSERT INTO moviedetails VALUES ('$id','$title', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$quality')";
+            $query = "INSERT INTO moviedetails VALUES ('$id','$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$quality')";
             $query_run = mysqli_query($connection, $query);
 
             if($query_run) {
@@ -335,6 +336,7 @@ if(isset($_POST['updatebtn']))
 {
     $id=$_POST['edit_id'];
     $m_title=$_POST['m_title'];
+    $description =  $_POST['description'];
     $gid=$_POST['gid'];
     $m_year=$_POST['m_year'];
     $m_duration=$_POST['m_duration'];
@@ -347,7 +349,7 @@ if(isset($_POST['updatebtn']))
     if($validate_img_extension)
     {
     
-        $query=  "UPDATE moviedetails SET 	title='$m_title', genreid='$gid', release_year='$m_year', duration='$m_duration', 	type='$m_type', poster_img='$m_img', quality='$m_quality' WHERE 	id='$id'";
+        $query=  "UPDATE moviedetails SET 	title='$m_title', description='$description', genreid='$gid', release_year='$m_year', duration='$m_duration', 	type='$m_type', poster_img='$m_img', quality='$m_quality' WHERE id='$id'";
         $result=mysqli_query($connection, $query);
         if($result)
         {
