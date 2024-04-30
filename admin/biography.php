@@ -362,7 +362,7 @@ h2{
 <ul class="dropdown-content">
 <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+<li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
 <li>
 <form action="logout.php" method="POST">

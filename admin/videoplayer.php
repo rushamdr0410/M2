@@ -314,7 +314,51 @@ h2{
     transition: background-color 0.3s, color 0.3s;
 }
 
+#video-container {
+            width: 70%; /* Set the width of the video container */
+            margin: auto; /* Center the video container */
+            text-align: center;
+            padding: 20px;
+            /*border: 1px solid #ccc;  Add a border around the video container */
+            border-radius: 8px;
+        }
 
+        video {
+            width: 100%; /* Make the video take up the full width of the container */
+            border-radius: 8px;
+        }
+
+        /* Custom control buttons */
+        .controls {
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #61DAFB;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #409ab3;
+        }
+
+        #movie-details {
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        h3 {
+            margin: 10px 0;
+        }
+
+        p {
+            margin: 5px 0;
+        }
 
 
 
@@ -378,56 +422,139 @@ h2{
 <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
 </div>
 </nav>
+<div id="video-container">
+        <video id="video-player" controls autoplay loop>
+            <!-- Specify the video source -->
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            <!-- Fallback message -->
+            Your browser does not support the video tag.
+        </video>
 
-
-<h2>Horror Movies,Tv-shows</h2>
-<div class="dropdown-filter-container">
-    <div class="dropdown">
-        <button class="dropdown-button">Type</button>
-        <div class="dropdown-content">
-            <a href="#">Movies</a>
-            <a href="#">TV shows</a>
+        <!-- Custom controls -->
+        <div class="controls">
+            <button id="playPauseBtn">Pause</button>
+            <button id="forwardBtn">Forward</button>
+            <button id="backwardBtn">Backward</button>
+            <button id="speedUpBtn">Speed Up</button>
+            <button id="slowDownBtn">Slow Down</button>
+            <button id="fullscreenBtn">Fullscreen</button>
         </div>
     </div>
-
-    <div class="dropdown">
-        <button class="dropdown-button">Genre</button>
-        <div class="dropdown-content">
-        <li><a href="action.php" class="genre-link">Action</a></li>
-<li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
+    <!-- Movie Details -->
+    <div id="movie-details">
+            <h3><?php echo htmlspecialchars($title); ?></h3>
+            <p>Rating: <?php echo htmlspecialchars($rating); ?> / 10 (751 reviews)</p>
+            <p>Resolution: <?php echo htmlspecialchars($resolution); ?></p>
+            <p>Release Date: <?php echo htmlspecialchars($releaseDate); ?></p>
+            <p>Description: <?php echo htmlspecialchars($description); ?></p>
+            <p>Type: <?php echo htmlspecialchars($type); ?></p>
+            <p>Country: <?php echo htmlspecialchars($country); ?></p>
+            <p>Genre: <?php echo htmlspecialchars($genre); ?></p>
         </div>
-    </div>
+    
 
-    <div class="dropdown">
-        <button class="dropdown-button">Quality</button>
-        <div class="dropdown-content">
-            <a href="#">HD</a>
-            <a href="#">CAM</a>
-        </div>
-    </div>
+    <script>
+        // Get the video player element
+        const videoPlayer = document.getElementById('video-player');
 
-    <div class="dropdown">
-        <button class="dropdown-button">Year</button>
-        <div class="dropdown-content">
-            <a href="#"></a>
-            <a href="#"></a>
-        </div>
-    </div>
+        // Get the control buttons
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const backwardBtn = document.getElementById('backwardBtn');
+        const speedUpBtn = document.getElementById('speedUpBtn');
+        const slowDownBtn = document.getElementById('slowDownBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-    <!-- Add the filter button -->
-    <button id="filter-button" class="filter-button">Filter</button>
-</div>
+        // Toggle play/pause
+        playPauseBtn.addEventListener('click', () => {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+                playPauseBtn.textContent = 'Pause';
+            } else {
+                videoPlayer.pause();
+                playPauseBtn.textContent = 'Play';
+            }
+        });
 
+        // Forward the video by 10 seconds
+        forwardBtn.addEventListener('click', () => {
+            videoPlayer.currentTime += 10;
+        });
 
+        // Rewind the video by 10 seconds
+        backwardBtn.addEventListener('click', () => {
+            videoPlayer.currentTime -= 10;
+        });
+
+        // Speed up the video playback rate
+        speedUpBtn.addEventListener('click', () => {
+            videoPlayer.playbackRate += 0.25;
+        });
+
+        // Slow down the video playback rate
+        slowDownBtn.addEventListener('click', () => {
+            videoPlayer.playbackRate -= 0.25;
+        });
+
+        // Toggle fullscreen
+        fullscreenBtn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                videoPlayer.requestFullscreen();
+            }
+        });
+    </script>
+
+<?php
+// Include your database configuration file
+include 'database/dbconfig.php';
+
+// Get the video ID from the URL parameters
+$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
+
+// Initialize variables for video URL and metadata
+$videoUrl = '';
+$title = '';
+$description = '';
+$rating = '';
+$resolution = '';
+$releaseDate = '';
+$type = '';
+$country = '';
+$genre = '';
+
+// Check if video ID is provided
+if ($videoId) {
+    // Prepare an SQL statement to select video details from the service table
+    $stmt = $connection->prepare('SELECT links AS video_url, title, description, rating, resolution, release_date, type, country, genre FROM service WHERE id = ?');
+    
+    // Bind the video ID parameter to the prepared statement
+    $stmt->bind_param('i', $videoId);
+    
+    // Execute the statement
+    $stmt->execute();
+    
+    // Bind the results to variables
+    $stmt->bind_result($videoUrl, $title, $description, $rating, $resolution, $releaseDate, $type, $country, $genre);
+    
+    // Fetch the results
+    if ($stmt->fetch()) {
+        // The variables now contain the video details
+        // You can use these variables in your HTML output
+    } else {
+        // Handle case where the provided video ID does not exist in the table
+        echo "Video not found.";
+        exit;
+    }
+    
+    // Close the statement
+    $stmt->close();
+} else {
+    echo "No video ID provided.";
+    exit;
+}
+?>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -435,9 +562,3 @@ h2{
 <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-
