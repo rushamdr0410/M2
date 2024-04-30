@@ -439,24 +439,27 @@
         height: 50vh;
         
       }
+      .swiper-slide{
+        background-repeat: no-repeat;
+      }
       .swiper-slide--one {
-        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
       }
 
       .swiper-slide--two {
-        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
       }
 
       .swiper-slide--three {
-        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
       }
 
       .swiper-slide--four {
-        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
       }
 
       .swiper-slide--five {
-        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), url("ImagesandVideos/MoviePosters/kungfupanda4.jpg") no-repeat 50% 50%/cover;
+        background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
       }
 
       .title {
@@ -497,7 +500,23 @@
         transition: .5s;
         
       }
-      .movies-container{
+      .movies-container-wrapper{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin:0 200px;
+      }
+      .movies-container-wrapper .movies-container{
+        width: calc(50% - 12px);
+      }
+      @media only screen and (max-witdh: 767px){
+        width: 100%;      }
+      .movies-container-wrapper .movies-container img{
+        width: 100%;
+        height: 270px;
+        object-fit: cover;
+      }
+      /* .movies-container{
         max-width: 968px;
         margin-left: auto;
         margin-right: auto;
@@ -508,7 +527,7 @@
         gap: 1rem;
         margin-top: 2rem;
         font-size: 12px;
-      }
+      } */
       
       .box .box-img {
         width: 100%;
@@ -607,45 +626,30 @@
 
     <div class="swiper">
       <div class="swiper-wrapper">
-        <div class="swiper-slide swiper-slide--one">
+      <?php
+      $query = "SELECT * FROM moviedetails";
+      $result = mysqli_query($connection, $query);
+      if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+          ?>
+        <div class="swiper-slide swiper-slide--one" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat;">
+
+          
           <div>
-            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
+            <h2 style="font-weight: bold; font-size: x-large;"><?php echo $row['title']; ?></h2>
             <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
-            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
+            <p><?php echo $row['release_year']; ?></p>
             <a href="#" target="_blank">Watch Now</a>
           </div>
         </div>
-        <div class="swiper-slide swiper-slide--two">
-          <div>
-            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
-            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
-            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
-            <a href="#" target="_blank">Watch Now</a>
-          </div>
-        </div>
-        <div class="swiper-slide swiper-slide--three">
-          <div>
-            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
-            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
-            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
-            <a href="#" target="_blank">Watch Now</a>
-          </div>
-        </div>
-        <div class="swiper-slide swiper-slide--four">
-          <div>
-            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
-            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
-            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
-            <a href="#" target="_blank">Watch Now</a>
-          </div>
-        </div>
-        <div class="swiper-slide swiper-slide--five">
-          <div>
-            <h2 style="font-weight: bold; font-size: x-large;">Kung Fu Panda 4</h2>
-            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
-            <p>After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...</p>
-            <a href="#" target="_blank">Watch Now</a>
-          </div>
+        
+          <?php
+        }
+      } 
+      else {
+        echo "No Records Found!";
+      }
+    ?>
         </div>
       </div>
       <!--<div class="swiper-pagination"></div>!-->
@@ -658,6 +662,7 @@
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
+    <div class="movies-container-wrapper">
     <?php
       $query = "SELECT * FROM moviedetails";
       $result = mysqli_query($connection, $query);
@@ -673,18 +678,18 @@
           
               <!-- Movie Details Section -->
               <div class="card-details">
-                <span class="date_min">
-                  <?php echo $row['release_year']; ?> |
-                  <?php echo $row['type']; ?> |
-                  <?php echo $row['duration']; ?>
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                 <p><?php echo $row['release_year']; ?></p>
+                  <p><?php echo $row['type']; ?> </p>
+                  <p><?php echo $row['duration']; ?></p>
                 </span>
-                <h3><?php echo $row['title']; var_dump($row);?></h3>
+                <h3><?php echo $row['title']; ?></h3>
               </div>
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
                 <form action="add_to_watchlist.php" method="POST">
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id ']; ?>">
+                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
                   <button type="submit" class="watchlist-btn">Add to Watchlist</button>
                 </form>
               </div>
@@ -697,6 +702,7 @@
         echo "No Records Found!";
       }
     ?>
+    </div>
   </section>
     <section class="movies" id="movies">
     <div class="title">
