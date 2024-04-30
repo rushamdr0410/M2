@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2024 at 07:53 PM
+-- Generation Time: Apr 30, 2024 at 10:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,7 +49,7 @@ INSERT INTO `about` (`id`, `title`, `subtitle`, `description`, `links`) VALUES
 --
 
 CREATE TABLE `genre_info` (
-  `genre_id` int(11) NOT NULL,
+  `genreid` int(11) NOT NULL,
   `genre_name` varchar(50) DEFAULT NULL,
   `active` int(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -58,7 +58,7 @@ CREATE TABLE `genre_info` (
 -- Dumping data for table `genre_info`
 --
 
-INSERT INTO `genre_info` (`genre_id`, `genre_name`, `active`) VALUES
+INSERT INTO `genre_info` (`genreid`, `genre_name`, `active`) VALUES
 (5, 'Action', 1),
 (6, 'Adventure', 1),
 (7, 'Romance', 1);
@@ -81,7 +81,6 @@ CREATE TABLE `message` (
 --
 
 INSERT INTO `message` (`id`, `name`, `email`, `message`) VALUES
-(1, 'Rusha Manandhar', 'rushamanandhar3@gmail.com', 'Hello'),
 (2, 'Apurva', 'apurva@gmail.com', 'hey! Just to let you know your websites is amazing'),
 (3, 'Amrita', 'aameyy@gmail.com', 'hey there!!you are doing an amazing job');
 
@@ -94,10 +93,13 @@ INSERT INTO `message` (`id`, `name`, `email`, `message`) VALUES
 CREATE TABLE `moviedetails` (
   `id` int(11) NOT NULL,
   `title` varchar(191) NOT NULL,
+  `description` longtext NOT NULL,
   `genreid` int(11) NOT NULL,
   `release_year` int(11) NOT NULL,
   `duration` int(11) NOT NULL,
+  `type` varchar(30) NOT NULL,
   `poster_img` varchar(191) NOT NULL,
+  `URL` varchar(191) NOT NULL,
   `quality` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -105,9 +107,9 @@ CREATE TABLE `moviedetails` (
 -- Dumping data for table `moviedetails`
 --
 
-INSERT INTO `moviedetails` (`id`, `title`, `genreid`, `release_year`, `duration`, `poster_img`, `quality`) VALUES
-(1, 'Kung Fu Panda ', 0, 2024, 94, 'kungfupanda4.jpg', 'CAM'),
-(2, 'Kung Fu Panda 4', 0, 2024, 94, 'kungfupanda4.jpg', 'CAM');
+INSERT INTO `moviedetails` (`id`, `title`, `description`, `genreid`, `release_year`, `duration`, `type`, `poster_img`, `URL`, `quality`) VALUES
+(9, 'Kung Fu Panda 4', 'After Po is tapped to become the Spiritual Leader of the Valley of Peace, he needs to find and train a new Dragon Warrior, while a wicked sorceress plans to re-summon all the master villains whom Po has vanquished to the spirit re...', 5, 2024, 94, 'Movie', 'kungfupanda4.jpg', '', 'CAM'),
+(11, 'Dune ', '', 5, 2024, 94, 'Movie', 'Dune.jpeg', '', 'CAM');
 
 -- --------------------------------------------------------
 
@@ -128,7 +130,7 @@ CREATE TABLE `register` (
 --
 
 INSERT INTO `register` (`id`, `username`, `email`, `password`, `usertype`) VALUES
-(2, 'Jenisha Sthapit', 'jensa@gmail.com', '5678', 'admin'),
+(2, '', '', '', ''),
 (28, 'Shubekshya Lama', 'subekshya@gmail.com', '4567', 'user'),
 (31, 'Rusha Manandhar', 'rusmdr@gmail.com', '1234', 'admin');
 
@@ -150,8 +152,7 @@ CREATE TABLE `service` (
 --
 
 INSERT INTO `service` (`id`, `title`, `description`, `links`) VALUES
-(2, 'High-Quality Streaming', 'Immerse yourself in the brilliance of entertainment with High-Quality Streaming. This cutting-edge service delivers a visual feast, offering content in vibrant high definition (HD) and, in some cases, 4K Ultra HD. Say goodbye to pixelation and lag – High-Quality Streaming ensures that every frame is a masterpiece, enhancing the details, colors, and clarity of your favorite movies and TV shows.  Whether you\'re on a big screen or a mobile device, this service guarantees an unparalleled viewing experience. Feel the intensity of every scene, savor the richness of colors, and enjoy crystal-clear audio that transports you into the heart of the narrative. High-Quality Streaming is not just about watching; it\'s about experiencing the magic of cinema in its truest form, right from the comfort of your own space. Elevate your entertainment standards with the pinnacle of visual excellence.', 'http://localhost/MovieMagic/admin/HomePage.php'),
-(8, ' Personalization and Recommendation', 'Step into a world where your preferences shape your entertainment journey with Personalization and Recommendation. This innovative service understands your viewing habits, curating a bespoke experience just for you. Seamlessly integrating advanced algorithms, it analyzes your watch history and genre preferences to suggest movies and TV shows tailored to your taste.  Discover new favorites effortlessly as the service adapts to your evolving interests. Personalization and Recommendation not only save you time but transform your screen into a personalized cinema. Say goodbye to endless scrolling and hello to a curated selection that resonates with your unique style. Embrace the future of entertainment, where every click unveils a world crafted exclusively for your enjoyment. Welcome to a personalized streaming experience that makes every viewing session feel uniquely yours.', 'http://localhost/MovieMagic/admin/HomePage.php');
+(2, 'High-Quality Streaming', 'Immerse yourself in the brilliance of entertainment with High-Quality Streaming. This cutting-edge service delivers a visual feast, offering content in vibrant high definition (HD) and, in some cases, 4K Ultra HD. Say goodbye to pixelation and lag – High-Quality Streaming ensures that every frame is a masterpiece, enhancing the details, colors, and clarity of your favorite movies and TV shows.  Whether you\'re on a big screen or a mobile device, this service guarantees an unparalleled viewing experience. Feel the intensity of every scene, savor the richness of colors, and enjoy crystal-clear audio that transports you into the heart of the narrative. High-Quality Streaming is not just about watching; it\'s about experiencing the magic of cinema in its truest form, right from the comfort of your own space. Elevate your entertainment standards with the pinnacle of visual excellence.', 'http://localhost/MovieMagic/admin/HomePage.php');
 
 --
 -- Indexes for dumped tables
@@ -167,7 +168,7 @@ ALTER TABLE `about`
 -- Indexes for table `genre_info`
 --
 ALTER TABLE `genre_info`
-  ADD PRIMARY KEY (`genre_id`);
+  ADD PRIMARY KEY (`genreid`);
 
 --
 -- Indexes for table `message`
@@ -207,7 +208,7 @@ ALTER TABLE `about`
 -- AUTO_INCREMENT for table `genre_info`
 --
 ALTER TABLE `genre_info`
-  MODIFY `genre_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `genreid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `message`
@@ -219,7 +220,7 @@ ALTER TABLE `message`
 -- AUTO_INCREMENT for table `moviedetails`
 --
 ALTER TABLE `moviedetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `register`

@@ -21,6 +21,10 @@ include('includes/navbar.php');
             <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title" required>
         </div>
         <div class="form-group">
+            <label> Description</label>
+            <textarea name="description" class="form-control" required rows="3"></textarea>
+        </div>
+        <div class="form-group">
             <label>Select Genre</label>
             <select name="gid" class="form-control">
                 <?php
@@ -55,6 +59,9 @@ include('includes/navbar.php');
         <div class="form-group">
             <label> Duration </label>
             <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" required>
+        </div><div class="form-group">
+            <label> Type </label>
+            <input type="text" name="m_type" class="form-control" placeholder="Enter Type" required>
         </div>
         <div class="form-group">
             <label>Poster Image</label>

@@ -1,3 +1,7 @@
+<?php
+  error_reporting(E_ALL); ini_set('display_errors', 1);
+  include('security.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -235,8 +239,8 @@
         color: #f2f5f7;
         background-color: transparent;
         border: none;
-        padding: 12px 16px; /* Adjust padding to match other list items */
-        margin: 0 0.7vw; /* Adjust margin to match other list items */
+        padding: 12px 16px;
+        margin: 0 0.7vw;
         cursor: pointer;
         transition: color 0.3s;
         text-align: left;
@@ -506,22 +510,24 @@
         font-size: 12px;
       }
       
-      .box .box-img{
+      .box .box-img {
         width: 100%;
         height: 270px;
+        overflow: hidden; 
+        border-radius: 6px;
       }
-      .box .box-img img{
+
+      .box .box-img img {
         width: 100%;
         height: 100%;
-        margin-bottom: 4px;
-        padding-bottom: 4px;
-        object-fit: cover;
-        border-radius: 6px; 
+        object-fit: cover; 
+        transition: transform 0.2s ease;
       }
-      .box .box-img img:hover{
+
+      .box .box-img img:hover {
         transform: translateY(-10px);
-        transition: 0.2s all linear;
       }
+
       .date_min{ 
         display: flex;
         justify-content: space-between;
@@ -551,16 +557,16 @@
         <a href="#" class="dropdown-toggle">Genre</a>
           <ul class="dropdown-content">
           <li><a href="action.php" class="genre-link">Action</a></li>
-<li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
+          <li><a href="adventure.php" class="genre-link">Adventure</a></li>
+          <li><a href="biography.php" class="genre-link">Biography</a></li>
+          <li><a href="comedy.php" class="genre-link">Comedy</a></li>
+          <li><a href="documentary.php" class="genre-link">Documentary</a></li>
+          <li><a href="drama.php" class="genre-link">Drama</a></li>
+          <li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+          <li><a href="horror.php" class="genre-link">Horror</a></li>
+          <li><a href="romance.php" class="genre-link">Romance</a></li>
+          <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+          <li><a href="thriller.php" class="genre-link">Thriller</a></li>
           </ul>
         </li>
         <li><a href="topimdb.php">Top IMdb</a></li>
@@ -652,100 +658,46 @@
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
-      
-    <div class="movies-container">
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="poster">
-          <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
+    <?php
+      $query = "SELECT * FROM moviedetails";
+      $result = mysqli_query($connection, $query);
+      if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+          ?>
+          <div class="movies-container">
+            <div class="card">
+              <!-- Movie Poster Section -->
+              <div class="card-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+              </div>
           
-          <h3>Kung Fu Panda 4</h3>
-        </div>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
+              <!-- Movie Details Section -->
+              <div class="card-details">
+                <span class="date_min">
+                  <?php echo $row['release_year']; ?> |
+                  <?php echo $row['type']; ?> |
+                  <?php echo $row['duration']; ?>
+                </span>
+                <h3><?php echo $row['title']; var_dump($row);?></h3>
+              </div>
+              
+              <!-- Add to Watchlist Button Section -->
+              <div class="card-watchlist">
+                <form action="add_to_watchlist.php" method="POST">
+                  <input type="hidden" name="movie_id" value="<?php echo $row['id ']; ?>">
+                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                </form>
+              </div>
+            </div>
           </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-    </section>
+          <?php
+        }
+      } 
+      else {
+        echo "No Records Found!";
+      }
+    ?>
+  </section>
     <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">latest movies</h2>
@@ -753,98 +705,36 @@
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
-    <div class="movies-container">
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="poster">
-          <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
+    <?php
+      $query="SELECT* FROM moviedetails WHERE type='Movie'";
+      $result=mysqli_query($connection, $query);
+      if(mysqli_num_rows($result)>0)
+      {
+        while($row=mysqli_fetch_assoc($result))
+        {
+          ?>
+          <div class="movies-container">
+            <div class="box">
+              <div class="box-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" width="100px;" height="100px;" alt="Movie Poster">'?>
+              </div>
+              <div class="poster">
+                <div class="date_min">
+                <span><?php echo $row['release_year']; ?></span>
+                <span><?php echo $row['type']; ?></span>
+                <span><?php echo $row['duration']; ?></span>
+              </div>
+                <h3><?php echo $row['title']; ?></h3>
+            </div>
           </div>
-          
-          <h3>Kung Fu Panda 4</h3>
-        </div>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
+          <?php
+        }
+      }
+      else
+      {
+        echo "No Records Found!";
+      }
+      ?>
     </section>
     <section class="movies" id="movies">
     <div class="title">
@@ -853,98 +743,39 @@
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
-    <div class="movies-container">
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="poster">
-          <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
+    <?php
+      $query="SELECT* FROM moviedetails WHERE type='TV-Show'";
+      $result=mysqli_query($connection, $query);
+      if(mysqli_num_rows($result)>0)
+      {
+        while($row=mysqli_fetch_assoc($result))
+        {
+          ?>
+          <div class="movies-container">
+              <div class="box">
+                <div class="box-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" width="100px;" height="100px;" alt="Movie Poster">'?>
+                </div>
+                <div class="poster">
+                  <div class="date_min">
+                  <span><?php echo $row['release_year']; ?></span>
+                  <span><?php echo $row['type']; ?></span>
+                  <span><?php echo $row['duration']; ?></span>
+                  </div>
+                  
+                  <h3>Kung Fu Panda 4</h3>
+                </div>
+              </div>
           </div>
-          
-          <h3>Kung Fu Panda 4</h3>
-        </div>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
-      <div class="box">
-        <div class="box-img">
-          <img src="ImagesandVideos/MoviePosters/kungfupanda4.jpg" alt="">
-        </div>
-        <div class="date_min">
-          <span>2024</span>
-          <span>MOVIE</span>
-          <span>94min</span>
-          </div>
-        <h3>Kung Fu Panda 4</h3>
-      </div>
+  
+          <?php
+        }
+      }
+      else
+      {
+        echo "No Records Found!";
+      }
+    ?>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

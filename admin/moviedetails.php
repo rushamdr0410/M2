@@ -40,6 +40,10 @@ include('includes/constants/constant.php');
                             <input type="text" name="m_title" class="form-control" placeholder="Enter Movie Title" value="<?php echo $row['title']; ?>">
                         </div>
                         <div class="form-group">
+                            <label> Description</label>
+                            <textarea name="description"  class="form-control" required rows="3"><?= $row['description']; ?></textarea>
+                        </div>
+                        <div class="form-group">
                             <label>Genre</label>
                             <select name="gid" class="form-control">
                                 <?php
@@ -79,6 +83,10 @@ include('includes/constants/constant.php');
                         <div class="form-group">
                             <label>Duration</label>
                             <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" value="<?php echo $row['duration'] ?? ''; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <input type="text" name="m_type" class="form-control" placeholder="Enter Type" value="<?php echo $row['type'] ?? ''; ?>">
                         </div>
                         <div class="form-group">
                             <label> Current Poster Image</label><br>
