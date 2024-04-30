@@ -511,20 +511,20 @@
       
       .box .box-img {
         width: 100%;
-        height: 270px; /* Adjust this height as needed */
-        overflow: hidden; /* Ensure the image doesn't overflow the container */
+        height: 270px;
+        overflow: hidden; 
         border-radius: 6px;
       }
 
       .box .box-img img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Maintain aspect ratio and cover the container */
-        transition: transform 0.2s ease; /* Smooth transition for hover effect */
+        object-fit: cover; 
+        transition: transform 0.2s ease;
       }
 
       .box .box-img img:hover {
-        transform: translateY(-10px); /* Adjust the vertical translation as needed */
+        transform: translateY(-10px);
       }
 
       .date_min{ 
