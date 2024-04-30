@@ -1,19 +1,23 @@
 <?php
-  error_reporting(E_ALL); ini_set('display_errors', 1);
+  // Include security measures and database connection
+  error_reporting(E_ALL);
+  ini_set('display_errors', 1);
   include('security.php');
+
+  // Query for fetching movie details
+  $query = "SELECT * FROM moviedetails";
+  $result = mysqli_query($connection, $query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>MovieMagic | Where Every Frame Tells A Story</title>
-    <link rel="website icon" type="JPG" href="#">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-      *{
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieMagic | Where Every Frame Tells A Story</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    *{
         margin: 0;
         padding: 0;
         color: #f2f5f7;
@@ -500,20 +504,60 @@
         transition: .5s;
         
       }
-      .movies-container-wrapper{
+      .movies-container-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust the minimum width (200px) as needed */
+        gap: 10px; /* Adjust the gap between containers as needed */
+        margin: 0 200px; /* Adjust the margin as needed */
+      }
+
+      .movies-container {
+        overflow: hidden; /* Ensure images don't overflow */
+        border-radius: 6px; /* Apply border radius to the container */
+      }
+
+      .movies-container img {
+        width: 100%;
+        height: auto;
+        max-height: 240px; /* Adjust the maximum height of the images as needed */
+        object-fit: cover;
+        transition: transform 0.2s ease;
+      }
+
+      .movies-container img:hover {
+        transform: translateY(-10px);
+      }
+
+
+      .date_min {
         display: flex;
-        flex-wrap: wrap;
-        gap: 24px;
-        margin:0 200px;
+        justify-content: space-between;
       }
-      .movies-container-wrapper .movies-container{
-        width: calc(50% - 12px);
+
+      .box h3 {
+        font-size: 0.9rem;
+        font-weight: 500;
       }
+
+      .box span {
+        font-size: 12px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .card-details span {
+        color: rgba(255, 255, 255, 0.7); /* Transparent white color */
+      }
+
+
+
       @media only screen and (max-witdh: 767px){
         width: 100%;      }
       .movies-container-wrapper .movies-container img{
         width: 100%;
-        height: 270px;
+        max-width: 100%
+        height: auto;
         object-fit: cover;
       }
       /* .movies-container{
@@ -562,59 +606,58 @@
         color: rgba(255, 255, 255, 0.5);
 
       }
-      
-    </style>
-  </head>
-  <body>
-    <nav>
-      <div class="logo" style="display: flex;align-items: center;">
-        <span style="color:#01939c; font-size:26px; font-weight:bold; letter-spacing: 1px;margin-left: 20px;">MovieMagic</span>
-      </div>
-      <ul class="nav-links">
-        <li><a href="HomePage.php">Home</a></li>
-        <li class="dropdown">
+
+      .watchlist-btn {
+        background-color: transparent; /* Transparent background */
+        color: #01939c; /* Text color matching the color of the heading */
+        border: 1px solid #01939c; /* Add border */
+        padding: 0.5rem 1rem; /* Adjust padding */
+        border-radius: 5px; /* Add border radius for rounded corners */
+        cursor: pointer; /* Change cursor on hover */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
+      }
+
+      .watchlist-btn:hover {
+        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
+        color: #fff; /* Change text color to white on hover */
+      }
+
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo" style="display: flex;align-items: center;">
+      <span style="color:#01939c; font-size:26px; font-weight:bold; letter-spacing: 1px;margin-left: 20px;">MovieMagic</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="HomePage.php">Home</a></li>
+      <li class="dropdown">
         <a href="#" class="dropdown-toggle">Genre</a>
-          <ul class="dropdown-content">
+        <ul class="dropdown-content">
           <li><a href="action.php" class="genre-link">Action</a></li>
-          <li><a href="adventure.php" class="genre-link">Adventure</a></li>
-          <li><a href="biography.php" class="genre-link">Biography</a></li>
-          <li><a href="comedy.php" class="genre-link">Comedy</a></li>
-          <li><a href="documentary.php" class="genre-link">Documentary</a></li>
-          <li><a href="drama.php" class="genre-link">Drama</a></li>
-          <li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-          <li><a href="horror.php" class="genre-link">Horror</a></li>
-          <li><a href="romance.php" class="genre-link">Romance</a></li>
-          <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-          <li><a href="thriller.php" class="genre-link">Thriller</a></li>
-          </ul>
-        </li>
-        <li><a href="topimdb.php">Top IMdb</a></li>
-        <li><a href="movies.php">Movies</a></li>
-        <li><a href="tvshows.php">TV-Shows</a></li>
-        <li class="search-bar">
-          <form action="#">
-            <input type="text" placeholder="Search">
-            <button type="submit"><ion-icon name="search"></ion-icon></button>
-          </form>
-        </li>
-      </ul>
-      <div class="profile" style="display: flex;align-items: center;">
-        <div class="profile-text-container">           
+          <!-- Add more genre links here -->
+        </ul>
+      </li>
+      <li><a href="topimdb.php">Top IMdb</a></li>
+      <li><a href="movies.php">Movies</a></li>
+      <li><a href="tvshows.php">TV-Shows</a></li>
+      <li class="search-bar">
+        <form action="#">
+          <input type="text" placeholder="Search">
+          <button type="submit"><ion-icon name="search"></ion-icon></button>
+        </form>
+      </li>
+    </ul>
+    <div class="profile" style="display: flex;align-items: center;">
+      <div class="profile-text-container">           
         <ul>
           <li class="dropdown">
-          <a href="#" class="dropdown-toggle">rus@gmail.com</a>
+            <a href="#" class="dropdown-toggle">rus@gmail.com</a>
             <ul class="dropdown-content">
-              <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-              <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
-              <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-              <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
-              <li>
-                <form action="logout.php" method="POST">
-                <button type="submit" name="userlogout_btn" class="dropdown-btn">
-                <i class="fas fa-arrow-right-from-bracket"></i> Logout
-                </button>
-                </form>
-              </li>
+            <li><a href="action.php" class="genre-link">Progile</a></li>
+            <li><a href="action.php" class="genre-link">Continue-Watching</a></li>
+            <li><a href="action.php" class="genre-link">Watchlist</a></li>
+            <li><a href="userlogin.php" class="genre-link">LogOut</a></li>
             </ul>
           </li>
         </ul>
@@ -622,39 +665,31 @@
       <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
     </div>
   </nav>
-  <main>
 
+  <main>
     <div class="swiper">
       <div class="swiper-wrapper">
-      <?php
-      $query = "SELECT * FROM moviedetails";
-      $result = mysqli_query($connection, $query);
-      if(mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-          ?>
-        <div class="swiper-slide swiper-slide--one" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat;">
-
-          
+        <?php
+        if(mysqli_num_rows($result) > 0) {
+          while($row = mysqli_fetch_assoc($result)) {
+        ?>
+        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat;">
           <div>
-            <h2 style="font-weight: bold; font-size: x-large;"><?php echo $row['title']; ?></h2>
-            <p style="font-weight: bold; font-size: 95%;">CAM | PG | 6.7 | 2024 |94 min | Animation | Adventure | Action<br></p>
+            <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['release_year']; ?></p>
             <a href="#" target="_blank">Watch Now</a>
           </div>
         </div>
-        
-          <?php
+        <?php
+          }
+        } else {
+          echo "No Records Found!";
         }
-      } 
-      else {
-        echo "No Records Found!";
-      }
-    ?>
-        </div>
+        ?>
       </div>
-      <!--<div class="swiper-pagination"></div>!-->
     </div>
   </main>
+
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">recommended</h2>
@@ -665,6 +700,55 @@
     <div class="movies-container-wrapper">
     <?php
       $query = "SELECT * FROM moviedetails";
+      $result = mysqli_query($connection, $query);
+      if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+          ?>
+          <div class="movies-container">
+            <div class="card">
+              <!-- Movie Poster Section -->
+              <div class="card-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+              </div>
+          
+              <!-- Movie Details Section -->
+              <div class="card-details">
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                 <p style="color: rgba(255, 255, 255, 0.7);"><?php echo $row['release_year']; ?></p>
+                  <p ><?php echo $row['type']; ?> </p>
+                  <p><?php echo $row['duration']; ?></p>
+                </span>
+                <h3><?php echo $row['title']; ?></h3>
+              </div>
+              
+              <!-- Add to Watchlist Button Section -->
+              <div class="card-watchlist">
+                <form action="add_to_watchlist.php" method="POST">
+                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <?php
+        }
+      } 
+      else {
+        echo "No Records Found!";
+      }
+    ?>
+    </div>
+  </section>
+  <section class="movies" id="movies">
+    <div class="title">
+      <h2 class="heading">Movies</h2>
+      <form>
+        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
+      </form>
+    </div>
+    <div class="movies-container-wrapper">
+    <?php
+      $query = "SELECT * FROM moviedetails WHERE type='Movie'";
       $result = mysqli_query($connection, $query);
       if(mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
@@ -704,88 +788,59 @@
     ?>
     </div>
   </section>
-    <section class="movies" id="movies">
+  <section class="movies" id="movies">
     <div class="title">
-      <h2 class="heading">latest movies</h2>
+      <h2 class="heading">TV-Shows</h2>
       <form>
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
+    <div class="movies-container-wrapper">
     <?php
-      $query="SELECT* FROM moviedetails WHERE type='Movie'";
-      $result=mysqli_query($connection, $query);
-      if(mysqli_num_rows($result)>0)
-      {
-        while($row=mysqli_fetch_assoc($result))
-        {
+      $query = "SELECT * FROM moviedetails WHERE type='TV-Show'";
+      $result = mysqli_query($connection, $query);
+      if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
           ?>
           <div class="movies-container">
-            <div class="box">
-              <div class="box-img">
-                <?php echo '<img src="upload/'.$row['poster_img'].'" width="100px;" height="100px;" alt="Movie Poster">'?>
+            <div class="card">
+              <!-- Movie Poster Section -->
+              <div class="card-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
               </div>
-              <div class="poster">
-                <div class="date_min">
-                <span><?php echo $row['release_year']; ?></span>
-                <span><?php echo $row['type']; ?></span>
-                <span><?php echo $row['duration']; ?></span>
-              </div>
+          
+              <!-- Movie Details Section -->
+              <div class="card-details">
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                 <p><?php echo $row['release_year']; ?></p>
+                  <p><?php echo $row['type']; ?> </p>
+                  <p><?php echo $row['duration']; ?></p>
+                </span>
                 <h3><?php echo $row['title']; ?></h3>
+              </div>
+              
+              <!-- Add to Watchlist Button Section -->
+              <div class="card-watchlist">
+                <form action="add_to_watchlist.php" method="POST">
+                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                </form>
+              </div>
             </div>
           </div>
           <?php
         }
-      }
-      else
-      {
-        echo "No Records Found!";
-      }
-      ?>
-    </section>
-    <section class="movies" id="movies">
-    <div class="title">
-      <h2 class="heading">latest tv-shows</h2>
-      <form>
-        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
-      </form>
-    </div>
-    <?php
-      $query="SELECT* FROM moviedetails WHERE type='TV-Show'";
-      $result=mysqli_query($connection, $query);
-      if(mysqli_num_rows($result)>0)
-      {
-        while($row=mysqli_fetch_assoc($result))
-        {
-          ?>
-          <div class="movies-container">
-              <div class="box">
-                <div class="box-img">
-                <?php echo '<img src="upload/'.$row['poster_img'].'" width="100px;" height="100px;" alt="Movie Poster">'?>
-                </div>
-                <div class="poster">
-                  <div class="date_min">
-                  <span><?php echo $row['release_year']; ?></span>
-                  <span><?php echo $row['type']; ?></span>
-                  <span><?php echo $row['duration']; ?></span>
-                  </div>
-                  
-                  <h3>Kung Fu Panda 4</h3>
-                </div>
-              </div>
-          </div>
-  
-          <?php
-        }
-      }
-      else
-      {
+      } 
+      else {
         echo "No Records Found!";
       }
     ?>
-    </section>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="js/Homepage.js"></script>
-  </body>
+    </div>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script src="js/Homepage.js"></script>
+</body>
 </html>

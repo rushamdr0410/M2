@@ -312,7 +312,7 @@ if(isset($_POST['m_insertbtn'])) {
         }
         else
         {
-            $query = "INSERT INTO moviedetails VALUES ('$id','$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$quality')";
+            $query = "INSERT INTO moviedetails(title, 	description, genreid, release_year, duration, type, poster_img, quality) VALUES ('$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$quality')";
             $query_run = mysqli_query($connection, $query);
 
             if($query_run) {
