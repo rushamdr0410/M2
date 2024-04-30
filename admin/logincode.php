@@ -8,7 +8,9 @@ if(isset($_POST['login_btn']))
     $email_login=$_POST['email'];
     $password_login=$_POST['password'];
 
-    $query="SELECT * FROM register WHERE email='$email_login' AND password='$password_login'";
+    $hashed_password_login = md5($password_login);
+
+    $query="SELECT * FROM register WHERE email='$email_login' AND password='$hashed_password_login'";
     $result=mysqli_query($connection,$query);
     $usertype=mysqli_fetch_array($result);
     if($usertype['usertype']=='admin')
@@ -33,7 +35,10 @@ if(isset($_POST['userloginbtn']))
     $emaillogin=$_POST['u_email'];
     $passwordlogin=$_POST['u_password'];
 
-    $query="SELECT * FROM register WHERE email='$emaillogin' AND password='$passwordlogin'";
+    $hashed_password_login = md5($password_login);
+
+
+    $query="SELECT * FROM register WHERE email='$emaillogin' AND password='$hashed_passwordlogin'";
     $result=mysqli_query($connection,$query);
     $usertype=mysqli_fetch_array($result);
     if($usertype['usertype']=='admin')
