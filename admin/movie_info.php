@@ -55,6 +55,9 @@ include('includes/navbar.php');
         <div class="form-group">
             <label> Duration </label>
             <input type="text" name="m_duration" class="form-control" placeholder="Enter Duration" required>
+        </div><div class="form-group">
+            <label> Type </label>
+            <input type="text" name="m_type" class="form-control" placeholder="Enter Type" required>
         </div>
         <div class="form-group">
             <label>Poster Image</label>
