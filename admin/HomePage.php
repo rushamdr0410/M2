@@ -1,4 +1,5 @@
 <?php
+  error_reporting(E_ALL); ini_set('display_errors', 1);
   include('security.php');
 ?>
 <!DOCTYPE html>
@@ -658,38 +659,45 @@
       </form>
     </div>
     <?php
-      $query="SELECT* FROM moviedetails";
-      $result=mysqli_query($connection, $query);
-      if(mysqli_num_rows($result)>0)
-      {
-        while($row=mysqli_fetch_assoc($result))
-        {
+      $query = "SELECT * FROM moviedetails";
+      $result = mysqli_query($connection, $query);
+      if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
           ?>
           <div class="movies-container">
-            <div class="box">
-              <div class="box-img">
-                <?php echo '<img src="upload/'.$row['poster_img'].'"style="width: 100%;height: 270px; overflow: hidden;border-radius: 6px;"" alt="Movie Poster">'?>
+            <div class="card">
+              <!-- Movie Poster Section -->
+              <div class="card-img">
+                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
               </div>
-              <div class="poster">
-                <div class="date_min">
-                <span><?php echo $row['release_year']; ?></span>
-                <span><?php echo $row['type']; ?></span>
-                <span><?php echo $row['duration']; ?></span>
-                </div>
-                
-                <h3><?php echo $row['title']; ?></h3>
+          
+              <!-- Movie Details Section -->
+              <div class="card-details">
+                <span class="date_min">
+                  <?php echo $row['release_year']; ?> |
+                  <?php echo $row['type']; ?> |
+                  <?php echo $row['duration']; ?>
+                </span>
+                <h3><?php echo $row['title']; var_dump($row);?></h3>
+              </div>
+              
+              <!-- Add to Watchlist Button Section -->
+              <div class="card-watchlist">
+                <form action="add_to_watchlist.php" method="POST">
+                  <input type="hidden" name="movie_id" value="<?php echo $row['id ']; ?>">
+                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                </form>
               </div>
             </div>
           </div>
           <?php
         }
-      }
-      else
-      {
+      } 
+      else {
         echo "No Records Found!";
       }
-      ?>
-    </section>
+    ?>
+  </section>
     <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">latest movies</h2>
