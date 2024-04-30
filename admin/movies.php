@@ -411,16 +411,17 @@ option {
 <div class="dropdown">
     <label for="type-select">Type:</label>
     <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">-- Select Type --</option>
+        <option value="">Select Type</option>
         <option value="#">Movies</option>
         <option value="#">TV shows</option>
     </select>
 </div>
 
+<div class="dropdown-container">
 <div class="dropdown">
-    <label for="genre-select">Genre:</label>
+<label for="genre-select">Genre:</label>
     <select id="genre-select" onchange="navigateToGenrePage(this)">
-        <option value="">-- Select Genre --</option>
+        <option value="">Select Genre</option>
         <option value="action.php">Action</option>
         <option value="adventure.php">Adventure</option>
         <option value="biography.php">Biography</option>
@@ -434,13 +435,15 @@ option {
         <option value="thriller.php">Thriller</option>
     </select>
 </div>
+    
+    
 
 
 
 <div class="dropdown">
     <label for="type-select">Quality:</label>
     <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">-- Select Quality --</option>
+        <option value="">Select Quality</option>
         <option value="#">CAM</option>
         <option value="#">HD</option>
     </select>
@@ -449,7 +452,7 @@ option {
 <div class="dropdown">
     <label for="type-select">Year:</label>
     <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">-- Select Year --</option>
+        <option value="">Select Year</option>
         <option value="#">2024</option>
         <option value="#">2023</option>
     </select>
@@ -460,10 +463,7 @@ option {
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/js/multi-select-tag.js"></script>
-<script>
-    new MultiSelectTag('genre-select') 
-</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>

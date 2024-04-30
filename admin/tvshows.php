@@ -8,6 +8,7 @@
 <link rel="website icon" type="JPG" href="#">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
 <style>
 
 *{
@@ -314,6 +315,31 @@ h2{
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* Style the select element */
+select {
+    width: 150px; /* Adjust the width as needed */
+    padding: 10px 15px; /* Adjust padding as needed */
+    border-radius: 5px; /* Adjust border radius as needed */
+    border: 1px solid #ccc; /* Add a border */
+    background-color: #131418; /* Match background color */
+    color: #f2f5f7; /* Match text color */
+    font-family: "Open Sans", sans-serif; /* Match font family */
+    cursor: pointer; /* Add cursor pointer */
+    outline: none; /* Remove focus outline */
+    transition: background-color 0.3s, color 0.3s; /* Add transitions */
+}
+
+/* Style the select element on hover */
+select:hover {
+    background-color: #61DAFB; /* Match hover background color */
+    color: #131418; /* Match hover text color */
+}
+
+/* Style the option elements */
+option {
+    background-color: #131418; /* Match background color */
+    color: #f2f5f7; /* Match text color */
+}
 
 
 
@@ -344,7 +370,7 @@ h2{
 <li><a href="thriller.php" class="genre-link">Thriller</a></li>
 </ul>
 </li>
-<li><a href="TopIMDB.php">Top IMdb</a></li>
+<li><a href="topimdb.php">Top IMdb</a></li>
 <li><a href="movies.php">Movies</a></li>
 <li><a href="tvshows.php">TV-Shows</a></li>
 <li class="search-bar">
@@ -362,7 +388,7 @@ h2{
 <ul class="dropdown-content">
 <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+<li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
 <li>
 <form action="logout.php" method="POST">
@@ -380,48 +406,57 @@ h2{
 </nav>
 
 
-<h2>Tv Shows</h2>
+<h2> Tv Shows</h2>
 <div class="dropdown-filter-container">
-    <div class="dropdown">
-        <button class="dropdown-button">Type</button>
-        <div class="dropdown-content">
-            <a href="#">Movies</a>
-            <a href="#">TV shows</a>
-        </div>
-    </div>
+<div class="dropdown">
+    <label for="type-select">Type:</label>
+    <select id="type-select" onchange="navigateToTypePage(this)">
+        <option value="">Select Type</option>
+        <option value="#">Movies</option>
+        <option value="#">TV shows</option>
+    </select>
+</div>
 
-    <div class="dropdown">
-        <button class="dropdown-button">Genre</button>
-        <div class="dropdown-content">
-        <li><a href="action.php" class="genre-link">Action</a></li>
-        <li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
-        </div>
-    </div>
+<div class="dropdown-container">
+<div class="dropdown">
+<label for="genre-select">Genre:</label>
+    <select id="genre-select" onchange="navigateToGenrePage(this)">
+        <option value="">Select Genre</option>
+        <option value="action.php">Action</option>
+        <option value="adventure.php">Adventure</option>
+        <option value="biography.php">Biography</option>
+        <option value="comedy.php">Comedy</option>
+        <option value="documentary.php">Documentary</option>
+        <option value="drama.php">Drama</option>
+        <option value="fantasy.php">Fantasy</option>
+        <option value="horror.php">Horror</option>
+        <option value="romance.php">Romance</option>
+        <option value="sci-fi.php">Sci-Fi</option>
+        <option value="thriller.php">Thriller</option>
+    </select>
+</div>
+    
+    
 
-    <div class="dropdown">
-        <button class="dropdown-button">Quality</button>
-        <div class="dropdown-content">
-            <a href="#">HD</a>
-            <a href="#">CAM</a>
-        </div>
-    </div>
 
-    <div class="dropdown">
-        <button class="dropdown-button">Year</button>
-        <div class="dropdown-content">
-            <a href="#"></a>
-            <a href="#"></a>
-        </div>
-    </div>
+
+<div class="dropdown">
+    <label for="type-select">Quality:</label>
+    <select id="type-select" onchange="navigateToTypePage(this)">
+        <option value="">Select Quality</option>
+        <option value="#">CAM</option>
+        <option value="#">HD</option>
+    </select>
+</div>
+
+<div class="dropdown">
+    <label for="type-select">Year:</label>
+    <select id="type-select" onchange="navigateToTypePage(this)">
+        <option value="">Select Year</option>
+        <option value="#">2024</option>
+        <option value="#">2023</option>
+    </select>
+</div>
 
     <!-- Add the filter button -->
     <button id="filter-button" class="filter-button">Filter</button>
@@ -435,3 +470,9 @@ h2{
 <script src="Homepage.js"></script>
 </body>
 </html>
+
+
+
+
+
+
