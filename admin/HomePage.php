@@ -713,7 +713,7 @@
           
               <!-- Movie Details Section -->
               <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
                  <p style="color: rgba(255, 255, 255, 0.7);"><?php echo $row['release_year']; ?></p>
                   <p ><?php echo $row['type']; ?> </p>
                   <p><?php echo $row['duration']; ?></p>
@@ -762,7 +762,7 @@
           
               <!-- Movie Details Section -->
               <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
                  <p><?php echo $row['release_year']; ?></p>
                   <p><?php echo $row['type']; ?> </p>
                   <p><?php echo $row['duration']; ?></p>
@@ -811,7 +811,7 @@
           
               <!-- Movie Details Section -->
               <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:20px;">
+                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
                  <p><?php echo $row['release_year']; ?></p>
                   <p><?php echo $row['type']; ?> </p>
                   <p><?php echo $row['duration']; ?></p>
@@ -821,13 +821,12 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-                <form action="add_to_watchlist.php" method="POST">
+                <form action="watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
                   <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
                   <button type="submit" class="watchlist-btn">Add to Watchlist</button>
                 </form>
               </div>
-            </div>
-          </div>
+
           <?php
         }
       } 
