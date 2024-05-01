@@ -1,3 +1,6 @@
+<?php
+  include('security.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -434,17 +437,33 @@ h2{
         allow="autoplay"
     ></iframe>
 </div>
+<?php
+  // Fetch video details from the database
+$stmt = $connection->prepare('SELECT title, description, quality, release_year, type, genreid FROM moviedetails WHERE id = ?');
+$stmt->bind_param('i', $videoId);
+$stmt->execute();
+$stmt->bind_result($title, $description, $quality, $release_year, $type, $genreid);
 
+// Check if the video details are fetched successfully
+if ($stmt->fetch()) {
+    // Video details fetched successfully, proceed to HTML output
+} else {
+    // Handle case where the video ID does not exist in the table
+    echo "Video not found.";
+    exit;
+}
+
+// Close the statement
+$stmt->close();
+?>
     <!-- Movie Details -->
     <div id="movie-details">
             <h3><?php echo htmlspecialchars($title); ?></h3>
-            <p>Rating: <?php echo htmlspecialchars($rating); ?> / 10 (751 reviews)</p>
-            <p>Resolution: <?php echo htmlspecialchars($resolution); ?></p>
-            <p>Release Date: <?php echo htmlspecialchars($releaseDate); ?></p>
+            <p>Resolution: <?php echo htmlspecialchars($quality); ?></p>
+            <p>Release Date: <?php echo htmlspecialchars($release_year); ?></p>
             <p>Description: <?php echo htmlspecialchars($description); ?></p>
             <p>Type: <?php echo htmlspecialchars($type); ?></p>
-            <p>Country: <?php echo htmlspecialchars($country); ?></p>
-            <p>Genre: <?php echo htmlspecialchars($genre); ?></p>
+            <p>id: <?php echo htmlspecialchars($genreid); ?></p>
         </div>
     
 

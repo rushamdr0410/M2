@@ -336,7 +336,7 @@ if(isset($_POST['updatebtn']))
 {
     $id=$_POST['edit_id'];
     $m_title=$_POST['m_title'];
-    $description =  $_POST['description'];
+    $description = $_POST['description'];
     $gid=$_POST['gid'];
     $m_year=$_POST['m_year'];
     $m_duration=$_POST['m_duration'];

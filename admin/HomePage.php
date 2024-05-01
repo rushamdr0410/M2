@@ -699,7 +699,7 @@
         <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; width: 100%; height: 28.125rem; max-width: 58.75rem">
           <div>
             <h2><?php echo $row['title']; ?></h2>
-            <p><?php echo $row['release_year']; ?></p>
+            <p><?php echo $row['description']; ?></p>
             <a href="videoplayer_kungfu.php" target="_blank">Watch Now</a>
           </div>
         </div>
