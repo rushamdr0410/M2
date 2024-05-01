@@ -1,0 +1,20 @@
+<?php
+    session_start();
+    if($_SERVER["REQUEST_METHOD"]=="POST")
+    {
+        if(isset($_POST['watchlist']))
+        {
+            if(isset($_SESSION['watchlist']))
+            {
+                $count=count($_SESSION['watchlist']);
+                $_SESSION['watchlist'][$count]=array('title'=>$_POST['title'],'release_year'=>$_POST['release_year'],'type'=>$_POST['type']);
+                print_r($_SESSION['watchlist']);
+            }
+            else
+            {
+                $_SESSION['watchlist'][0]=array('title'=>$_POST['title'],'release_year'=>$_POST['release_year'],'type'=>$_POST['type']);
+                print_r($_SESSION['watchlist']);
+            }
+        }
+    }
+?>
