@@ -538,8 +538,9 @@ if (isset($_POST['submit'])) {
         
         // Movie Poster Section
         echo '<div class="card-img">';
-        echo '<img src="' . $row['poster_img'] . '" alt="' . $row['title'] . '">';
+        echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
         echo '</div>';
+        
         
         // Movie Details Section
         echo '<div class="card-details">';

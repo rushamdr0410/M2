@@ -524,8 +524,9 @@ if ($result && mysqli_num_rows($result) > 0) {
         
         // Movie Poster Section
         echo '<div class="card-img">';
-        echo '<img src="' . htmlspecialchars($row['poster_img']) . '" alt="' . htmlspecialchars($row['title']) . '">';
+        echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
         echo '</div>';
+        
         
         // Movie Details Section
         echo '<div class="card-details">';
