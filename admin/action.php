@@ -1,3 +1,9 @@
+<?php
+   include('security.php');
+  
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -407,62 +413,109 @@ option {
 
 
 <h2>action Movies,tv shows</h2>
+<form method="POST" action="action.php">
 <div class="dropdown-filter-container">
 <div class="dropdown">
     <label for="type-select">Type:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <select id="type-select" name="type">
         <option value="">Select Type</option>
-        <option value="#">Movies</option>
-        <option value="#">TV shows</option>
+        <option value="Movies">Movies</option>
+        <option value="TV shows">TV shows</option>
     </select>
 </div>
 
-<div class="dropdown-container">
 <div class="dropdown">
 <label for="genre-select">Genre:</label>
-    <select id="genre-select" onchange="navigateToGenrePage(this)">
+    <select id="genre-select" name="genre" >
         <option value="">Select Genre</option>
-        <option value="action.php">Action</option>
-        <option value="adventure.php">Adventure</option>
-        <option value="biography.php">Biography</option>
-        <option value="comedy.php">Comedy</option>
-        <option value="documentary.php">Documentary</option>
-        <option value="drama.php">Drama</option>
-        <option value="fantasy.php">Fantasy</option>
-        <option value="horror.php">Horror</option>
-        <option value="romance.php">Romance</option>
-        <option value="sci-fi.php">Sci-Fi</option>
-        <option value="thriller.php">Thriller</option>
+        <option value="Action">Action</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Biography">Biography</option>
+        <option value="Comedy">Comedy</option>
+        <option value="Documentary">Documentary</option>
+        <option value="Drama">Drama</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Horror">Horror</option>
+        <option value="Romance">Romance</option>
+        <option value="Sci-fi">Sci-Fi</option>
+        <option value="Thriller">Thriller</option>
     </select>
 </div>
-    
-    
-
 
 
 <div class="dropdown">
-    <label for="type-select">Quality:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <label for="quality-select">Quality:</label>
+    <select id="quality-select" name="quality">
         <option value="">Select Quality</option>
-        <option value="#">CAM</option>
-        <option value="#">HD</option>
+        <option value="CAM">CAM</option>
+        <option value="HD">HD</option>
     </select>
 </div>
 
 <div class="dropdown">
-    <label for="type-select">Year:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <label for="year-select">Year:</label>
+    <select id="year-select" name="year">
         <option value="">Select Year</option>
-        <option value="#">2024</option>
-        <option value="#">2023</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
     </select>
 </div>
+
 
     <!-- Add the filter button -->
-    <button id="filter-button" class="filter-button">Filter</button>
+    <input type="submit" id="filter-button" name="submit" class="filter-button">
 </div>
+</form>
 
 
+<?php
+
+
+        if (isset($_POST['submit'])) 
+       {
+        // var_dump($_POST);
+        // die();
+        // Retrieve filter inputs
+        $type = isset($_POST['type']) ? $_POST['type'] : '';
+        $quality = isset($_POST['quality']) ? $_POST['quality'] : '';
+        $genre = isset($_POST['genre']) ? $_POST['genre'] : '';
+        $year = isset($_POST['year']) ? $_POST['year'] : '';
+
+        // Construct query
+        $query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails WHERE genreid='5'";
+
+        // Add filters to query
+        if (!empty($type)) {
+            $query .= " AND type = '$type'";
+        }
+        if (!empty($quality)) {
+            $query .= " AND quality = '$quality'";
+        }
+        if (!empty($genre)) {
+            $query .= " AND genreid = '$genre'";
+        }
+        if (!empty($year)) {
+            $query .= " AND release_year = '$year'";
+        }
+
+        // Execute query
+        $result =mysqli_query($connection, $query);
+
+        // Display results
+        while ($row = $result->fetch_assoc()) {
+            echo "<div>";
+            echo "<h3>" . $row['title'] . "</h3>";
+            echo "<p>Description: " . $row['description'] . "</p>";
+            echo "<p>Release Year: " . $row['release_year'] . "</p>";
+            echo "<p>Duration: " . $row['duration'] . " mins</p>";
+            echo "<p>Type: " . $row['type'] . "</p>";
+            echo "<p>Quality: " . $row['quality'] . "</p>";
+            echo "<img src='" . $row['poster_img'] . "' alt='" . $row['title'] . "'>";
+            echo "</div>";
+        }
+    }
+    ?>
+   
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
