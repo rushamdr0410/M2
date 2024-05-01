@@ -646,7 +646,7 @@
 <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
 <li><a href="thriller.php" class="genre-link">Thriller</a></li>
 
-    
+          
         </ul>
       </li>
       <li><a href="topimdb.php">Top IMdb</a></li>
