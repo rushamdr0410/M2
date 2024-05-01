@@ -370,6 +370,20 @@ option {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
 
+.watchlist-btn {
+        background-color: transparent; /* Transparent background */
+        color: #01939c; /* Text color matching the color of the heading */
+        border: 1px solid #01939c; /* Add border */
+        padding: 0.5rem 1rem; /* Adjust padding */
+        border-radius: 5px; /* Add border radius for rounded corners */
+        cursor: pointer; /* Change cursor on hover */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
+      }
+
+      .watchlist-btn:hover {
+        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
+        color: #fff; /* Change text color to white on hover */
+      }
 
 
 
