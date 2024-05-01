@@ -656,7 +656,7 @@
             <ul class="dropdown-content">
             <li><a href="action.php" class="genre-link">Progile</a></li>
             <li><a href="action.php" class="genre-link">Continue-Watching</a></li>
-            <li><a href="action.php" class="genre-link">Watchlist</a></li>
+            <li><a href="watchlist.php" class="genre-link">Watchlist</a></li>
             <li><a href="userlogin.php" class="genre-link">LogOut</a></li>
             </ul>
           </li>
