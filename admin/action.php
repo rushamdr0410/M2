@@ -419,7 +419,7 @@ option {
     <label for="type-select">Type:</label>
     <select id="type-select" name="type">
         <option value="">Select Type</option>
-        <option value="Movies">Movies</option>
+        <option value="Movie">Movies</option>
         <option value="TV shows">TV shows</option>
     </select>
 </div>
@@ -470,9 +470,10 @@ option {
 
 <?php
 
-
+        // var_dump($_POST);
         if (isset($_POST['submit'])) 
        {
+        
         // var_dump($_POST);
         // die();
         // Retrieve filter inputs
@@ -500,9 +501,13 @@ option {
 
         // Execute query
         $result =mysqli_query($connection, $query);
+        // var_dump($result->num_rows);
+        // die();
 
         // Display results
         while ($row = $result->fetch_assoc()) {
+        //    var_dump($row);
+        // die();
             echo "<div>";
             echo "<h3>" . $row['title'] . "</h3>";
             echo "<p>Description: " . $row['description'] . "</p>";
