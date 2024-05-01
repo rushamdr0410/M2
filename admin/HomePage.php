@@ -712,7 +712,6 @@
       </div>
     </div>
   </main>
-
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">recommended</h2>
@@ -747,10 +746,11 @@
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
                 <form action="manage_watchlist.php" method="POST">
-                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
                   <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
                   <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
                   <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['duration']; ?>">
                 </form>
               </div>
             </div>
@@ -837,7 +837,7 @@
               </div>
           
               <!-- Movie Details Section -->
-              <form action="manage_watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
+              
                 <div class="card-details">
                   <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
                   <p><?php echo $row['release_year']; ?></p>
@@ -849,7 +849,7 @@
               
                 <!-- Add to Watchlist Button Section -->
                 <div class="card-watchlist">
-                  
+
                     <button type="submit" class="watchlist-btn">Add to Watchlist</button>
                     <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
                     <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">

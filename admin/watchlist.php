@@ -1,3 +1,6 @@
+<?php
+  session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,11 +34,15 @@ body{
   overflow-y: scroll;
   overflow-x: hidden;
   background-color: #131418;
-  padding-top: 0.1rem;
+  color: #ffffff;
+      font-family: "Open Sans", sans-serif;
+      padding-top: 2rem;
+      text-align: center;
 }
 nav{
   height: 4.5rem;
   width: 100vw;
+  margin-top: -39px;
   background-color: #131418;
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -269,50 +276,77 @@ nav{
 h2{
   margin-top: 6rem;
   color: ffffff;
+  margin-top: 100px;
   font-size: 2.2rem;
   font-weight: bold;
   text-transform: uppercase;
   align-items: center;
   margin-left:15px;
 }
-.dropdown-button{
-  background-color: #131418; /* Match background color */
-    color: #f2f5f7;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px; /* Adjust button radius */
-    cursor: pointer;]
-    
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+  color: #01939c;
+  margin-top: 20px; /* Add margin at the top */
 }
 
-.dropdown-filter-container {
-    display: flex;
-    justify-content: flex-start; /* Adjusts alignment of dropdowns */
-    gap: 20px; /* Space between the dropdowns */
-    margin-bottom: 20px; /* Add space below the container */
-    margin-left:10px;
-    
-}
-  
-.dropdown-filter-container a:hover{
-  color: #61DAFB;
-  
+.table h2 {
+  margin-bottom: 10px; /* Add margin at the bottom */
+  font-size: 22px;
+  font-weight: bold;
+  color: #01939c;
 }
 
-.dropdown-filter-container{
-  display: flex;
-    align-items: center; /* Aligns items vertically in the center */
-    gap: 15px; 
+
+.table th,
+.table td {
+  padding: 8px 16px;
+  text-align: left;
+  border-bottom: 1px solid #01939c;
 }
-.filter-button {
-    background-color: #61DAFB; /* Match background color */
-    color: #131418 ;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+
+.table th {
+  background-color: #000;
+  font-weight: bold;
 }
+
+.table tbody tr:nth-child(even) {
+  background-color: #000;
+}
+
+.table tbody tr:hover {
+  background-color: #222;
+}
+
+.table th:first-child,
+.table td:first-child {
+  border-left: 1px solid #01939c;
+}
+
+.table th:last-child,
+.table td:last-child {
+  border-right: 1px solid #01939c;
+}
+
+.btn {
+  background-color: #dc3545; /* Red color */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 8px 16px; /* Adjust padding as needed */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+
+
 
 
 
@@ -379,45 +413,48 @@ h2{
 </div>
 </nav>
 
-
-<section id="watchlist-section">
-    <h2>My Watchlist</h2>
-    <ul id="watchlist">
-        <?php
-        // Include your PHP functions file
-        include 'functions.php';
-
-        // Get the user ID from the session (you need to set this up based on your application)
-        $id = $_SESSION['id'];
-
-        // Get the watchlist for the user
-        $watchlist = getWatchlist($id);
-
-        // Display the watchlist items
-        foreach ($watchlist as $item) {
-            // Assuming you have a function to get movie details by ID
-            $movie = getMovieDetails($item['movie_id']);
-
-            echo '<li>';
-            echo 'Movie Title: ' . htmlspecialchars($movie['title']) . ' ';
-            
-            // Add form for removing item from watchlist
-            echo '<form action="remove_from_watchlist.php" method="POST" style="display:inline;">';
-            echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($item['movie_id']) . '">';
-            echo '<button type="submit">Remove from Watchlist</button>';
-            echo '</form>';
-
-            echo '</li>';
+<table class="table">
+  <h2>My Watchlist</h2>
+  <thead>
+    <tr>
+      <th scope="col">TITLE</th>
+      <th scope="col">YEAR</th>
+      <th scope="col">TYPE</th>
+      <th>DELETE</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php 
+    if(isset($_SESSION['watchlist']) && !empty($_SESSION['watchlist'])) {
+        
+        foreach($_SESSION['watchlist'] as $key => $value) {
+            ?>
+            <tr>
+                <td><?php echo $value['title'];?></td>
+                <td><?php echo $value['release_year'];?></td>
+                <td><?php echo $value['type'];?></td>
+                <td>
+                    <form action="manage_watchlist.php" method="POST">
+                        <input type="hidden" name="title" value="<?php echo $value['title']; ?>">
+                        <input type="hidden" name="release_year" value="<?php echo $value['release_year']; ?>">
+                        <input type="hidden" name="type" value="<?php echo $value['type']; ?>">
+                        <button type="submit" name="remove_btn" class="btn btn-danger">REMOVE</button>
+                    </form>
+                </td>
+            </tr>
+            <?php
         }
-        ?>
-    </ul>
-</section>
+    } else {
+        // Handle case where watchlist is empty or not set
+        echo "<tr><td colspan='4'>No items in watchlist</td></tr>";
+    }
+    ?>
 
-<!-- Example form for adding a movie to the watchlist -->
-<form action="add_to_watchlist.php" method="POST">
-    <input type="hidden" name="movie_id" value="1"> <!-- Specify the movie ID -->
-    <button type="submit">Add to Watchlist</button>
-</form>
+  </tbody>
+</table>
+
+
+
 
 
 
