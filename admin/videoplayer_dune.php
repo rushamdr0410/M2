@@ -1,9 +1,3 @@
-<?php
-   include('security.php');
-  
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +8,6 @@
 <link rel="website icon" type="JPG" href="#">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
 <style>
 
 *{
@@ -321,69 +314,53 @@ h2{
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Style the select element */
-select {
-    width: 150px; /* Adjust the width as needed */
-    padding: 10px 15px; /* Adjust padding as needed */
-    border-radius: 5px; /* Adjust border radius as needed */
-    border: 1px solid #ccc; /* Add a border */
-    background-color: #131418; /* Match background color */
-    color: #f2f5f7; /* Match text color */
-    font-family: "Open Sans", sans-serif; /* Match font family */
-    cursor: pointer; /* Add cursor pointer */
-    outline: none; /* Remove focus outline */
-    transition: background-color 0.3s, color 0.3s; /* Add transitions */
-}
+#video-container {
+            width: 70%; /* Set the width of the video container */
+            margin: auto; /* Center the video container */
+            text-align: center;
+            padding: 20px;
+            /*border: 1px solid #ccc;  Add a border around the video container */
+            border-radius: 8px;
+            margin-top:50px;
+        }
 
-/* Style the select element on hover */
-select:hover {
-    background-color: #61DAFB; /* Match hover background color */
-    color: #131418; /* Match hover text color */
-}
+        video {
+            width: 100%; /* Make the video take up the full width of the container */
+            border-radius: 8px;
+        }
 
-/* Style the option elements */
-option {
-    background-color: #131418; /* Match background color */
-    color: #f2f5f7; /* Match text color */
-}
+        /* Custom control buttons */
+        .controls {
+            margin-top: 10px;
+        }
 
-/* Container for all movie cards */
-.movies-container {
-    display: flex; /* Arrange child elements in a row */
-    flex-wrap: wrap; /* Allow cards to wrap to the next line if necessary */
-    gap: 16px; /* Space between cards */
-    justify-content: flex-start; /* Align cards to the start */
-}
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #61DAFB;
+            color: #fff;
+            cursor: pointer;
+        }
 
-/* Style for individual movie cards */
-.card {
-    width: 250px; /* Set a fixed width for each card */
-    padding: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    transition: box-shadow 0.3s ease;
-}
+        button:hover {
+            background-color: #409ab3;
+        }
 
-/* Hover effect for movie cards */
-.card:hover {
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-}
+        #movie-details {
+            margin-top: 15px;
+            text-align: left;
+        }
 
-.watchlist-btn {
-        background-color: transparent; /* Transparent background */
-        color: #01939c; /* Text color matching the color of the heading */
-        border: 1px solid #01939c; /* Add border */
-        padding: 0.5rem 1rem; /* Adjust padding */
-        border-radius: 5px; /* Add border radius for rounded corners */
-        cursor: pointer; /* Change cursor on hover */
-        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
-      }
+        h3 {
+            margin: 10px 0;
+        }
 
-      .watchlist-btn:hover {
-        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
-        color: #fff; /* Change text color to white on hover */
-      }
+        p {
+            margin: 5px 0;
+        }
+
 
 
 
@@ -446,125 +423,131 @@ option {
 <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
 </div>
 </nav>
-
-
-<h2>action Movies,tv shows</h2>
-<form method="POST" action="action.php">
-<div class="dropdown-filter-container"> 
-<div class="dropdown">
-    <label for="type-select">Type:</label>
-    <select id="type-select" name="type">
-        <option value="">Select Type</option>
-        <option value="Movie">Movies</option>
-        <option value="TV shows">TV shows</option>
-    </select>
+<<div id="video-container">
+    <iframe
+        id="video-player"
+        width="1000px"
+        height="600px"
+        src="https://www.youtube.com/embed/_YUzQa_1RCE"
+        frameborder="0"
+        allowfullscreen
+        allow="autoplay"
+    ></iframe>
 </div>
 
-<div class="dropdown">
-<label for="genre-select">Genre:</label>
-    <select id="genre-select" name="genre" >
-        <option value="">Select Genre</option>
-        <option value="Action">Action</option>
-        <option value="Adventure">Adventure</option>
-        <option value="Biography">Biography</option>
-        <option value="Comedy">Comedy</option>
-        <option value="Documentary">Documentary</option>
-        <option value="Drama">Drama</option>
-        <option value="Fantasy">Fantasy</option>
-        <option value="Horror">Horror</option>
-        <option value="Romance">Romance</option>
-        <option value="Sci-fi">Sci-Fi</option>
-        <option value="Thriller">Thriller</option>
-    </select>
-</div>
+    <!-- Movie Details -->
+    <div id="movie-details">
+            <h3><?php echo htmlspecialchars($title); ?></h3>
+            <p>Rating: <?php echo htmlspecialchars($rating); ?> / 10 (751 reviews)</p>
+            <p>Resolution: <?php echo htmlspecialchars($resolution); ?></p>
+            <p>Release Date: <?php echo htmlspecialchars($releaseDate); ?></p>
+            <p>Description: <?php echo htmlspecialchars($description); ?></p>
+            <p>Type: <?php echo htmlspecialchars($type); ?></p>
+            <p>Country: <?php echo htmlspecialchars($country); ?></p>
+            <p>Genre: <?php echo htmlspecialchars($genre); ?></p>
+        </div>
+    
 
+    <script>
+        // Get the video player element
+        const videoPlayer = document.getElementById('video-player');
 
-<div class="dropdown">
-    <label for="quality-select">Quality:</label>
-    <select id="quality-select" name="quality">
-        <option value="">Select Quality</option>
-        <option value="CAM">CAM</option>
-        <option value="HD">HD</option>
-    </select>
-</div>
+        // Get the control buttons
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const backwardBtn = document.getElementById('backwardBtn');
+        const speedUpBtn = document.getElementById('speedUpBtn');
+        const slowDownBtn = document.getElementById('slowDownBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-<div class="dropdown">
-    <label for="year-select">Year:</label>
-    <select id="year-select" name="year">
-        <option value="">Select Year</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-    </select>
-</div>
+        // Toggle play/pause
+        playPauseBtn.addEventListener('click', () => {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+                playPauseBtn.textContent = 'Pause';
+            } else {
+                videoPlayer.pause();
+                playPauseBtn.textContent = 'Play';
+            }
+        });
 
+        // Forward the video by 10 seconds
+        forwardBtn.addEventListener('click', () => {
+            videoPlayer.currentTime += 10;
+        });
 
-    <!-- Add the filter button -->
-    <input type="submit" id="filter-button" name="submit" class="filter-button">
-</div>
-</form>
+        // Rewind the video by 10 seconds
+        backwardBtn.addEventListener('click', () => {
+            videoPlayer.currentTime -= 10;
+        });
+
+        // Speed up the video playback rate
+        speedUpBtn.addEventListener('click', () => {
+            videoPlayer.playbackRate += 0.25;
+        });
+
+        // Slow down the video playback rate
+        slowDownBtn.addEventListener('click', () => {
+            videoPlayer.playbackRate -= 0.25;
+        });
+
+        // Toggle fullscreen
+        fullscreenBtn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                videoPlayer.requestFullscreen();
+            }
+        });
+    </script>
 
 <?php
-if (isset($_POST['submit'])) {
-    // Retrieve filter inputs
-    $type = isset($_POST['type']) ? $_POST['type'] : '';
-    $quality = isset($_POST['quality']) ? $_POST['quality'] : '';
-    $genre = isset($_POST['genre']) ? $_POST['genre'] : '';
-    $year = isset($_POST['year']) ? $_POST['year'] : '';
+// Include your database configuration file
+include 'database/dbconfig.php';
 
-    // Construct query
-    $query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails WHERE genreid='5'";
+// Get the video ID from the URL parameters
+$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
 
-    // Add filters to query
-    if (!empty($type)) {
-        $query .= " AND type = '$type'";
-    }
-    if (!empty($quality)) {
-        $query .= " AND quality = '$quality'";
-    }
-    if (!empty($genre)) {
-        $query .= " AND genreid = '$genre'";
-    }
-    if (!empty($year)) {
-        $query .= " AND release_year = '$year'";
-    }
+// Initialize variables for video URL and metadata
+$videoUrl = '';
+$title = '';
+$description = '';
+$rating = '';
+$resolution = '';
+$releaseDate = '';
+$type = '';
+$country = '';
+$genre = '';
 
-    // Execute query
-    $result = mysqli_query($connection, $query);
-
-    // Display results in card form
-    echo '<div class="movies-container">'; // Container for all cards
-    while ($row = $result->fetch_assoc()) {
-        echo '<div class="card">';
-        
-        // Movie Poster Section
-        echo '<div class="card-img">';
-        echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
-        echo '</div>';
-        
-        
-        // Movie Details Section
-        echo '<div class="card-details">';
-        echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
-        echo '<p>' . $row['release_year'] . '</p>';
-        echo '<p>' . $row['type'] . '</p>';
-        echo '<p>' . $row['duration'] . ' mins</p>';
-        echo '</span>';
-        echo '<h3>' . $row['title'] . '</h3>';
-        echo '</div>';
-        
-        // Add to Watchlist Button Section
-        echo '<div class="card-watchlist">';
-        echo '<form action="manage_watchlist.php" method="POST">';
-        echo '<button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>';
-        echo '<input type="hidden" name="title" value="' . $row['title'] . '">';
-        echo '<input type="hidden" name="release_year" value="' . $row['release_year'] . '">';
-        echo '<input type="hidden" name="type" value="' . $row['type'] . '">';
-        echo '</form>';
-        echo '</div>';
-        
-        echo '</div>'; // Close card
+// Check if video ID is provided
+if ($videoId) {
+    // Prepare an SQL statement to select video details from the service table
+    $stmt = $connection->prepare('SELECT links AS video_url, title, description, rating, resolution, release_date, type, country, genre FROM service WHERE id = ?');
+    
+    // Bind the video ID parameter to the prepared statement
+    $stmt->bind_param('i', $videoId);
+    
+    // Execute the statement
+    $stmt->execute();
+    
+    // Bind the results to variables
+    $stmt->bind_result($videoUrl, $title, $description, $rating, $resolution, $releaseDate, $type, $country, $genre);
+    
+    // Fetch the results
+    if ($stmt->fetch()) {
+        // The variables now contain the video details
+        // You can use these variables in your HTML output
+    } else {
+        // Handle case where the provided video ID does not exist in the table
+        echo "Video not found.";
+        exit;
     }
-    echo '</div>'; // Close movies container
+    
+    // Close the statement
+    $stmt->close();
+} else {
+    echo "No video ID provided.";
+    exit;
 }
 ?>
 
@@ -574,9 +557,3 @@ if (isset($_POST['submit'])) {
 <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-

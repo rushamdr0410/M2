@@ -1,3 +1,9 @@
+<?php
+   include('security.php');
+  
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -341,7 +347,43 @@ option {
     color: #f2f5f7; /* Match text color */
 }
 
+/* Container for all movie cards */
+.movies-container {
+    display: flex; /* Arrange child elements in a row */
+    flex-wrap: wrap; /* Allow cards to wrap to the next line if necessary */
+    gap: 16px; /* Space between cards */
+    justify-content: flex-start; /* Align cards to the start */
+}
 
+/* Style for individual movie cards */
+.card {
+    width: 250px; /* Set a fixed width for each card */
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Hover effect for movie cards */
+.card:hover {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.watchlist-btn {
+        background-color: transparent; /* Transparent background */
+        color: #01939c; /* Text color matching the color of the heading */
+        border: 1px solid #01939c; /* Add border */
+        padding: 0.5rem 1rem; /* Adjust padding */
+        border-radius: 5px; /* Add border radius for rounded corners */
+        cursor: pointer; /* Change cursor on hover */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
+      }
+
+      .watchlist-btn:hover {
+        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
+        color: #fff; /* Change text color to white on hover */
+      }
 
 
 
@@ -406,63 +448,117 @@ option {
 </nav>
 
 
-<h2> Movies</h2>
-<div class="dropdown-filter-container">
+<h2>Movies</h2>
+<form method="POST" action="action.php">
+<div class="dropdown-filter-container"> 
 <div class="dropdown">
     <label for="type-select">Type:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <select id="type-select" name="type">
         <option value="">Select Type</option>
-        <option value="#">Movies</option>
-        <option value="#">TV shows</option>
+        <option value="Movie">Movies</option>
+        <option value="TV shows">TV shows</option>
     </select>
 </div>
 
-<div class="dropdown-container">
 <div class="dropdown">
 <label for="genre-select">Genre:</label>
-    <select id="genre-select" onchange="navigateToGenrePage(this)">
+    <select id="genre-select" name="genre" >
         <option value="">Select Genre</option>
-        <option value="action.php">Action</option>
-        <option value="adventure.php">Adventure</option>
-        <option value="biography.php">Biography</option>
-        <option value="comedy.php">Comedy</option>
-        <option value="documentary.php">Documentary</option>
-        <option value="drama.php">Drama</option>
-        <option value="fantasy.php">Fantasy</option>
-        <option value="horror.php">Horror</option>
-        <option value="romance.php">Romance</option>
-        <option value="sci-fi.php">Sci-Fi</option>
-        <option value="thriller.php">Thriller</option>
+        <option value="Action">Action</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Biography">Biography</option>
+        <option value="Comedy">Comedy</option>
+        <option value="Documentary">Documentary</option>
+        <option value="Drama">Drama</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Horror">Horror</option>
+        <option value="Romance">Romance</option>
+        <option value="Sci-fi">Sci-Fi</option>
+        <option value="Thriller">Thriller</option>
     </select>
 </div>
-    
-    
-
 
 
 <div class="dropdown">
-    <label for="type-select">Quality:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <label for="quality-select">Quality:</label>
+    <select id="quality-select" name="quality">
         <option value="">Select Quality</option>
-        <option value="#">CAM</option>
-        <option value="#">HD</option>
+        <option value="CAM">CAM</option>
+        <option value="HD">HD</option>
     </select>
 </div>
 
 <div class="dropdown">
-    <label for="type-select">Year:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
+    <label for="year-select">Year:</label>
+    <select id="year-select" name="year">
         <option value="">Select Year</option>
-        <option value="#">2024</option>
-        <option value="#">2023</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
     </select>
 </div>
+
 
     <!-- Add the filter button -->
-    <button id="filter-button" class="filter-button">Filter</button>
+    <input type="submit" id="filter-button" name="submit" class="filter-button">
 </div>
+</form>
+
+<?php
+// Include the database connection file if not already included
+// include('security.php');
 
 
+// Query to fetch all movies from the moviedetails table
+$query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails";
+
+// Execute the query
+$result = mysqli_query($connection, $query);
+
+// Check if there are results
+if ($result && mysqli_num_rows($result) > 0) {
+    echo '<div class="movies-container">'; // Container for all movie cards
+
+    // Loop through each movie and display it as a card
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo '<div class="card">';
+        
+        // Movie Poster Section
+        echo '<div class="card-img">';
+        echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
+        echo '</div>';
+        
+        
+        // Movie Details Section
+        echo '<div class="card-details">';
+        echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
+        echo '<p>' . htmlspecialchars($row['release_year']) . '</p>';
+        echo '<p>' . htmlspecialchars($row['duration']) . ' mins</p>';
+        echo '<p>' . htmlspecialchars($row['quality']) . '</p>';
+        echo '</span>';
+        echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
+        echo '</div>';
+        
+        // Add to Watchlist Button Section
+        echo '<div class="card-watchlist">';
+        echo '<form action="manage_watchlist.php" method="POST">';
+        echo '<button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>';
+        echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
+        echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
+        echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+        echo '</form>';
+        echo '</div>';
+        
+        echo '</div>'; // Close card
+    }
+
+    echo '</div>'; // Close movies container
+} else {
+    echo '<p>No movies found.</p>'; // Display a message if no movies are found
+}
+
+// Close the database connection if needed
+// mysqli_close($connection);
+?>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

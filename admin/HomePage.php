@@ -700,7 +700,7 @@
           <div>
             <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['release_year']; ?></p>
-            <a href="#" target="_blank">Watch Now</a>
+            <a href="videoplayer_kungfu.php" target="_blank">Watch Now</a>
           </div>
         </div>
         <?php

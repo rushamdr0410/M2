@@ -321,6 +321,7 @@ h2{
             padding: 20px;
             /*border: 1px solid #ccc;  Add a border around the video container */
             border-radius: 8px;
+            margin-top:50px;
         }
 
         video {
@@ -422,24 +423,18 @@ h2{
 <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
 </div>
 </nav>
-<div id="video-container">
-        <video id="video-player" controls autoplay loop>
-            <!-- Specify the video source -->
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            <!-- Fallback message -->
-            Your browser does not support the video tag.
-        </video>
+<<div id="video-container">
+    <iframe
+        id="video-player"
+        width="1000px"
+        height="600px"
+        src="https://www.youtube.com/embed/5g0W38rzBhU"
+        frameborder="0"
+        allowfullscreen
+        allow="autoplay"
+    ></iframe>
+</div>
 
-        <!-- Custom controls -->
-        <div class="controls">
-            <button id="playPauseBtn">Pause</button>
-            <button id="forwardBtn">Forward</button>
-            <button id="backwardBtn">Backward</button>
-            <button id="speedUpBtn">Speed Up</button>
-            <button id="slowDownBtn">Slow Down</button>
-            <button id="fullscreenBtn">Fullscreen</button>
-        </div>
-    </div>
     <!-- Movie Details -->
     <div id="movie-details">
             <h3><?php echo htmlspecialchars($title); ?></h3>
