@@ -10,7 +10,7 @@ if(isset($_POST['login_btn']))
 
     $hashed_password_login = md5($password_login);
 
-    $query="SELECT * FROM register WHERE email='$email_login'1234567890-= 0";
+    $query="SELECT * FROM register WHERE email='$email_login'";
     $result=mysqli_query($connection,$query);
     $usertype=mysqli_fetch_array($result);
     if($usertype['usertype']=='admin')
@@ -44,7 +44,7 @@ if(isset($_POST['userloginbtn']))
     if($usertype['usertype']=='admin')
     {
         $_SESSION[ 'username' ] = $emaillogin;
-        header('Location: login.php');
+        header('Location:login.php');
     }
     else if($usertype['usertype']=='user')
     {

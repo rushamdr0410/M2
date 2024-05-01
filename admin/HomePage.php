@@ -448,6 +448,9 @@
       }
       .swiper-slide--one {
         background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
+        height: 28.125rem;
+        width: 30%; /* Set width to 30% of the container */
+        max-width: 18.75rem;
       }
 
       .swiper-slide--two {
@@ -456,6 +459,9 @@
 
       .swiper-slide--three {
         background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
+        height: 28.125rem;
+        width: 30%; /* Set width to 30% of the container */
+        max-width: 18.75rem;
       }
 
       .swiper-slide--four {
@@ -665,10 +671,16 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle">rus@gmail.com</a>
             <ul class="dropdown-content">
-            <li><a href="action.php" class="genre-link">Progile</a></li>
-            <li><a href="action.php" class="genre-link">Continue-Watching</a></li>
-            <li><a href="watchlist.php" class="genre-link">Watchlist</a></li>
-            <li><a href="userlogin.php" class="genre-link">LogOut</a></li>
+            <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
+            <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+            <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
+            <li>
+            <form action="logout.php" method="POST">
+            <button type="submit" name="userlogout_btn" class="dropdown-btn">
+            <i class="fas fa-arrow-right-from-bracket"></i> Logout
+            </button>
+            </form>
             </ul>
           </li>
         </ul>
@@ -684,7 +696,7 @@
         if(mysqli_num_rows($result) > 0) {
           while($row = mysqli_fetch_assoc($result)) {
         ?>
-        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat;">
+        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; width: 100%; height: 28.125rem; max-width: 58.75rem">
           <div>
             <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['release_year']; ?></p>
@@ -734,9 +746,11 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-                <form action="add_to_watchlist.php" method="POST">
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                <form action="manage_watchlist.php" method="POST">
                   <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
                 </form>
               </div>
             </div>
@@ -783,9 +797,11 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-                <form action="add_to_watchlist.php" method="POST">
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
-                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                <form action="manage_watchlist.php" method="POST">
+                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
+                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
                 </form>
               </div>
             </div>
@@ -821,22 +837,26 @@
               </div>
           
               <!-- Movie Details Section -->
-              <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
-                 <p><?php echo $row['release_year']; ?></p>
-                  <p><?php echo $row['type']; ?> </p>
-                  <p><?php echo $row['duration']; ?></p>
-                </span>
-                <h3><?php echo $row['title']; ?></h3>
-              </div>
+              <form action="manage_watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
+                <div class="card-details">
+                  <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
+                  <p><?php echo $row['release_year']; ?></p>
+                    <p><?php echo $row['type']; ?> </p>
+                    <p><?php echo $row['duration']; ?></p>
+                  </span>
+                  <h3><?php echo $row['title']; ?></h3>
+                </div>
               
-              <!-- Add to Watchlist Button Section -->
-              <div class="card-watchlist">
-                <form action="watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
-                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
-                </form>
-              </div>
+                <!-- Add to Watchlist Button Section -->
+                <div class="card-watchlist">
+                  
+                    <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                    <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                    <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                    <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
+                  
+                </div>
+              </form>
 
           <?php
         }
