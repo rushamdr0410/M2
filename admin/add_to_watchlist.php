@@ -1,4 +1,4 @@
-<?php
+<!--<?php
 // Include your functions file
 include 'functions.php';
 
@@ -13,4 +13,4 @@ addToWatchlist($userId, $movieId);
 
 // Redirect back to the watchlist page or display a confirmation message
 header('Location: watchlist.php');
-?>
+?>!-->
