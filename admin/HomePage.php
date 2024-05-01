@@ -746,9 +746,11 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-                <form action="watchlist.php" method="POST">
+                <form action="manage_watchlist.php" method="POST">
                   <button type="submit" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
                 </form>
               </div>
             </div>
@@ -795,20 +797,12 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-              <form action="" method="POST">
-                  <input type="hidden" name="watchlist" value="1"> <!-- This indicates that the form is for adding to watchlist -->
-                  <label for="title">Title:</label>
-                  <input type="text" name="title" id="title">
-                  
-                  <label for="release_year">Release Year:</label>
-                  <input type="text" name="release_year" id="release_year">
-                  
-                  <label for="type">Type:</label>
-                  <input type="text" name="type" id="type">
-                  
-                  <button type="submit">Add to Watchlist</button>
-              </form>
-
+                <form action="manage_watchlist.php" method="POST">
+                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
+                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
+                </form>
               </div>
             </div>
           </div>
@@ -843,23 +837,26 @@
               </div>
           
               <!-- Movie Details Section -->
-              <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
-                 <p><?php echo $row['release_year']; ?></p>
-                  <p><?php echo $row['type']; ?> </p>
-                  <p><?php echo $row['duration']; ?></p>
-                </span>
-                <h3><?php echo $row['title']; ?></h3>
-              </div>
+              <form action="manage_watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
+                <div class="card-details">
+                  <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
+                  <p><?php echo $row['release_year']; ?></p>
+                    <p><?php echo $row['type']; ?> </p>
+                    <p><?php echo $row['duration']; ?></p>
+                  </span>
+                  <h3><?php echo $row['title']; ?></h3>
+                </div>
               
-              <!-- Add to Watchlist Button Section -->
-              <div class="card-watchlist">
-                <form action="watchlist.php" method="POST"> <!-- Change the action to watchlist.php -->
-                  <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                <!-- Add to Watchlist Button Section -->
+                <div class="card-watchlist">
                   
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
-                </form>
-              </div>
+                    <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                    <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                    <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                    <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
+                  
+                </div>
+              </form>
 
           <?php
         }

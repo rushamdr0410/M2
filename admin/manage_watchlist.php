@@ -1,27 +1,25 @@
 <?php
-session_start();
+    session_start();
+    var_dump($_SESSION);
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['watchlist'])) {
-    // Check if all necessary fields are set
-    if (isset($_POST['title']) && isset($_POST['release_year']) && isset($_POST['type'])) {
-        // Initialize the session variable if it doesn't exist
-        if (!isset($_SESSION['watchlist'])) {
-            $_SESSION['watchlist'] = array();
+    if($_SERVER["REQUEST_METHOD"]=="POST")
+    {
+        if(isset($_POST['watchlist']))
+        {
+            if(isset($_SESSION['watchlist']))
+            {
+                $count=count($_SESSION['watchlist']);
+                $_SESSION['watchlist'][$count]=array('title'=>$_POST['title'],'release_year'=>$_POST['release_year'],'type'=>$_POST['type']);
+                print_r($_SESSION['watchlist']);
+            }
+            else
+            {
+                $_SESSION['watchlist'][0]=array('title'=>$_POST['title'],'release_year'=>$_POST['release_year'],'type'=>$_POST['type']);
+                print_r($_SESSION['watchlist']);
+            }
         }
-
-        // Add the new entry to the watchlist
-        $entry = array(
-            'title' => $_POST['title'],
-            'release_year' => $_POST['release_year'],
-            'type' => $_POST['type']
-        );
-        $_SESSION['watchlist'][] = $entry;
-
-        // Print the updated watchlist for debugging
-        print_r($_SESSION['watchlist']);
-    } else {
-        // Handle case where one or more fields are missing
-        echo "Error: One or more fields are missing.";
     }
-}
+    var_dump('title');
 ?>
