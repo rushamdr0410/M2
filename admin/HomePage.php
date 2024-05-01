@@ -795,10 +795,20 @@
               
               <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
-                <form action="manage_watchlist.php" method="POST">
-                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
-                </form>
+              <form action="" method="POST">
+                  <input type="hidden" name="watchlist" value="1"> <!-- This indicates that the form is for adding to watchlist -->
+                  <label for="title">Title:</label>
+                  <input type="text" name="title" id="title">
+                  
+                  <label for="release_year">Release Year:</label>
+                  <input type="text" name="release_year" id="release_year">
+                  
+                  <label for="type">Type:</label>
+                  <input type="text" name="type" id="type">
+                  
+                  <button type="submit">Add to Watchlist</button>
+              </form>
+
               </div>
             </div>
           </div>
