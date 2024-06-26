@@ -1,5 +1,5 @@
 <?php
-  session_start();
+  include('security.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -284,74 +284,43 @@ h2{
   margin-left:15px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  font-size: 14px;
-  color: #01939c;
-  margin-top: 20px; /* Add margin at the top */
+.movies-container {
+    display: flex; /* Arrange child elements in a row */
+    flex-wrap: wrap; /* Allow cards to wrap to the next line if necessary */
+    gap: 16px; /* Space between cards */
+    justify-content: flex-start; /* Align cards to the start */
+    margin-top:32px;
 }
 
-.table h2 {
-  margin-bottom: 10px; /* Add margin at the bottom */
-  font-size: 22px;
-  font-weight: bold;
-  color: #01939c;
+/* Style for individual movie cards */
+.card {
+    width: 250px; /* Set a fixed width for each card */
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
 }
 
-
-.table th,
-.table td {
-  padding: 8px 16px;
-  text-align: left;
-  border-bottom: 1px solid #01939c;
+/* Hover effect for movie cards */
+.card:hover {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
 
-.table th {
-  background-color: #000;
-  font-weight: bold;
+.watchlist-btn{
+   background-color: transparent; /* Transparent background */
+        color: #01939c; /* Text color matching the color of the heading */
+        border: 1px solid #01939c; /* Add border */
+        padding: 0.5rem 1rem; /* Adjust padding */
+        border-radius: 5px; /* Add border radius for rounded corners */
+        cursor: pointer; /* Change cursor on hover */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
 }
 
-.table tbody tr:nth-child(even) {
-  background-color: #000;
+.watchlist-btn:hover {
+        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
+        color: #fff; /* Change text color to white on hover */
 }
-
-.table tbody tr:hover {
-  background-color: #222;
-}
-
-.table th:first-child,
-.table td:first-child {
-  border-left: 1px solid #01939c;
-}
-
-.table th:last-child,
-.table td:last-child {
-  border-right: 1px solid #01939c;
-}
-
-.btn {
-  background-color: #dc3545; /* Red color */
-  color: #fff; /* White text color */
-  border: none;
-  padding: 8px 16px; /* Adjust padding as needed */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer;
-  transition: background-color 0.3s; /* Smooth transition */
-}
-
-.btn:hover {
-  background-color: #c82333; /* Darker red on hover */
-}
-
-
-
-
-
-
-
-
 
 </style>
 </head>
@@ -413,45 +382,71 @@ h2{
 </div>
 </nav>
 
-<table class="table">
-  <h2>My Watchlist</h2>
-  <thead>
-    <tr>
-      <th scope="col">TITLE</th>
-      <th scope="col">YEAR</th>
-      <th scope="col">TYPE</th>
-      <th>DELETE</th>
-    </tr>
-  </thead>
-  <tbody>
-  <?php 
-    if(isset($_SESSION['watchlist']) && !empty($_SESSION['watchlist'])) {
-        
-        foreach($_SESSION['watchlist'] as $key => $value) {
-            ?>
-            <tr>
-                <td><?php echo $value['title'];?></td>
-                <td><?php echo $value['release_year'];?></td>
-                <td><?php echo $value['type'];?></td>
-                <td>
-                    <form action="manage_watchlist.php" method="POST">
-                        <input type="hidden" name="title" value="<?php echo $value['title']; ?>">
-                        <input type="hidden" name="release_year" value="<?php echo $value['release_year']; ?>">
-                        <input type="hidden" name="type" value="<?php echo $value['type']; ?>">
-                        <button type="submit" name="remove_btn" class="btn btn-danger">REMOVE</button>
-                    </form>
-                </td>
-            </tr>
-            <?php
-        }
-    } else {
-        // Handle case where watchlist is empty or not set
-        echo "<tr><td colspan='4'>No items in watchlist</td></tr>";
-    }
-    ?>
+<h2>My Watchlist</h2>
 
-  </tbody>
-</table>
+<?php
+
+$query = "SELECT title, release_year,	duration, poster_img, quality FROM watchlist";
+
+// Execute the query
+$result = mysqli_query($connection, $query);
+
+// Check if there are results
+if ($result && mysqli_num_rows($result) > 0) {
+    echo '<div class="movies-container">'; // Container for all movie cards
+
+    // Loop through each movie and display it as a card
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo '<div class="card">';
+        
+        // Movie Poster Section
+        echo '<div class="card-img">';
+        echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
+        echo '</div>';
+        
+        
+        // Movie Details Section
+        echo '<div class="card-details">';
+        echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
+        echo '<p>' . htmlspecialchars($row['release_year']) . '</p>';
+        echo '<p>' . htmlspecialchars($row['duration']) . ' mins</p>';
+        echo '<p>' . htmlspecialchars($row['quality']) . '</p>';
+        echo '</span>';
+        echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
+        echo '</div>';
+        
+         // Watch and Delete Buttons Section
+         echo '<div class="card-watchlist">';
+         // Watch Button
+         echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block; margin-right: 48px;">';
+         echo '<button type="submit" name="action" value="watch" class="watchlist-btn">Watch</button>';
+         //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
+         echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
+         echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
+         echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+         echo '</form>';
+         // Delete Button
+         echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block;">';
+         echo '<button type="submit" name="action" value="delete" class="watchlist-btn">Delete</button>';
+         //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
+         echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
+         echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
+         echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+         echo '</form>';
+         echo '</div>';
+         
+         echo '</div>'; // Close card
+     }
+ 
+     echo '</div>'; // Close movies container
+ } else {
+     echo '<p style="margin-top:33px;">No movies found.</p>'; // Display a message if no movies are found
+ }
+
+// Close the database connection if needed
+// mysqli_close($connection);
+?>
+  
 
 
 
