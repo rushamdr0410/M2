@@ -1,6 +1,14 @@
 <?php
   include('security.php');
+  $user_id = $_POST['user_id']; // Assuming you have user ID stored in session
+
+  $sql = "SELECT title, release_year, type, duration FROM watchlist WHERE user_id = ?";
+  $stmt = $connection->prepare($sql);
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -409,7 +417,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         echo '<div class="card-details">';
         echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
         echo '<p>' . htmlspecialchars($row['release_year']) . '</p>';
-        echo '<p>' . htmlspecialchars($row['duration']) . ' mins</p>';
+        echo '<p>' . htmlspecialchars($row['duration']) . '</p>';
         echo '<p>' . htmlspecialchars($row['quality']) . '</p>';
         echo '</span>';
         echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
@@ -423,7 +431,7 @@ if ($result && mysqli_num_rows($result) > 0) {
          //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
          echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
          echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-         echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+         //echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
          echo '</form>';
          // Delete Button
          echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block;">';
@@ -431,7 +439,7 @@ if ($result && mysqli_num_rows($result) > 0) {
          //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
          echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
          echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-         echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+         //echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
          echo '</form>';
          echo '</div>';
          
