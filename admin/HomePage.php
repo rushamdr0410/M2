@@ -747,12 +747,13 @@
               <div class="card-watchlist">
                 <form action="manage_watchlist.php" method="POST">
                   <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
-                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
-                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
-                  <input type="hidden" name="type" value="<?php echo $row['duration']; ?>">
+                  <input type="hidden" name="title" value="<?php echo htmlspecialchars($row['title']); ?>">
+                  <input type="hidden" name="release_year" value="<?php echo htmlspecialchars($row['release_year']); ?>">
+                  <input type="hidden" name="type" value="<?php echo htmlspecialchars($row['type']); ?>">
+                  <input type="hidden" name="duration" value="<?php echo htmlspecialchars($row['duration']); ?>">
+                  <input type="hidden" name="quality" value="<?php echo htmlspecialchars($row['quality']); ?>">
+                  <input type="hidden" name="poster_img" value="<?php echo htmlspecialchars($row['poster_img']); ?>">
                 </form>
-              </div>
             </div>
           </div>
           <?php
