@@ -1,8 +1,8 @@
 <?php
   include('security.php');
-  $user_id = $_POST['user_id']; // Assuming you have user ID stored in session
+  $id = $_POST['id']; // Assuming you have user ID stored in session
 
-  $sql = "SELECT title, release_year, type, duration FROM watchlist WHERE user_id = ?";
+  $sql = "SELECT title, release_year, type, duration FROM watchlist WHERE id = ?";
   $stmt = $connection->prepare($sql);
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
@@ -426,33 +426,29 @@ if ($result && mysqli_num_rows($result) > 0) {
          // Watch and Delete Buttons Section
          echo '<div class="card-watchlist">';
          // Watch Button
-         echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block; margin-right: 48px;">';
+         echo '<form action="videoplayer_kungfu.php" method="GET" style="display:inline-block; margin-right: 48px;">';
          echo '<button type="submit" name="action" value="watch" class="watchlist-btn">Watch</button>';
          //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
          echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
          echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-         //echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+        // echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
          echo '</form>';
          // Delete Button
          echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block;">';
-         echo '<button type="submit" name="action" value="delete" class="watchlist-btn">Delete</button>';
-         //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
-         echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
-         echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-         //echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+         echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($row['id']) .'">';
+        echo '<button type="submit" name="action" value="delete" class="watchlist-btn">Delete</button>';
          echo '</form>';
          echo '</div>';
          
-         echo '</div>'; // Close card
+         echo '</div>'; 
      }
  
-     echo '</div>'; // Close movies container
+     echo '</div>'; 
  } else {
-     echo '<p style="margin-top:33px;">No movies found.</p>'; // Display a message if no movies are found
+     echo '<p style="margin-top:33px;">No movies found.</p>'; 
  }
 
-// Close the database connection if needed
-// mysqli_close($connection);
+
 ?>
   
 
