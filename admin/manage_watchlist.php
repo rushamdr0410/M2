@@ -38,5 +38,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['watchlist'])) {
     header("Location: watchlist.php");
     exit();
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    //$user_id = $POST['user_id'];
+    $title = $_POST['title'];
+
+    // Prepare and bind parameters
+    $stmt = $conn->prepare("DELETE FROM watchlist WHERE title = ?");
+    
+    // Check for errors in prepare
+    if ($stmt === false) {
+        die('prepare() failed: ' . htmlspecialchars($conn->error));
+    }
+
+    // Binding the parameters
+    $stmt->bind_param("s", $title);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+        echo "Movie deleted from watchlist successfully";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    // Redirect back to watchlist page
+    header("Location: watchlist.php");
+    exit();
+}
 ?>
 
