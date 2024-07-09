@@ -509,7 +509,7 @@ option {
 
 
 // Query to fetch all movies from the moviedetails table
-$query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails";
+$query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails where type='movie'";
 
 // Execute the query
 $result = mysqli_query($connection, $query);

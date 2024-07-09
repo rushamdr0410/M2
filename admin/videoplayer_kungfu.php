@@ -1,6 +1,54 @@
 <?php
   include('security.php');
 ?>
+<?php
+ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
+      $videoId = $_POST['video_id'];
+      $userId = $_SESSION['user_id'];  // Assuming you store user_id in session
+      $reviewText = $_POST['review_text'];
+
+      $stmt = $connection->prepare('INSERT INTO reviews (video_id, user_id, review_text) VALUES (?, ?, ?)');
+      $stmt->bind_param('iis', $videoId, $userId, $reviewText);
+      $stmt->execute();
+      $stmt->close();
+  }
+
+elseif (isset($_POST['submit_reply'])) {
+  $reviewId = $_POST['review_id'];
+  $userId = $_SESSION['user_id'];
+  $replyText = $_POST['reply_text'];
+
+  $stmt = $connection->prepare('INSERT INTO replies (review_id, user_id, reply_text) VALUES (?, ?, ?)');
+  $stmt->bind_param('iis', $reviewId, $userId, $replyText);
+  $stmt->execute();
+  $stmt->close();
+} elseif (isset($_POST['like_review'])) {
+  $reviewId = $_POST['review_id'];
+
+  $stmt = $connection->prepare('UPDATE reviews SET likes = likes + 1 WHERE id = ?');
+  $stmt->bind_param('i', $reviewId);
+  $stmt->execute();
+  $stmt->close();
+}
+
+// Fetch video details from the database
+$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
+if ($videoId) {
+    $stmt = $connection->prepare('SELECT poster_img, title, description, release_year, duration, type, quality FROM moviedetails WHERE id = ?');
+    $stmt->bind_param('i', $videoId);
+    $stmt->execute();
+    $stmt->bind_result($poster_img, $title, $description, $release_year, $duration, $type, $quality);
+    if (!$stmt->fetch()) {
+        echo "Video not found.";
+        exit;
+    }
+    $stmt->close();
+} else {
+    echo "No video ID provided.";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -363,6 +411,56 @@ h2{
         p {
             margin: 5px 0;
         }
+        .review-container {
+  margin-top: 20px;
+  max-width: 800px;
+  margin: auto;
+  background-color: #232323;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+
+.review-form, .reply-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+.review-form textarea, .reply-form textarea {
+  resize: vertical;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #131418;
+  color: #fff;
+}
+.review-form button, .reply-form button {
+  padding: 10px 20px;
+  background-color: #61DAFB;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.review {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.review .likes {
+  color: #61DAFB;
+  cursor: pointer;
+}
+.reply {
+  margin-left: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.review-form {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 3 !important;
+}
 
 
 
@@ -437,6 +535,30 @@ h2{
         allow="autoplay"
     ></iframe>
 </div>
+
+ <!-- Video Details Section -->
+ <div id="video-container">
+        <div id="movie-details" style="text-align: center; margin-bottom: 20px;">
+            <img src="path_to_images/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 300px; border-radius: 8px;">
+            <h3><?php echo htmlspecialchars($title); ?></h3>
+            <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
+            <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
+            <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
+            <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
+            <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
+        </div>
+    </div>
+
+    <!-- Review Section -->
+    <div class="review-container">
+<form action="" method="POST" class="review-form">
+    <h3>Leave a Review</h3>
+    <textarea name="review_text" rows="4" required></textarea>
+    <input type="hidden" name="video_id" value="<?php echo htmlspecialchars($videoId); ?>">
+    <button type="submit" name="submit_review">Submit Review</button>
+</form>
+</div>
+
 <?php
   // Fetch video details from the database
 $stmt = $connection->prepare('SELECT title, description, quality, release_year, type, genreid FROM moviedetails WHERE id = ?');
@@ -449,7 +571,7 @@ if ($stmt->fetch()) {
     // Video details fetched successfully, proceed to HTML output
 } else {
     // Handle case where the video ID does not exist in the table
-    echo "Video not found.";
+    //echo "Video not found.";
     exit;
 }
 
@@ -466,6 +588,53 @@ $stmt->close();
             <p>id: <?php echo htmlspecialchars($genreid); ?></p>
         </div>
     
+        <div class="review-container">
+    <!-- Review Form -->
+    <form action="" method="POST" class="review-form">
+        <h3>Leave a Review</h3>
+        <textarea name="review_text" rows="4" required></textarea>
+        <input type="hidden" name="video_id" value="<?php echo htmlspecialchars($videoId); ?>">
+        <button type="submit" name="submit_review">Submit Review</button>
+    </form>
+
+    <!-- Display Reviews -->
+    <?php
+    $stmt = $connection->prepare('SELECT reviews.id, reviews.review_text, reviews.likes, users.username FROM reviews JOIN users ON reviews.user_id = users.id WHERE video_id = ? ORDER BY reviews.created_at DESC');
+    $stmt->bind_param('i', $videoId);
+    $stmt->execute();
+    $stmt->bind_result($reviewId, $reviewText, $likes, $username);
+
+    while ($stmt->fetch()) {
+        echo '<div class="review">';
+        echo '<p><strong>' . htmlspecialchars($username) . '</strong>: ' . htmlspecialchars($reviewText) . '</p>';
+        echo '<p class="likes"><span class="like-count">' . htmlspecialchars($likes) . '</span> Likes <button class="like-button" data-review-id="' . htmlspecialchars($reviewId) . '">Like</button></p>';
+        
+        // Display replies
+        $replyStmt = $connection->prepare('SELECT replies.reply_text, users.username FROM replies JOIN users ON replies.user_id = users.id WHERE review_id = ? ORDER BY replies.created_at ASC');
+        $replyStmt->bind_param('i', $reviewId);
+        $replyStmt->execute();
+        $replyStmt->bind_result($replyText, $replyUsername);
+        
+        while ($replyStmt->fetch()) {
+            echo '<div class="reply">';
+            echo '<p><strong>' . htmlspecialchars($replyUsername) . '</strong>: ' . htmlspecialchars($replyText) . '</p>';
+            echo '</div>';
+        }
+        $replyStmt->close();
+
+        // Reply Form
+        echo '<form action="" method="POST" class="reply-form">';
+        echo '<textarea name="reply_text" rows="2" required></textarea>';
+        echo '<input type="hidden" name="review_id" value="' . htmlspecialchars($reviewId) . '">';
+        echo '<button type="submit" name="submit_reply">Reply</button>';
+        echo '</form>';
+        
+        echo '</div>';
+    }
+    $stmt->close();
+    ?>
+</div>
+
 
     <script>
         // Get the video player element
@@ -519,6 +688,30 @@ $stmt->close();
             }
         });
     </script>
+    <script>
+// JavaScript for handling likes
+document.querySelectorAll('.like-button').forEach(button => {
+  button.addEventListener('click', function() {
+    const reviewId = this.getAttribute('data-review-id');
+
+    fetch('like_review.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `review_id=${reviewId}`
+    })
+    .then(response => response.text())
+    .then(data => {
+      if (data === 'success') {
+        const likeCountElem = this.previousElementSibling;
+        const currentLikes = parseInt(likeCountElem.textContent);
+        likeCountElem.textContent = currentLikes + 1;
+      }
+    });
+  });
+});
+</script>
 
 <?php
 // Include your database configuration file
