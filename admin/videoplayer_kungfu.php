@@ -524,17 +524,18 @@ h2{
 <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
 </div>
 </nav>
-<<div id="video-container">
+<div id="video-container">
     <iframe
         id="video-player"
         width="1000px"
         height="600px"
-        src="https://www.youtube.com/embed/5g0W38rzBhU"
+        src="<?php echo htmlspecialchars($video_url); ?>"
         frameborder="0"
         allowfullscreen
         allow="autoplay"
     ></iframe>
 </div>
+
 
  <!-- Video Details Section -->
  <div id="video-container">
@@ -560,20 +561,24 @@ h2{
 </div>
 
 <?php
-  // Fetch video details from the database
-$stmt = $connection->prepare('SELECT title, description, quality, release_year, type, genreid FROM moviedetails WHERE id = ?');
-$stmt->bind_param('i', $videoId);
-$stmt->execute();
-$stmt->bind_result($title, $description, $quality, $release_year, $type, $genreid);
-
-// Check if the video details are fetched successfully
-if ($stmt->fetch()) {
-    // Video details fetched successfully, proceed to HTML output
+// Fetch video details from the database
+$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
+if ($videoId) {
+    $stmt = $connection->prepare('SELECT poster_img, title, description, release_year, duration, type, quality, video_url FROM moviedetails WHERE id = ?');
+    $stmt->bind_param('i', $videoId);
+    $stmt->execute();
+    $stmt->bind_result($poster_img, $title, $description, $release_year, $duration, $type, $quality, $video_url);
+    if (!$stmt->fetch()) {
+        echo "Video not found.";
+        exit;
+    }
+    $stmt->close();
 } else {
-    // Handle case where the video ID does not exist in the table
-    //echo "Video not found.";
+    echo "No video ID provided.";
     exit;
 }
+?>
+
 
 // Close the statement
 $stmt->close();
