@@ -435,7 +435,7 @@ if ($result && mysqli_num_rows($result) > 0) {
          echo '</form>';
          // Delete Button
          echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block;">';
-         echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($row['id']) .'">';
+         //echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($row['id']) .'">';
         echo '<button type="submit" name="action" value="delete" class="watchlist-btn">Delete</button>';
          echo '</form>';
          echo '</div>';
