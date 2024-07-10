@@ -1,8 +1,10 @@
 <?php
+  
   // Include security measures and database connection
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
   include('security.php');
+
 
   // Query for fetching movie details
   $query = "SELECT * FROM moviedetails";
@@ -700,7 +702,7 @@
           <div>
             <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['description']; ?></p>
-            <a href="videoplayer_kungfu.php" target="_blank">Watch Now</a>
+            <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
           </div>
         </div>
         <?php

@@ -1,36 +1,46 @@
 <?php
-  include('security.php');
-?>
-<?php
- if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
-      $videoId = $_POST['video_id'];
-      $userId = $_SESSION['user_id'];  
-      $reviewText = $_POST['review_text'];
+include('security.php');
 
-      $stmt = $connection->prepare('INSERT INTO reviews (video_id, user_id, review_text) VALUES (?, ?, ?)');
-      $stmt->bind_param('iis', $videoId, $userId, $reviewText);
-      $stmt->execute();
-      $stmt->close();
-  }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['submit_review'])) {
+        $videoId = $_POST['video_id'];
+        // var_dump($videoId);
+        // die();
+        $userId = $_SESSION['user_id'];  
+        $reviewText = $_POST['review_text'];
 
-elseif (isset($_POST['submit_reply'])) {
-  $reviewId = $_POST['review_id'];
-  $userId = $_SESSION['user_id'];
-  $replyText = $_POST['reply_text'];
+        $stmt = $connection->prepare('INSERT INTO reviews (video_id, user_id, review_text) VALUES (?, ?, ?)');
+        $stmt->bind_param('iis', $videoId, $userId, $reviewText);
+        $stmt->execute();
+        $stmt->close();
+    } elseif (isset($_POST['submit_reply'])) {
+        $reviewId = $_POST['review_id'];
+        $userId = $_SESSION['user_id'];
+        $replyText = $_POST['reply_text'];
 
-  $stmt = $connection->prepare('INSERT INTO replies (review_id, user_id, reply_text) VALUES (?, ?, ?)');
-  $stmt->bind_param('iis', $reviewId, $userId, $replyText);
-  $stmt->execute();
-  $stmt->close();
-} elseif (isset($_POST['like_review'])) {
-  $reviewId = $_POST['review_id'];
+        $stmt = $connection->prepare('INSERT INTO replies (review_id, user_id, reply_text) VALUES (?, ?, ?)');
+        $stmt->bind_param('iis', $reviewId, $userId, $replyText);
+        $stmt->execute();
+        $stmt->close();
+    } elseif (isset($_POST['like_review'])) {
+        $reviewId = $_POST['review_id'];
 
-  $stmt = $connection->prepare('UPDATE reviews SET likes = likes + 1 WHERE id = ?');
-  $stmt->bind_param('i', $reviewId);
-  $stmt->execute();
-  $stmt->close();
+        $stmt = $connection->prepare('UPDATE reviews SET likes = likes + 1 WHERE id = ?');
+        $stmt->bind_param('i', $reviewId);
+        $stmt->execute();
+        $stmt->close();
+    }
 }
 
+// Fetch video details
+$videoId = isset($_GET['video_id']) ? $_GET['video_id'] :null; // Default video ID if not provided
+
+$stmt = $connection->prepare('SELECT title, description, release_year, duration, type, quality, poster_img, video_url FROM moviedetails WHERE id = ?');
+$stmt->bind_param('i', $videoId);
+$stmt->execute();
+$stmt->bind_result($title, $description, $release_year, $duration, $type, $quality, $poster_img, $video_url);
+$stmt->fetch();
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +54,6 @@ elseif (isset($_POST['submit_reply'])) {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
-
 *{
   margin: 0;
   padding: 0;
@@ -444,10 +453,6 @@ h2{
     visibility: visible !important;
     opacity: 3 !important;
 }
-
-
-
-
 </style>
 </head>
 <body>
@@ -518,51 +523,26 @@ h2{
         allow="autoplay"
     ></iframe>
 </div>
-
-
- 
- <div id="video-container">
-        <div id="movie-details" style="text-align: center; margin-bottom: 20px;">
-            <img src="path_to_images/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 300px; border-radius: 8px;">
-            <h3><?php echo htmlspecialchars($title); ?></h3>
-            <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
-            <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
-            <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
-            <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
-            <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
-        </div>
+<div id="video-container">
+    <div id="movie-details" style="text-align: center; margin-bottom: 20px;">
+        <img src="path_to_images/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 300px; border-radius: 8px;">
+        <h3><?php echo htmlspecialchars($title); ?></h3>
+        <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
+        <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
+        <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
+        <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
+        <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
     </div>
-
-    
-    <div class="review-container">
-<form action="" method="POST" class="review-form">
-    <h3>Leave a Review</h3>
-    <textarea name="review_text" rows="4" required></textarea>
-    <input type="hidden" name="video_id" value="<?php echo htmlspecialchars($videoId); ?>">
-    <button type="submit" name="submit_review">Submit Review</button>
-</form>
 </div>
-
-    
-    <div id="movie-details">
-            <h3><?php echo htmlspecialchars($title); ?></h3>
-            <p>Resolution: <?php echo htmlspecialchars($quality); ?></p>
-            <p>Release Date: <?php echo htmlspecialchars($release_year); ?></p>
-            <p>Description: <?php echo htmlspecialchars($description); ?></p>
-            <p>Type: <?php echo htmlspecialchars($type); ?></p>
-            <p>id: <?php echo htmlspecialchars($genreid); ?></p>
-        </div>
-    
-        <div class="review-container">
-    
+<div class="review-container">
     <form action="" method="POST" class="review-form">
         <h3>Leave a Review</h3>
         <textarea name="review_text" rows="4" required></textarea>
         <input type="hidden" name="video_id" value="<?php echo htmlspecialchars($videoId); ?>">
         <button type="submit" name="submit_review">Submit Review</button>
     </form>
-
-    
+</div>
+<div class="review-container">
     <?php
     $stmt = $connection->prepare('SELECT reviews.id, reviews.review_text, reviews.likes, register.username FROM reviews JOIN register ON reviews.user_id = register.id WHERE video_id = ? ORDER BY reviews.created_at DESC');
     $stmt->bind_param('i', $videoId);
@@ -573,7 +553,6 @@ h2{
         echo '<div class="review">';
         echo '<p><strong>' . htmlspecialchars($username) . '</strong>: ' . htmlspecialchars($reviewText) . '</p>';
         echo '<p class="likes"><span class="like-count">' . htmlspecialchars($likes) . '</span> Likes <button class="like-button" data-review-id="' . htmlspecialchars($reviewId) . '">Like</button></p>';
-        
         
         $replyStmt = $connection->prepare('SELECT replies.reply_text, register.username FROM replies JOIN register ON replies.user_id = register.id WHERE review_id = ? ORDER BY replies.created_at ASC');
         $replyStmt->bind_param('i', $reviewId);
@@ -587,7 +566,6 @@ h2{
         }
         $replyStmt->close();
 
-        
         echo '<form action="" method="POST" class="reply-form">';
         echo '<textarea name="reply_text" rows="2" required></textarea>';
         echo '<input type="hidden" name="review_id" value="' . htmlspecialchars($reviewId) . '">';
@@ -600,61 +578,7 @@ h2{
     ?>
 </div>
 
-
-    <script>
-        
-        const videoPlayer = document.getElementById('video-player');
-
-        
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const forwardBtn = document.getElementById('forwardBtn');
-        const backwardBtn = document.getElementById('backwardBtn');
-        const speedUpBtn = document.getElementById('speedUpBtn');
-        const slowDownBtn = document.getElementById('slowDownBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-        
-        playPauseBtn.addEventListener('click', () => {
-            if (videoPlayer.paused) {
-                videoPlayer.play();
-                playPauseBtn.textContent = 'Pause';
-            } else {
-                videoPlayer.pause();
-                playPauseBtn.textContent = 'Play';
-            }
-        });
-
-        
-        forwardBtn.addEventListener('click', () => {
-            videoPlayer.currentTime += 10;
-        });
-
-        
-        backwardBtn.addEventListener('click', () => {
-            videoPlayer.currentTime -= 10;
-        });
-
-        
-        speedUpBtn.addEventListener('click', () => {
-            videoPlayer.playbackRate += 0.25;
-        });
-
-        
-        slowDownBtn.addEventListener('click', () => {
-            videoPlayer.playbackRate -= 0.25;
-        });
-
-       
-        fullscreenBtn.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                videoPlayer.requestFullscreen();
-            }
-        });
-    </script>
-    <script>
-
+<script>
 document.querySelectorAll('.like-button').forEach(button => {
   button.addEventListener('click', function() {
     const reviewId = this.getAttribute('data-review-id');
@@ -677,8 +601,6 @@ document.querySelectorAll('.like-button').forEach(button => {
   });
 });
 </script>
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
