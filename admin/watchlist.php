@@ -426,7 +426,7 @@ if ($result && mysqli_num_rows($result) > 0) {
          // Watch and Delete Buttons Section
          echo '<div class="card-watchlist">';
          // Watch Button
-         echo '<form action="videoplayer_kungfu.php" method="GET" style="display:inline-block; margin-right: 48px;">';
+         echo '<form action="videoplayer_kungfu.php?video_id=echo $row["id"]" method="GET" style="display:inline-block; margin-right: 48px;">';
          echo '<button type="submit" name="action" value="watch" class="watchlist-btn">Watch</button>';
          //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
          echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';

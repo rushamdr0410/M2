@@ -492,7 +492,7 @@ h2{
 <div class="profile-text-container">           
 <ul>
 <li class="dropdown">
-<a href="#" class="dropdown-toggle">rus@gmail.com</a>
+<a href="#" class="dropdown-toggle"><?php echo $_SESSION['username']?></a>
 <ul class="dropdown-content">
 <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
