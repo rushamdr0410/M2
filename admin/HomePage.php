@@ -1,8 +1,10 @@
 <?php
+  
   // Include security measures and database connection
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
   include('security.php');
+
 
   // Query for fetching movie details
   $query = "SELECT * FROM moviedetails";
