@@ -158,6 +158,7 @@
         display: block;
       }
       .profile{
+        margin-left: -45px;
         flex: 2;
         justify-content: flex-end;
         margin-right: 20px;
@@ -673,10 +674,7 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle"><?php echo $_SESSION['username']?></a>
             <ul class="dropdown-content">
-            <li><a href="profile.php" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-            <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
             <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-            <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
             <li>
             <form action="logout.php" method="POST">
             <button type="submit" name="userlogout_btn" class="dropdown-btn">

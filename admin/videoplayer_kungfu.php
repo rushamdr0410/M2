@@ -4,8 +4,6 @@ include('security.php');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['submit_review'])) {
         $videoId = $_POST['video_id'];
-        // var_dump($videoId);
-        // die();
         $userId = $_SESSION['user_id'];  
         $reviewText = $_POST['review_text'];
 
@@ -494,11 +492,7 @@ h2{
 <li class="dropdown">
 <a href="#" class="dropdown-toggle"><?php echo $_SESSION['username']?></a>
 <ul class="dropdown-content">
-<li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
 <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
-<li>
 <form action="logout.php" method="POST">
 <button type="submit" name="userlogout_btn" class="dropdown-btn">
 <i class="fas fa-arrow-right-from-bracket"></i> Logout

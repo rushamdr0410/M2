@@ -428,10 +428,7 @@ option {
 <li class="dropdown">
 <a href="#" class="dropdown-toggle">rus@gmail.com</a>
 <ul class="dropdown-content">
-<li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
 <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
 <li>
 <form action="logout.php" method="POST">
 <button type="submit" name="userlogout_btn" class="dropdown-btn">
@@ -553,7 +550,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     echo '</div>'; // Close movies container
 } else {
-    echo '<p>No movies found.</p>'; // Display a message if no movies are found
+    echo '<p>No TV-Shows found.</p>'; // Display a message if no movies are found
 }
 
 // Close the database connection if needed
