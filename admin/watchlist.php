@@ -1,6 +1,21 @@
 <?php
   include('security.php');
-  $id = $_POST['id']; // Assuming you have user ID stored in session
+  include('logincode.php');
+  
+  if (!isset($_SESSION['user_id'])) {
+      header("Location: login.php");
+      exit();
+  }
+  else {
+    $userId = null;
+  }
+  
+  $user_id = $_SESSION['user_id'];
+  
+  // Now you can safely use $user_id in your queries and logic
+  $query = "SELECT * FROM watchlist WHERE user_id = '$user_id'";
+  $result = mysqli_query($connection, $query);
+  
 
   $sql = "SELECT title, release_year, type, duration FROM watchlist WHERE id = ?";
   $stmt = $connection->prepare($sql);
@@ -75,7 +90,7 @@ nav{
   justify-content: space-evenly;
   align-items: center;
   text-transform: uppercase;
-  font-size: 15px;
+  font-size: 13px;
 }
 .nav-links li a{
   text-decoration: none;
@@ -369,12 +384,9 @@ h2{
 <div class="profile-text-container">           
 <ul>
 <li class="dropdown">
-<a href="#" class="dropdown-toggle">rus@gmail.com</a>
+<a href="#" class="dropdown-toggle"><?php echo $_SESSION['username']?></a>
 <ul class="dropdown-content">
-<li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
 <li>
 <form action="logout.php" method="POST">
 <button type="submit" name="userlogout_btn" class="dropdown-btn">
@@ -428,15 +440,15 @@ if ($result && mysqli_num_rows($result) > 0) {
          // Watch Button
          echo '<form action="videoplayer_kungfu.php?video_id=echo $row["id"]" method="GET" style="display:inline-block; margin-right: 48px;">';
          echo '<button type="submit" name="action" value="watch" class="watchlist-btn">Watch</button>';
-         //echo '<input type="hidden" name="movie_id" value="' . htmlspecialchars($row['movie_id']) . '">';
+         //echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($user_id).'">';
          echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
          echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-        // echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
+        //echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
          echo '</form>';
          // Delete Button
-         echo '<form action="manage_watchlist.php" method="POST" style="display:inline-block;">';
-         //echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($row['id']) .'">';
-        echo '<button type="submit" name="action" value="delete" class="watchlist-btn">Delete</button>';
+         echo '<form action="code.php" method="POST" style="display:inline-block;">';
+         echo '<input type="hidden" name="delete_id" value="'.htmlspecialchars($user_id).'">';
+        echo '<button type="submit" name="watchlist-btn" value="delete" class="watchlist-btn">Delete</button>';
          echo '</form>';
          echo '</div>';
          

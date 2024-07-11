@@ -452,7 +452,7 @@
       .swiper-slide--one {
         background: linear-gradient(to top, #0f2027, #203a4300, #2c536400), no-repeat 50% 50%/cover;
         height: 28.125rem;
-        width: 30%; /* Set width to 30% of the container */
+        width: 10%; /* Set width to 30% of the container */
         max-width: 18.75rem;
       }
 
@@ -514,17 +514,26 @@
         
       }
       .movies-container-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust the minimum width (200px) as needed */
-        gap: 10px; /* Adjust the gap between containers as needed */
-        margin: 0 200px; /* Adjust the margin as needed */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 20px;
       }
 
       .movies-container {
-        overflow: hidden; /* Ensure images don't overflow */
-        border-radius: 6px; /* Apply border radius to the container */
+        overflow: hidden; 
+        border-radius: 6px; 
+        max-width: 968px;
+        margin-left: 157px;
+        margin-right: auto;
+        margin-bottom: 1rem;
+        padding-bottom: 3rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(266px, 1fr));
+        margin-top: 2rem;
+        font-size: 12px;
       }
-
       .movies-container img {
         width: 100%;
         height: auto;
@@ -570,16 +579,7 @@
         object-fit: cover;
       }
       /* .movies-container{
-        max-width: 968px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 3rem;
-        padding-bottom: 3rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit,minmax(180px,auto));
-        gap: 1rem;
-        margin-top: 2rem;
-        font-size: 12px;
+        
       } */
       
       .box .box-img {
@@ -645,15 +645,15 @@
         <ul class="dropdown-content">
           <li><a href="action.php" class="genre-link">Action</a></li>
           <li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
+          <li><a href="biography.php" class="genre-link">Biography</a></li>
+          <li><a href="comedy.php" class="genre-link">Comedy</a></li>
+          <li><a href="documentary.php" class="genre-link">Documentary</a></li>
+          <li><a href="drama.php" class="genre-link">Drama</a></li>
+          <li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+          <li><a href="horror.php" class="genre-link">Horror</a></li>
+          <li><a href="romance.php" class="genre-link">Romance</a></li>
+          <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+          <li><a href="thriller.php" class="genre-link">Thriller</a></li>
 
           
         </ul>
@@ -696,13 +696,14 @@
         if(mysqli_num_rows($result) > 0) {
           while($row = mysqli_fetch_assoc($result)) {
         ?>
-        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; width: 100%; height: 28.125rem; max-width: 58.75rem">
+        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
           <div>
             <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['description']; ?></p>
             <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
           </div>
         </div>
+
         <?php
           }
         } else {
@@ -713,13 +714,13 @@
     </div>
   </main>
   <section class="movies" id="movies">
-    <div class="title">
-      <h2 class="heading">recommended</h2>
-      <form>
-        <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
-      </form>
-    </div>
-    <div class="movies-container-wrapper">
+  <div class="title">
+    <h2 class="heading">recommended</h2>
+    <form>
+      <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
+    </form>
+  </div>
+  <div class="movies-container-wrapper">
     <?php
       $query = "SELECT * FROM moviedetails";
       $result = mysqli_query($connection, $query);
@@ -735,25 +736,25 @@
           
               <!-- Movie Details Section -->
               <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
-                 <p style="color: rgba(255, 255, 255, 0.7);"><?php echo $row['release_year']; ?></p>
-                  <p ><?php echo $row['type']; ?> </p>
-                  <p><?php echo $row['duration']; ?></p>
+                <span class="date_min">
+                  <p><?php echo $row['release_year']; ?></p>
+                  <p><?php echo $row['duration']; ?> min</p>
+                  <p><?php echo $row['type']; ?></p>
                 </span>
                 <h3><?php echo $row['title']; ?></h3>
               </div>
               
-              <!-- Add to Watchlist Button Section -->
               <div class="card-watchlist">
                 <form action="manage_watchlist.php" method="POST">
                   <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="title" value="<?php echo htmlspecialchars($row['title']); ?>">
-                  <input type="hidden" name="release_year" value="<?php echo htmlspecialchars($row['release_year']); ?>">
-                  <input type="hidden" name="type" value="<?php echo htmlspecialchars($row['type']); ?>">
-                  <input type="hidden" name="duration" value="<?php echo htmlspecialchars($row['duration']); ?>">
-                  <input type="hidden" name="quality" value="<?php echo htmlspecialchars($row['quality']); ?>">
-                  <input type="hidden" name="poster_img" value="<?php echo htmlspecialchars($row['poster_img']); ?>">
+                  <input type="hidden" name="duration" value="<?php echo $row['duration']; ?>">
+                  <input type="hidden" name="quality" value="<?php echo $row['quality']; ?>">
+                  <input type="hidden" name="poster_img" value="<?php echo $row['poster_img']; ?>">
+                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
+                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
+                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
                 </form>
+              </div>
             </div>
           </div>
           <?php
@@ -763,8 +764,9 @@
         echo "No Records Found!";
       }
     ?>
-    </div>
-  </section>
+  </div>
+</section>
+
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Movies</h2>

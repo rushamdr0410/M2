@@ -1,7 +1,4 @@
-<?php
 
-  include('security.php');
-?>
 <?php
  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
       $videoId = $_POST['video_id'];

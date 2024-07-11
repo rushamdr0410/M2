@@ -421,4 +421,22 @@ if(isset($_POST['delete_btn'])) {
     }
 }
 
+
+if (isset($_POST['delete_id'])) {
+    $delete_id = mysqli_real_escape_string($connection, $_POST['delete_id']);
+
+    // Delete the data from the watchlist table
+    $query = "DELETE FROM watchlist WHERE user_id = '$delete_id'";
+    $result = mysqli_query($connection, $query);
+
+    // Check if the deletion was successful
+    if ($result) {
+        // Redirect back to the watchlist page
+        header('Location: watchlist.php');
+        exit;
+    } else {
+        echo 'Error deleting data from watchlist table: '. mysqli_error($connection);
+    }
+}
+
 ?>

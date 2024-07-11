@@ -2,7 +2,7 @@
 include('security.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['watchlist'])) {
-    
+    $userId = $_SESSION['user_id'];  
     $title = $_POST['title'];
     $release_year = $_POST['release_year'];
     $type = $_POST['type'];
@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['watchlist'])) {
     $quality = isset($_POST['quality']) ? $_POST['quality'] : null;
 
     // Prepare and bind parameters
-        $stmt =$connection->prepare("INSERT INTO watchlist ( title, release_year, type, quality, duration, poster_img) VALUES ( ?, ?, ?, ?, ?, ?)");
+        $stmt =$connection->prepare("INSERT INTO watchlist ( user_id, title, release_year, duration, poster_img, quality, type) VALUES (? , ?, ?, ?, ?, ?, ?)");
+
     
     // Check for errors in prepare
     if($stmt === false) {
@@ -22,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['watchlist'])) {
     }
 
     // Binding the parameters
-    $stmt->bind_param("sissss", $title, $release_year, $type, $quality, $duration, $poster_img);
-
+    $stmt->bind_param("isissss", $userId, $title, $release_year, $duration,  $poster_img, $quality, $type);
+    
     // Execute the statement
     if ($stmt->execute()) {
         echo "Added to watchlist successfully";
@@ -39,34 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['watchlist'])) {
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
-    //$user_id = $POST['user_id'];
-    $title = $_POST['title'];
 
-    // Prepare and bind parameters
-    $stmt = $conn->prepare("DELETE FROM watchlist WHERE title = ?");
-    
-    // Check for errors in prepare
-    if ($stmt === false) {
-        die('prepare() failed: ' . htmlspecialchars($conn->error));
-    }
-
-    // Binding the parameters
-    $stmt->bind_param("s", $title);
-
-    // Execute the statement
-    if ($stmt->execute()) {
-        echo "Movie deleted from watchlist successfully";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-
-    $stmt->close();
-    $conn->close();
-
-    // Redirect back to watchlist page
-    header("Location: watchlist.php");
-    exit();
-}
 ?>
 
