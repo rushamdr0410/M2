@@ -702,7 +702,7 @@
           <div>
             <h2><?php echo $row['title']; ?></h2>
             <p><?php echo $row['description']; ?></p>
-            <a href="videoplayer_kungfu.php?video_id=<?= $row["id"] ?>" target="_blank">Watch Now</a>
+            <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
           </div>
         </div>
         <?php
