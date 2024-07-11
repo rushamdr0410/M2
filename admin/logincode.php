@@ -49,8 +49,8 @@ if(isset($_POST['userloginbtn']))
 
     
 
-    if(isset($user["id"])){
-        $_SESSION["user_id"] = $user["id"];
+    if(isset($user['id'])){
+        $_SESSION['user_id'] = $user['id'];
     }
     // var_dump($_SESSION);
     // die();
