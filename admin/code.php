@@ -298,36 +298,41 @@ if(isset($_POST['m_insertbtn'])) {
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
     $m_type = mysqli_real_escape_string($connection, $_POST['m_type']);
     $poster_img= $_FILES['m_img']['name'];
+    $m_video=$_FILES['m_video']['name'];
     $quality = mysqli_real_escape_string($connection, $_POST['m_quality']);
 
     $validate_img_extension=$_FILES['m_img']['type']=="image/jpeg"||$_FILES['m_img']['type']=="image/png"||$_FILES['m_img']['type']=="image/jpg";
+    $validate_video_extension=$_FILES['m_video']['type']=="video/mp4";
 
-    if($validate_img_extension)
+    if($validate_img_extension && $validate_video_extension)
     {
-         if(file_exists("upload/".$_FILES["m_img"]["name"]))
+         if(file_exists("upload/".$_FILES["m_img"]["name"]) && file_exists("upload/".$_FILES["m_video"]["name"]))
         {
             $store = $_FILES["m_img"]["name"];
-            $_SESSION['status']= "Image already exists. '.$store.'";
+            $store = $_FILES["m_video"]["name"];
+            $_SESSION['status']= "Image/Video already exists. '.$store.'";
             header('Location: movie_info.php');
         }
         else
         {
-            $query = "INSERT INTO moviedetails(title, 	description, genreid, release_year, duration, type, poster_img, quality) VALUES ('$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$quality')";
+            $video_url = "upload/" . $_FILES["m_video"]["name"];
+            $query = "INSERT INTO moviedetails(title, 	description, genreid, release_year, duration, type, poster_img, video_url, quality) VALUES ('$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$video_url', '$quality')";
             $query_run = mysqli_query($connection, $query);
 
             if($query_run) {
-                move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]);
-                $_SESSION['success'] = "Movie Details Added";
-                header('Location: movie_info.php');
-            } else {
-                $_SESSION['status'] = "Movie Details Not Added: " . mysqli_error($connection);
-                header('Location: movie_info.php');
-            }
+                if(move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]) && move_uploaded_file($_FILES["m_video"]['tmp_name'], "upload/".$_FILES["m_video"]["name"])) {
+                    $_SESSION['success'] = "Movie Details Added";
+                    header('Location: movie_info.php');
+                } else {
+                    $_SESSION['status'] = "File upload failed";
+                    header('Location: movie_info.php');
+                }
+            } 
         }
     }
     else
     {
-        $_SESSION['status'] = "Only PNG/JPG/JPEG Files are Supported " . mysqli_error($connection);
+        $_SESSION['status'] = "Only PNG/JPG/JPEG/MP4 Files are Supported " . mysqli_error($connection);
         header('Location: movie_info.php');
     }
 }
@@ -342,18 +347,22 @@ if(isset($_POST['updatebtn']))
     $m_duration=$_POST['m_duration'];
     $m_type=$_POST['m_type'];
     $m_img=$_FILES['m_img']['name'];
+    $m_video=$_FILES['m_video']['name'];
     $m_quality=$_POST['m_quality'];
 
     $validate_img_extension=$_FILES['m_img']['type']=="image/jpeg"||$_FILES['m_img']['type']=="image/png"||$_FILES['m_img']['type']=="image/jpg";
 
-    if($validate_img_extension)
+    $validate_video_extension=$_FILES['m_video']['type']=="video/mp4";
+
+    if($validate_img_extension && $validate_video_extension)
     {
     
-        $query=  "UPDATE moviedetails SET 	title='$m_title', description='$description', genreid='$gid', release_year='$m_year', duration='$m_duration', 	type='$m_type', poster_img='$m_img', quality='$m_quality' WHERE id='$id'";
+        $query=  "UPDATE moviedetails SET 	title='$m_title', description='$description', genreid='$gid', release_year='$m_year', duration='$m_duration', 	type='$m_type', poster_img='$m_img', video_url='$m_video' quality='$m_quality' WHERE id='$id'";
         $result=mysqli_query($connection, $query);
         if($result)
         {
             move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]);
+            move_uploaded_file($_FILES["m_video"]['tmp_name'], "upload/".$_FILES["m_video"]["name"]);
             $_SESSION['success'] = "Your Data is Updated";
             header('Location: movie_info.php');
         }

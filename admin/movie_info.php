@@ -68,6 +68,10 @@ include('includes/navbar.php');
             <input type="file" name="m_img" id="m_img" class="form-control" required>
         </div>
         <div class="form-group">
+            <label>Movie</label>
+            <input type="file" name="m_video" id="m_video" class="form-control" required>
+        </div>
+        <div class="form-group">
             <label> Quality </label>
             <input type="text" name="m_quality" class="form-control" placeholder="Enter Quality" required>
         </div>

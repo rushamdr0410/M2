@@ -1,11 +1,12 @@
 
 <?php
- if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
-      $videoId = $_POST['video_id'];
-      $userId = $_SESSION['user_id'];  // Assuming you store user_id in session
-      $reviewText = $_POST['review_text'];
- }
+ 
 include('security.php');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
+  $videoId = $_POST['video_id'];
+  $userId = $_SESSION['user_id'];  // Assuming you store user_id in session
+  $reviewText = $_POST['review_text'];
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -128,7 +129,7 @@ nav{
   justify-content: space-evenly;
   align-items: center;
   text-transform: uppercase;
-  font-size: 15px;
+  font-size: 13px;
 }
 .nav-links li a{
   text-decoration: none;
@@ -451,6 +452,7 @@ h2{
   border-radius: 4px;
   background-color: #131418;
   color: #fff;
+  width: 774px;
 }
 .review-form button, .reply-form button {
   padding: 10px 20px;
@@ -477,6 +479,26 @@ h2{
     display: block !important;
     visibility: visible !important;
     opacity: 3 !important;
+}
+#movie-details {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: flex-start; /* Vertically align the poster and details */
+  margin-left: 50px;
+}
+
+.poster-container {
+  margin-right: 20px; /* Add some space between the poster and details */
+}
+
+.poster-container img {
+  max-width: 150px; /* Set a fixed width for the poster */
+  border-radius: 8px;
+}
+
+.details-container {
+  flex: 1; /* Take up the remaining space */
+  
 }
 </style>
 </head>
@@ -534,31 +556,50 @@ h2{
 </div>
 </nav>
 <div id="video-container">
-    <iframe
-        id="video-player"
-        width="1000px"
-        height="600px"
-        src="<?php echo htmlspecialchars($video_url); ?>"
-        frameborder="0"
-        allowfullscreen
-        allow="autoplay"
-    ></iframe>
+  <?php
+  // Fetch video details from the database
+  $videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
+  if ($videoId) {
+      $stmt = $connection->prepare('SELECT video_url FROM moviedetails WHERE id = ?');
+      $stmt->bind_param('i', $videoId);
+      $stmt->execute();
+      $stmt->bind_result($video_url);
+      if (!$stmt->fetch()) {
+          echo "Video not found.";
+          exit;
+      }
+      $stmt->close();
+  } else {
+      echo "No video ID provided.";
+      exit;
+  }
+  ?>
+  
+  <!-- Display video -->
+  <video id="video-player" width="100%" controls autoplay>
+    <source src="<?php echo $video_url;?>" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </div>
 
 
 
  <!-- Video Details Section -->
  <div id="video-container">
-        <div id="movie-details" style="text-align: center; margin-bottom: 20px;">
-            <img src="path_to_images/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 300px; border-radius: 8px;">
-            <h3><?php echo htmlspecialchars($title); ?></h3>
-            <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
-            <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
-            <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
-            <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
-            <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
-        </div>
+  <div id="movie-details" style="display: flex; margin-bottom: 20px;">
+    <div class="poster-container">
+      <img src="upload/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 150px; border-radius: 8px;">
     </div>
+    <div class="details-container">
+      <h3><?php echo htmlspecialchars($title); ?></h3>
+      <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
+      <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
+      <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
+      <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
+      <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
+    </div>
+  </div>
+</div>
 
     <!-- Review Section -->
     <div class="review-container">
@@ -570,65 +611,11 @@ h2{
 </form>
 </div>
 
-<?php
-// Fetch video details from the database
-$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
-if ($videoId) {
-    $stmt = $connection->prepare('SELECT poster_img, title, description, release_year, duration, type, quality, video_url FROM moviedetails WHERE id = ?');
-    $stmt->bind_param('i', $videoId);
-    $stmt->execute();
-    $stmt->bind_result($poster_img, $title, $description, $release_year, $duration, $type, $quality, $video_url);
-    if (!$stmt->fetch()) {
-        echo "Video not found.";
-        exit;
-    }
-    $stmt->close();
-} else {
-    echo "No video ID provided.";
-    exit;
-}
-?>
 
 
-// Close the statement
-$stmt->close();
-?>
-    <!-- Movie Details -->
-    <div id="movie-details">
-            <h3><?php echo htmlspecialchars($title); ?></h3>
-            <p>Resolution: <?php echo htmlspecialchars($quality); ?></p>
-            <p>Release Date: <?php echo htmlspecialchars($release_year); ?></p>
-            <p>Description: <?php echo htmlspecialchars($description); ?></p>
-            <p>Type: <?php echo htmlspecialchars($type); ?></p>
-            <p>id: <?php echo htmlspecialchars($genreid); ?></p>
-        </div>
-    
-        <div class="review-container">
-    <!-- Review Form -->
-=======
-<div id="video-container">
-    <div id="movie-details" style="text-align: center; margin-bottom: 20px;">
-        <img src="path_to_images/<?php echo htmlspecialchars($poster_img); ?>" alt="Poster" style="max-width: 300px; border-radius: 8px;">
-        <h3><?php echo htmlspecialchars($title); ?></h3>
-        <p><strong>Description:</strong> <?php echo htmlspecialchars($description); ?></p>
-        <p><strong>Release Year:</strong> <?php echo htmlspecialchars($release_year); ?></p>
-        <p><strong>Duration:</strong> <?php echo htmlspecialchars($duration); ?> mins</p>
-        <p><strong>Type:</strong> <?php echo htmlspecialchars($type); ?></p>
-        <p><strong>Quality:</strong> <?php echo htmlspecialchars($quality); ?></p>
-    </div>
-</div>
-<div class="review-container">
-
-    <form action="" method="POST" class="review-form">
-        <h3>Leave a Review</h3>
-        <textarea name="review_text" rows="4" required></textarea>
-        <input type="hidden" name="video_id" value="<?php echo htmlspecialchars($videoId); ?>">
-        <button type="submit" name="submit_review">Submit Review</button>
-    </form>
-</div>
 <div class="review-container">
     <?php
-    $stmt = $connection->prepare('SELECT reviews.id, reviews.review_text, reviews.likes, users.username FROM reviews JOIN users ON reviews.user_id = users.id WHERE video_id = ? ORDER BY reviews.created_at DESC');
+    $stmt = $connection->prepare('SELECT reviews.id, reviews.review_text, reviews.likes, register.username FROM reviews JOIN register ON reviews.user_id = register.id WHERE video_id = ? ORDER BY reviews.created_at DESC');
     $stmt->bind_param('i', $videoId);
     $stmt->execute();
     $stmt->bind_result($reviewId, $reviewText, $likes, $username);
@@ -636,171 +623,35 @@ $stmt->close();
     while ($stmt->fetch()) {
         echo '<div class="review">';
         echo '<p><strong>' . htmlspecialchars($username) . '</strong>: ' . htmlspecialchars($reviewText) . '</p>';
-        echo '<p class="likes"><span class="like-count">' . htmlspecialchars($likes) . '</span> Likes <button class="like-button" data-review-id="' . htmlspecialchars($reviewId) . '">Like</button></p>';
-        
-
-        // Display replies
-        $replyStmt = $connection->prepare('SELECT replies.reply_text, users.username FROM replies JOIN users ON replies.user_id = users.id WHERE review_id = ? ORDER BY replies.created_at ASC');
-
-        $replyStmt = $connection->prepare('SELECT replies.reply_text, register.username FROM replies JOIN register ON replies.user_id = register.id WHERE review_id = ? ORDER BY replies.created_at ASC');
-
-        $replyStmt->bind_param('i', $reviewId);
-        $replyStmt->execute();
-        $replyStmt->bind_result($replyText, $replyUsername);
-        
-        while ($replyStmt->fetch()) {
-            echo '<div class="reply">';
-            echo '<p><strong>' . htmlspecialchars($replyUsername) . '</strong>: ' . htmlspecialchars($replyText) . '</p>';
-            echo '</div>';
-        }
-        $replyStmt->close();
-
-
-        // Reply Form
-
-        echo '<form action="" method="POST" class="reply-form">';
-        echo '<textarea name="reply_text" rows="2" required></textarea>';
-        echo '<input type="hidden" name="review_id" value="' . htmlspecialchars($reviewId) . '">';
-        echo '<button type="submit" name="submit_reply">Reply</button>';
-        echo '</form>';
-        
+        echo '<p class="likes"><span class="like-count">' . htmlspecialchars($likes) . '</span> Likes <button class="like-button" data-review-id="' . htmlspecialchars($reviewId) . '"><i class="fa-regular fa-heart"></i></button></p>';
         echo '</div>';
     }
     $stmt->close();
     ?>
 </div>
-
-
-
-    <script>
-        // Get the video player element
-        const videoPlayer = document.getElementById('video-player');
-
-        // Get the control buttons
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const forwardBtn = document.getElementById('forwardBtn');
-        const backwardBtn = document.getElementById('backwardBtn');
-        const speedUpBtn = document.getElementById('speedUpBtn');
-        const slowDownBtn = document.getElementById('slowDownBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-        // Toggle play/pause
-        playPauseBtn.addEventListener('click', () => {
-            if (videoPlayer.paused) {
-                videoPlayer.play();
-                playPauseBtn.textContent = 'Pause';
-            } else {
-                videoPlayer.pause();
-                playPauseBtn.textContent = 'Play';
-            }
-        });
-
-        // Forward the video by 10 seconds
-        forwardBtn.addEventListener('click', () => {
-            videoPlayer.currentTime += 10;
-        });
-
-        // Rewind the video by 10 seconds
-        backwardBtn.addEventListener('click', () => {
-            videoPlayer.currentTime -= 10;
-        });
-
-        // Speed up the video playback rate
-        speedUpBtn.addEventListener('click', () => {
-            videoPlayer.playbackRate += 0.25;
-        });
-
-        // Slow down the video playback rate
-        slowDownBtn.addEventListener('click', () => {
-            videoPlayer.playbackRate -= 0.25;
-        });
-
-        // Toggle fullscreen
-        fullscreenBtn.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                videoPlayer.requestFullscreen();
-            }
-        });
-    </script>
-    <script>
-// JavaScript for handling likes
-=======
 <script>
+$(document).ready(function() {
+  $('.like-button').on('click', function() {
+    var reviewId = $(this).data('review-id');
+    var likeCountSpan = $(this).prev('.like-count');
 
-document.querySelectorAll('.like-button').forEach(button => {
-  button.addEventListener('click', function() {
-    const reviewId = this.getAttribute('data-review-id');
+    console.log('Like button clicked:', reviewId);
 
-    fetch('like_review.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+    $.ajax({
+      type: 'POST',
+      url: 'like.php',
+      data: { reviewId: reviewId },
+      success: function(data) {
+        console.log('Success:', data);
+        likeCountSpan.text(data.likes + ' Likes');
       },
-      body: `review_id=${reviewId}`
-    })
-    .then(response => response.text())
-    .then(data => {
-      if (data === 'success') {
-        const likeCountElem = this.previousElementSibling;
-        const currentLikes = parseInt(likeCountElem.textContent);
-        likeCountElem.textContent = currentLikes + 1;
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
       }
     });
   });
 });
 </script>
-<?php
-// Include your database configuration file
-include 'database/dbconfig.php';
-
-// Get the video ID from the URL parameters
-$videoId = isset($_GET['video_id']) ? $_GET['video_id'] : null;
-
-// Initialize variables for video URL and metadata
-$videoUrl = '';
-$title = '';
-$description = '';
-$rating = '';
-$resolution = '';
-$releaseDate = '';
-$type = '';
-$country = '';
-$genre = '';
-
-// Check if video ID is provided
-if ($videoId) {
-    // Prepare an SQL statement to select video details from the service table
-    $stmt = $connection->prepare('SELECT links AS video_url, title, description, rating, resolution, release_date, type, country, genre FROM service WHERE id = ?');
-    
-    // Bind the video ID parameter to the prepared statement
-    $stmt->bind_param('i', $videoId);
-    
-    // Execute the statement
-    $stmt->execute();
-    
-    // Bind the results to variables
-    $stmt->bind_result($videoUrl, $title, $description, $rating, $resolution, $releaseDate, $type, $country, $genre);
-    
-    // Fetch the results
-    if ($stmt->fetch()) {
-        // The variables now contain the video details
-        // You can use these variables in your HTML output
-    } else {
-        // Handle case where the provided video ID does not exist in the table
-        echo "Video not found.";
-        exit;
-    }
-    
-    // Close the statement
-    $stmt->close();
-} else {
-    echo "No video ID provided.";
-    exit;
-}
-?>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
