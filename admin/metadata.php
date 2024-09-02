@@ -46,7 +46,7 @@ include('includes/navbar.php');
                                 <td><?php echo $row['id']; ?></td>
                                 <td><?php echo $row['title']; ?></td>
                                 <td><?php echo $row['description']; ?></td>
-                                <td><?php echo $row['URL']; ?></td>
+                                <td><?php echo $row['video_url']; ?></td>
                             </tr>
                             <?php
                         }
