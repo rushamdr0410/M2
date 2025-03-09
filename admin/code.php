@@ -10,6 +10,8 @@ if(isset($_POST['registerbtn']))
     $cpassword = $_POST['confirmpassword'];
     $usertype=$_POST['usertype'];
 
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
     $emailquery = "SELECT * FROM register WHERE email='$email' ";
     $email_query_run = mysqli_query($connection, $emailquery);
     if(mysqli_num_rows($email_query_run) > 0)
@@ -22,7 +24,7 @@ if(isset($_POST['registerbtn']))
     {
         if($password === $cpassword)
         {
-            $query = "INSERT INTO register (username,email,password,usertype) VALUES ('$username','$email','$password','$usertype')";
+            $query = "INSERT INTO register (username,email,password,usertype) VALUES ('$username','$email','$hashed_password','$usertype')";
             $result = mysqli_query($connection, $query);
             
             if($result)
@@ -98,6 +100,8 @@ if(isset($_POST['userregistration']))
     $cpassword=$_POST['u_cpassword'];
     $usertype=$_POST['u_usertype'];
 
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
     $queryemail = "SELECT * FROM register WHERE email='$email' ";
     $emailqueryrun = mysqli_query($connection, $queryemail);
     if(mysqli_num_rows($emailqueryrun) > 0)
@@ -108,7 +112,7 @@ if(isset($_POST['userregistration']))
 
     if($password === $cpassword)
     {
-        $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$password','$usertype')";
+        $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$hashed_password','$usertype')";
         $result=mysqli_query($connection,$query);
 
         if($result)

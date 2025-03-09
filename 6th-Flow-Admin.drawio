@@ -1,0 +1,168 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" version="26.0.16">
+  <diagram name="Page-1" id="dHLUvcpmh_q9O6HOJK99">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-1" target="PxG2Tk-3BBFvP_HrgiMS-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-1" value="Start" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="380" y="10" width="90" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-2" target="PxG2Tk-3BBFvP_HrgiMS-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-2" value="Admin" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Times New Roman;fontSize=14;rounded=0;arcSize=0;size=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="120" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="180" as="targetPoint" />
+            <mxPoint x="343.75" y="255" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="174" y="235" />
+              <mxPoint x="220" y="235" />
+              <mxPoint x="220" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;startFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-3" target="PxG2Tk-3BBFvP_HrgiMS-47">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-3" value="Login" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="85.62" y="192" width="88.75" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-4" value="Dashboard/Admin Panel" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="200" y="320" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-7" value="Manage Users" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="200" y="380" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-8" value="Manage Alerts" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="200" y="490" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-9" value="Configure System Settings" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="200" y="430" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-10" value="Stop" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="380" y="630" width="90" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-16" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="170" y="153" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-18" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-26" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="PxG2Tk-3BBFvP_HrgiMS-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="345" as="sourcePoint" />
+            <mxPoint x="200" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-27" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="509.54999999999995" as="sourcePoint" />
+            <mxPoint x="200" y="509.54999999999995" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-28" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="454.55" as="sourcePoint" />
+            <mxPoint x="200" y="454.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-29" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="399.55" as="sourcePoint" />
+            <mxPoint x="200" y="399.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-30" target="PxG2Tk-3BBFvP_HrgiMS-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-30" value="User" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Times New Roman;fontSize=14;rounded=0;arcSize=0;size=0;" vertex="1" parent="1">
+          <mxGeometry x="670" y="120" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="720" y="180" as="targetPoint" />
+            <mxPoint x="764.3699999999999" y="236" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="764" y="235" />
+              <mxPoint x="810" y="235" />
+              <mxPoint x="810" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;startFill=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-32" target="PxG2Tk-3BBFvP_HrgiMS-47">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="720.4545454545453" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-32" value="Login" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="675.63" y="192" width="88.75" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-33" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="764.38" y="153" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-34" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="710" y="280" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-36" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="PxG2Tk-3BBFvP_HrgiMS-30">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="425" y="90" as="sourcePoint" />
+            <mxPoint x="675" y="90" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="720" y="90" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-38" value="Input Data" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="530" y="325" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-39" value="View Health Status" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="530" y="380" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-40" value="Receive Alerts" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="530" y="435" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-41" value="Update Profile" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="530" y="490" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-42" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="344.55" as="sourcePoint" />
+            <mxPoint x="720" y="344.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-43" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="509.55" as="sourcePoint" />
+            <mxPoint x="720" y="509.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-44" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="454.55" as="sourcePoint" />
+            <mxPoint x="720" y="454.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-45" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="399.55" as="sourcePoint" />
+            <mxPoint x="720" y="399.55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PxG2Tk-3BBFvP_HrgiMS-47" target="PxG2Tk-3BBFvP_HrgiMS-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PxG2Tk-3BBFvP_HrgiMS-47" value="Logout" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="365" y="560" width="120" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

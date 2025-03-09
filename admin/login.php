@@ -38,7 +38,7 @@
                                         
                                         <button type="submit" name="login_btn" class="btn btn-primary btn-user btn-block">Login</button>
                                         <hr>
-                                    </from>  
+                                    </from> 
                                 </div>
                             </div>
                         </div>
