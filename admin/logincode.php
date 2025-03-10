@@ -1,70 +1,73 @@
 <?php
-include('security.php');
+include('security.php'); // Ensure session security
 
 $connection = mysqli_connect("localhost", "root", "", "moviemagic");
 
 if (isset($_POST['login_btn'])) {
     $email_login = $_POST['email'];
     $password_login = $_POST['password'];
-    
 
-
+    // Fetch user details from the database
     $query = "SELECT * FROM register WHERE email='$email_login'";
     $result = mysqli_query($connection, $query);
-    $usertype = mysqli_fetch_array($result);
-
-    password_verify($password_login, $usertype['password']);
-
+    $usertype = mysqli_fetch_assoc($result); // ✅ Use fetch_assoc() instead of fetch_array()
 
     if ($usertype) {
-        // Verify the hashed password with the one entered by the user
-        if (password_verify($password_login, $usertype['password'])) {  // Correct password verification
-            $_SESSION['username'] = $email_login;
+
+        if (password_verify($password_login, $usertype['password'])) {
+            $_SESSION['username'] = $usertype['username'];
+            $_SESSION['user_id'] = $usertype['id'];
+            $_SESSION['usertype'] = $usertype['usertype']; // ✅ Store usertype
+
             if ($usertype['usertype'] == 'admin') {
                 header('Location: index.php');
+                exit();
             } else {
-                header('Location: userlogin.php');
+                header('Location: HomePage.php'); // Redirect normal users
+                exit();
             }
-        }
-
-        else {
+        } else {
             $_SESSION['status'] = "Email or Password is invalid";
             header('Location: login.php');
+            exit();
         }
-
     } else {
         $_SESSION['status'] = "Email or Password is invalid";
         header('Location: login.php');
+        exit();
     }
 }
 
-
 if (isset($_POST['userloginbtn'])) {
-    $_SESSION = null;
     $emaillogin = $_POST['u_email'];
     $passwordlogin = $_POST['u_password'];
 
     $query = "SELECT * FROM register WHERE email='$emaillogin'";
     $result = mysqli_query($connection, $query);
-    $user = mysqli_fetch_array($result);
+    $user = mysqli_fetch_assoc($result);
 
     if ($user) {
-        if (password_verify($passwordlogin, $user['password'])) { // Corrected verification
+        if (password_verify($passwordlogin, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $emaillogin;
-            
-            if ($user['usertype'] == 'admin') {
-                header('Location: login.php');
-            } else{
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['usertype'] = $user['usertype'];
+
+            if ($user['usertype'] == 'user') {  // ✅ Removed extra space in 'user'
                 header('Location: HomePage.php');
+                exit();
+            } else if ($user['usertype'] == 'admin') {
+                header('Location: login.php');
+                exit();
             }
         } else {
             $_SESSION['status'] = "Email or Password is invalid";
             header('Location: userlogin.php');
+            exit();
         }
     } else {
         $_SESSION['status'] = "Email or Password is invalid";
         header('Location: userlogin.php');
+        exit();
     }
 }
 ?>

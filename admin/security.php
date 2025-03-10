@@ -13,6 +13,6 @@ else
 
 if(!$_SESSION['username'])
 {
-    header("Location: userlogin.php");
+    header("Location: login.php");
 }
 ?>
