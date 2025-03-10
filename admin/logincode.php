@@ -15,8 +15,8 @@ if (isset($_POST['login_btn'])) {
     if ($usertype) {
 
         if (password_verify($password_login, $usertype['password'])) {
-            $_SESSION['username'] = $usertype['username'];
-            $_SESSION['user_id'] = $usertype['id'];
+            $_SESSION['admin_username'] = $usertype['username'];
+            $_SESSION['admin_id'] = $usertype['id'];
             $_SESSION['usertype'] = $usertype['usertype']; // ✅ Store usertype
 
             if ($usertype['usertype'] == 'admin') {
@@ -49,7 +49,7 @@ if (isset($_POST['userloginbtn'])) {
     if ($user) {
         if (password_verify($passwordlogin, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
+            $_SESSION['user_username'] = $user['username'];
             $_SESSION['usertype'] = $user['usertype'];
 
             if ($user['usertype'] == 'user') {  // ✅ Removed extra space in 'user'
