@@ -14,7 +14,7 @@ include('includes/navbar.php');
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="code.php" method="POST">
+      <form id="adminRegisterForm" action="code.php" method="POST" onsubmit="return validateForm()">
       <div class="modal-body">
         <div class="form-group">
             <label> Username </label>
@@ -124,6 +124,74 @@ include('includes/navbar.php');
     </div>
 </div>
 </div>
+<script>
+    function validateForm() {
+        console.log("Validation function called"); // Debugging statement
+
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmpassword').value.trim();
+
+        console.log("Username:", username); // Debugging statement
+        console.log("Email:", email); // Debugging statement
+        console.log("Password:", password); // Debugging statement
+        console.log("Confirm Password:", confirmPassword); // Debugging statement
+
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+        let isValid = true;
+
+        // Validate Username
+        if (!username) {
+            console.log("Username is empty"); // Debugging statement
+            document.getElementById('usernameError').textContent = 'Username is required.';
+            isValid = false;
+        } else if (!usernameRegex.test(username)) {
+            console.log("Username validation failed"); // Debugging statement
+            document.getElementById('usernameError').textContent = 'Username must be 3-20 characters long and can only contain letters, numbers, and underscores.';
+            isValid = false;
+        }
+
+        // Validate Email
+        if (!email) {
+            console.log("Email is empty"); // Debugging statement
+            document.getElementById('emailError').textContent = 'Email is required.';
+            isValid = false;
+        } else if (!emailRegex.test(email)) {
+            console.log("Email validation failed"); // Debugging statement
+            document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+            isValid = false;
+        }
+
+        // Validate Password
+        if (!password) {
+            console.log("Password is empty"); // Debugging statement
+            document.getElementById('passwordError').textContent = 'Password is required.';
+            isValid = false;
+        } else if (!passwordRegex.test(password)) {
+            console.log("Password validation failed"); // Debugging statement
+            document.getElementById('passwordError').textContent = 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.';
+            isValid = false;
+        }
+
+        // Validate Confirm Password
+        if (!confirmPassword) {
+            console.log("Confirm Password is empty"); // Debugging statement
+            document.getElementById('confirmPasswordError').textContent = 'Confirm Password is required.';
+            isValid = false;
+        } else if (password !== confirmPassword) {
+            console.log("Confirm Password validation failed"); // Debugging statement
+            document.getElementById('confirmPasswordError').textContent = 'Passwords do not match.';
+            isValid = false;
+        }
+
+        console.log("Validation result:", isValid); // Debugging statement
+        return isValid;
+    }
+</script>
 <?php
 include('includes/scripts.php');
 include('includes/footer.php');

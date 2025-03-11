@@ -148,7 +148,7 @@
 		}
         .form-box {
 			position: relative;
-			width: 100%;
+			width: 1rem;
 			height: 100%;
 			display: flex;
 			flex-direction: column;
@@ -190,7 +190,7 @@
  		 	overflow: visible;
 		}
 		.input-box input{
-			width: 100%;
+			width: 20rem;
 			height: 65px;
 			background: transparent;
 			border: none;
@@ -222,6 +222,7 @@
 		.remember-forgot a{
 			color: #3cb2e9;
 			text-decoration: none;
+			margin-left: 4rem;
 		}
 		.remember-forgot a:hover{
 			text-decoration: underline;
@@ -311,11 +312,11 @@
 		</div>
 		<div class="form-box register">
 			<h2>Ready to Watch?</h2>
-			<form action="code.php" method="POST">
+			<form id="registerForm" action="code.php" method="POST" onsubmit="return validateForm()">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
 					<input type="text" id="username" name="u_username" required>
-					<label >Name</label>
+					<label >Username</label>
 					
 				</div>
 				<div class="input-box">
@@ -352,5 +353,53 @@
 	<script  type="text/javascript" src="js/Login.js"></script>
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+	<script>
+		function validateForm() {
+			console.log("Validation function called"); // Debugging statement
+			const username = document.getElementById('username').value.trim();
+			const email = document.getElementById('email').value.trim();
+			const password = document.getElementById('password').value.trim();
+			const cpassword = document.getElementById('cpassword').value.trim();
+			const terms = document.getElementById('terms').checked;
+
+			console.log("Username:", username); // Debugging statement
+			console.log("Email:", email); // Debugging statement
+			console.log("Password:", password); // Debugging statement
+			console.log("Confirm Password:", cpassword); // Debugging statement
+			console.log("Terms Checked:", terms); // Debugging statement
+
+			const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+			if (!usernameRegex.test(username)) {
+				alert('Username must be 3-20 characters long and can only contain letters, numbers, and underscores.');
+				return false;
+			}
+
+			if (!emailRegex.test(email)) {
+				alert('Please enter a valid email address.');
+				return false;
+			}
+
+			if (!passwordRegex.test(password)) {
+				alert('Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.');
+				return false;
+			}
+
+			if (password !== cpassword) {
+				alert('Passwords do not match.');
+				return false;
+			}
+
+			if (!terms) {
+				alert('You must agree to the terms and conditions.');
+				return false;
+			}
+
+			console.log("Validation passed"); // Debugging statement
+			return true;
+		}
+	</script>
 </body>
 </html>

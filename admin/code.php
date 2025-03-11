@@ -94,43 +94,45 @@ if(isset($_POST['delete_btn']))
 
 if(isset($_POST['userregistration']))
 {
-    $username=$_POST['u_username'];
-    $email=$_POST['u_email'];
-    $password=$_POST['u_password'];
-    $cpassword=$_POST['u_cpassword'];
-    $usertype=$_POST['u_usertype'];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        print_r($_POST); 
+        $username=$_POST['u_username'];
+        $email=$_POST['u_email'];
+        $password=$_POST['u_password'];
+        $cpassword=$_POST['u_cpassword'];
+        $usertype=$_POST['u_usertype'];
 
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-    $queryemail = "SELECT * FROM register WHERE email='$email' ";
-    $emailqueryrun = mysqli_query($connection, $queryemail);
-    if(mysqli_num_rows($emailqueryrun) > 0)
-    {
-        $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
-        header('Location: userlogin.php');  
-    }
-
-    if($password === $cpassword)
-    {
-        $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$hashed_password','$usertype')";
-        $result=mysqli_query($connection,$query);
-
-        if($result)
+        $queryemail = "SELECT * FROM register WHERE email='$email' ";
+        $emailqueryrun = mysqli_query($connection, $queryemail);
+        if(mysqli_num_rows($emailqueryrun) > 0)
         {
-            //echo "Saved";
-            $_SESSION[ 'success' ] = "User Registered Successfully!";
-            header("location: userlogin.php");
+            $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
+            header('Location: userlogin.php');  
+        }
+
+        if($password === $cpassword)
+        {
+            $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$hashed_password','$usertype')";
+            $result=mysqli_query($connection,$query);
+
+            if($result)
+            {
+                //echo "Saved";
+                $_SESSION[ 'success' ] = "User Registered Successfully!";
+                header("location: userlogin.php");
+            }
+            else{
+                $_SESSION[ 'status' ] = "User Not Registered";
+                header("location: userlogin.php");
+            }
         }
         else{
-            $_SESSION[ 'status' ] = "User Not Registered";
+            $_SESSION[ 'status' ] = "Password and Confirm Password Does Not Match";
             header("location: userlogin.php");
         }
-    }
-    else{
-        $_SESSION[ 'status' ] = "Password and Confirm Password Does Not Match";
-        header("location: userlogin.php");
-    }
-    
+    }   
 }
 
 if(isset($_POST['update_btn'])) {
