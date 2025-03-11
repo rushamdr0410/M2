@@ -8,7 +8,7 @@ if (!$connection) {
 }
 
 // Check if user is logged in
-if(!$_SESSION['username'])
+if(!$_SESSION['user_username'])
 {
     header("Location: userlogin.php");
 }

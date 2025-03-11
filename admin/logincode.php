@@ -1,4 +1,5 @@
 <?php
+session_start();
 include('security.php'); // Ensure session security
 
 $connection = mysqli_connect("localhost", "root", "", "moviemagic");
@@ -13,25 +14,30 @@ if (isset($_POST['login_btn'])) {
     $usertype = mysqli_fetch_assoc($result); // ✅ Use fetch_assoc() instead of fetch_array()
 
     if ($usertype) {
-
+        echo "User found: " . print_r($usertype, true) . "<br>";
         if (password_verify($password_login, $usertype['password'])) {
+            echo "Password verified<br>";
             $_SESSION['admin_username'] = $usertype['username'];
             $_SESSION['admin_id'] = $usertype['id'];
             $_SESSION['usertype'] = $usertype['usertype']; // ✅ Store usertype
 
             if ($usertype['usertype'] == 'admin') {
+                echo "Redirecting to index.php<br>";
                 header('Location: index.php');
                 exit();
             } else {
-                header('Location: HomePage.php'); // Redirect normal users
+                echo "Redirecting to userlogin.php<br>";
+                header('Location: userlogin.php'); // Redirect normal users
                 exit();
             }
         } else {
+            echo "Password verification failed<br>";
             $_SESSION['status'] = "Email or Password is invalid";
             header('Location: login.php');
             exit();
         }
     } else {
+        echo "User not found<br>";
         $_SESSION['status'] = "Email or Password is invalid";
         header('Location: login.php');
         exit();
@@ -70,4 +76,5 @@ if (isset($_POST['userloginbtn'])) {
         exit();
     }
 }
+
 ?>

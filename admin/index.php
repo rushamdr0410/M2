@@ -2,6 +2,12 @@
  include('security.php');
  include('includes/header.php');
  include('includes/navbar.php');
+
+ if (!isset($_SESSION['admin_username'])) {
+    header("Location: login.php");
+    exit();
+}
+
  ?>
 
         

@@ -3,6 +3,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include('user_auth.php');
 
+if (!isset($_SESSION['user_username'])) {
+  header("Location: userlogin.php");
+  exit();
+}
 
 
   // Query for fetching movie details
