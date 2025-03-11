@@ -39,6 +39,7 @@
                                         <button type="submit" name="login_btn" class="btn btn-primary btn-user btn-block">Login</button>
                                         <hr>
                                     </from> 
+                                    <a href="forgot_password.php" style="margin-left: 10rem; font-size: 14px; color: #007bff; text-decoration: none;">Forgot Password?</a>
                                 </div>
                             </div>
                         </div>

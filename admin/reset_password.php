@@ -1,29 +1,34 @@
 <?php
-include('security.php');  // Ensure your database connection is included
-
-// Connect to the database
+session_start();
 $connection = mysqli_connect("localhost", "root", "", "moviemagic");
 
-// Check if the script is being accessed with an email parameter
-if (isset($_GET['email'])) {
-    $email = $_GET['email'];
+if (isset($_POST['reset_btn'])) {
+    $email = $_POST['email'];
 
-    // Update the password to a new hashed value (e.g., "1234")
-    $new_password = password_hash('1234', PASSWORD_BCRYPT);  // New password to set
-
-    // Query to update the password for the user
-    $query = "UPDATE register SET password = '$new_password' WHERE email = '$email'";
-
-    // Execute the query
+    // Check if the email exists in the database
+    $query = "SELECT * FROM register WHERE email='$email'";
     $result = mysqli_query($connection, $query);
 
-    // Check if the query was successful
-    if ($result) {
-        echo "Password has been reset successfully for the user with email: $email.";
+    if (mysqli_num_rows($result) == 1) {
+        // Generate a unique token for password reset
+        $token = bin2hex(random_bytes(50));
+
+        // Store the token in the database
+        $query = "UPDATE register SET reset_token='$token' WHERE email='$email'";
+        mysqli_query($connection, $query);
+
+        // Send an email with the reset link (you'll need to implement this)
+        $reset_link = "http://yourwebsite.com/reset_password_form.php?token=$token";
+        $message = "Click the link to reset your password: $reset_link";
+        mail($email, "Password Reset", $message);
+
+        $_SESSION['status'] = "Password reset link sent to your email.";
+        header("Location: forgot_password.php");
+        exit();
     } else {
-        echo "Error resetting password.";
+        $_SESSION['status'] = "Email not found.";
+        header("Location: forgot_password.php");
+        exit();
     }
-} else {
-    echo "Please provide an email address.";
 }
 ?>
