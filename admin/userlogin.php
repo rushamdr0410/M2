@@ -264,6 +264,12 @@
 		.signin-register p a:hover{
 			text-decoration: underline;
 		}
+		.error-message {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
 	</style>
 </head>
 <body>
@@ -317,25 +323,25 @@
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
 					<input type="text" id="username" name="u_username" required>
 					<label >Username</label>
-					
+					<span class="error-message" id="username-error"></span>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
 					<input type="email" id="email" name="u_email" required>
 					<label >E-mail</label>
-					
+					<span class="error-message" id="email-error"></span>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
 					<input type="password" id="password" name="u_password" required>
 					<label >Password</label>
-					
+					<span class="error-message" id="password-error"></span>
 				</div>
                 <div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
 					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" name="u_cpassword" required>
 					<label >Confirm Password</label>
-					
+					<span class="error-message" id="cpassword-error"></span>
 				</div>
 				<div class="remember-forgot">
 					<label><input type="checkbox" id="terms" required> I agree to the terms &conditions</label>
@@ -354,52 +360,107 @@
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 	<script>
-		function validateForm() {
-			console.log("Validation function called"); // Debugging statement
-			const username = document.getElementById('username').value.trim();
-			const email = document.getElementById('email').value.trim();
-			const password = document.getElementById('password').value.trim();
-			const cpassword = document.getElementById('cpassword').value.trim();
-			const terms = document.getElementById('terms').checked;
+        
+        document.getElementById('username').addEventListener('input', function () {
+            const username = this.value.trim();
+            const usernameError = document.getElementById('username-error');
 
-			console.log("Username:", username); // Debugging statement
-			console.log("Email:", email); // Debugging statement
-			console.log("Password:", password); // Debugging statement
-			console.log("Confirm Password:", cpassword); // Debugging statement
-			console.log("Terms Checked:", terms); // Debugging statement
+            if (username.length < 3 || username.length > 20) {
+                usernameError.innerText = 'Username must be 3-20 characters long.';
+                usernameError.style.display = 'block';
+            } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                usernameError.innerText = 'Username can only contain letters, numbers, and underscores.';
+                usernameError.style.display = 'block';
+            } else {
+                usernameError.style.display = 'none';
+            }
+        });
 
-			const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+        document.getElementById('email').addEventListener('input', function () {
+            const email = this.value.trim();
+            const emailError = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-			if (!usernameRegex.test(username)) {
-				alert('Username must be 3-20 characters long and can only contain letters, numbers, and underscores.');
-				return false;
-			}
+            if (!emailRegex.test(email)) {
+                emailError.innerText = 'Please enter a valid email address.';
+                emailError.style.display = 'block';
+            } else {
+                emailError.style.display = 'none';
+            }
+        });
 
-			if (!emailRegex.test(email)) {
-				alert('Please enter a valid email address.');
-				return false;
-			}
+        document.getElementById('password').addEventListener('input', function () {
+            const password = this.value.trim();
+            const passwordError = document.getElementById('password-error');
 
-			if (!passwordRegex.test(password)) {
-				alert('Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.');
-				return false;
-			}
+            if (password.length < 8) {
+                passwordError.innerText = 'Password must be at least 8 characters long.';
+                passwordError.style.display = 'block';
+            } else if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/.test(password)) {
+                passwordError.innerText = 'Password must include at least one uppercase letter, one lowercase letter, and one number.';
+                passwordError.style.display = 'block';
+            } else {
+                passwordError.style.display = 'none';
+            }
+        });
 
-			if (password !== cpassword) {
-				alert('Passwords do not match.');
-				return false;
-			}
+        document.getElementById('cpassword').addEventListener('input', function () {
+            const cpassword = this.value.trim();
+            const password = document.getElementById('password').value.trim();
+            const cpasswordError = document.getElementById('cpassword-error');
 
-			if (!terms) {
-				alert('You must agree to the terms and conditions.');
-				return false;
-			}
+            if (password !== cpassword) {
+                cpasswordError.innerText = 'Passwords do not match.';
+                cpasswordError.style.display = 'block';
+            } else {
+                cpasswordError.style.display = 'none';
+            }
+        });
 
-			console.log("Validation passed"); // Debugging statement
-			return true;
-		}
+        function validateForm() {
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const cpassword = document.getElementById('cpassword').value.trim();
+            const terms = document.getElementById('terms').checked;
+
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+            let isValid = true;
+
+            if (!usernameRegex.test(username)) {
+                document.getElementById('username-error').innerText = 'Username must be 3-20 characters long and can only contain letters, numbers, and underscores.';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!emailRegex.test(email)) {
+                document.getElementById('email-error').innerText = 'Please enter a valid email address.';
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password-error').innerText = 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password !== cpassword) {
+                document.getElementById('cpassword-error').innerText = 'Passwords do not match.';
+                document.getElementById('cpassword-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!terms) {
+                alert('You must agree to the terms and conditions.');
+                isValid = false;
+            }
+
+            return isValid;
+        }
 	</script>
 </body>
 </html>
