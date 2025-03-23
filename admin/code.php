@@ -58,7 +58,10 @@ if(isset($_POST['updatebtn']))
     $email=$_POST['edit_email'];
     $password=$_POST['edit_password'];
     $usertype = $_POST['update_usertype'];
-    $query=  "UPDATE register SET username='$username', email='$email', password='$password', usertype='$usertype' WHERE id ='$id'";
+
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    $query=  "UPDATE register SET username='$username', email='$email', password='$hashed_password', usertype='$usertype' WHERE id ='$id'";
     $result=mysqli_query($connection, $query);
     if($result)
     {
