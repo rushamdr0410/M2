@@ -662,9 +662,10 @@ if (!isset($_SESSION['user_username'])) {
             <div class="card">
               <!-- Movie Poster Section -->
               <div class="img">
-              <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-              </div>
+                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
+                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                </a>
+            ` </div>
               <div class="movies-title">
                 <h3><?php echo $row['title']; ?></h3>
               </div>
@@ -680,9 +681,9 @@ if (!isset($_SESSION['user_username'])) {
   </div>
 </section>
 
-  <section class="movies" id="movies">
+<section class="movies" id="movies">
     <div class="title">
-      <h2 class="heading">movies</h2>
+      <h2 class="heading">Movies</h2>
       <form>
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
@@ -698,8 +699,10 @@ if (!isset($_SESSION['user_username'])) {
             <div class="card">
               <!-- Movie Poster Section -->
               <div class="img">
-                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-              </div>
+                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
+                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                </a>
+            ` </div>
               <div class="movies-title">
                 <h3><?php echo $row['title']; ?></h3>
               </div>
@@ -713,7 +716,7 @@ if (!isset($_SESSION['user_username'])) {
       }
     ?>
   </div>
-  </section>
+</section>
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">TV-Shows</h2>
@@ -732,8 +735,10 @@ if (!isset($_SESSION['user_username'])) {
             <div class="card">
               <!-- Movie Poster Section -->
               <div class="img">
-                <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-              </div>
+                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
+                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                </a>
+            ` </div>
               <div class="movies-title">
                 <h3><?php echo $row['title']; ?></h3>
               </div>
