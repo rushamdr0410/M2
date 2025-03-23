@@ -521,8 +521,8 @@ if (!isset($_SESSION['user_username'])) {
         gap: 10px;
         overflow-x: auto;
         padding: 10px;
-        background-color: #000;
-        margin-left: 181px;
+        background-color: #131418;
+        margin-left: 179px;
       }
 
       .movies-container {
@@ -533,8 +533,8 @@ if (!isset($_SESSION['user_username'])) {
         font-family: Arial, sans-serif;
       }
       .movies-container img {
-        width: 100%;
-        height: auto;
+        width: 110%;
+        height: 100%;
         border-radius: 5px;
         transition: transform 0.3s ease;
       }
@@ -543,8 +543,8 @@ if (!isset($_SESSION['user_username'])) {
         transform: scale(1.05);
       }
 
-      .movies-container-title {
-          font-size: 14px;
+      .movies-title {
+          font-size: 9px;
           margin-top: 5px;
           white-space: nowrap;
           overflow: hidden;
@@ -661,8 +661,12 @@ if (!isset($_SESSION['user_username'])) {
           <div class="movies-container">
             <div class="card">
               <!-- Movie Poster Section -->
-              <div class="card-img">
+              <div class="img">
+              <a href="movie_details.php?id=<?php echo $row['id']; ?>">
                 <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+              </div>
+              <div class="movies-title">
+                <h3><?php echo $row['title']; ?></h3>
               </div>
             </div>
           </div>
@@ -678,14 +682,14 @@ if (!isset($_SESSION['user_username'])) {
 
   <section class="movies" id="movies">
     <div class="title">
-      <h2 class="heading">Movies</h2>
+      <h2 class="heading">movies</h2>
       <form>
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
     <div class="movies-container-wrapper">
     <?php
-      $query = "SELECT * FROM moviedetails WHERE type='Movie'";
+      $query = "SELECT * FROM moviedetails where type='Movie'";
       $result = mysqli_query($connection, $query);
       if(mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
@@ -693,28 +697,11 @@ if (!isset($_SESSION['user_username'])) {
           <div class="movies-container">
             <div class="card">
               <!-- Movie Poster Section -->
-              <div class="card-img">
+              <div class="img">
                 <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
               </div>
-          
-              <!-- Movie Details Section -->
-              <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
-                 <p><?php echo $row['release_year']; ?></p>
-                  <p><?php echo $row['type']; ?> </p>
-                  <p><?php echo $row['duration']; ?></p>
-                </span>
+              <div class="movies-title">
                 <h3><?php echo $row['title']; ?></h3>
-              </div>
-              
-              <!-- Add to Watchlist Button Section -->
-              <div class="card-watchlist">
-                <form action="manage_watchlist.php" method="POST">
-                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
-                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
-                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
-                </form>
               </div>
             </div>
           </div>
@@ -725,7 +712,7 @@ if (!isset($_SESSION['user_username'])) {
         echo "No Records Found!";
       }
     ?>
-    </div>
+  </div>
   </section>
   <section class="movies" id="movies">
     <div class="title">
@@ -736,7 +723,7 @@ if (!isset($_SESSION['user_username'])) {
     </div>
     <div class="movies-container-wrapper">
     <?php
-      $query = "SELECT * FROM moviedetails WHERE type='TV-Show'";
+      $query = "SELECT * FROM moviedetails where type='TV-Show'";
       $result = mysqli_query($connection, $query);
       if(mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
@@ -744,28 +731,11 @@ if (!isset($_SESSION['user_username'])) {
           <div class="movies-container">
             <div class="card">
               <!-- Movie Poster Section -->
-              <div class="card-img">
+              <div class="img">
                 <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
               </div>
-          
-              <!-- Movie Details Section -->
-              <div class="card-details">
-                <span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">
-                 <p><?php echo $row['release_year']; ?></p>
-                  <p><?php echo $row['type']; ?> </p>
-                  <p><?php echo $row['duration']; ?></p>
-                </span>
+              <div class="movies-title">
                 <h3><?php echo $row['title']; ?></h3>
-              </div>
-              
-              <!-- Add to Watchlist Button Section -->
-              <div class="card-watchlist">
-                <form action="manage_watchlist.php" method="POST">
-                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
-                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
-                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
-                </form>
               </div>
             </div>
           </div>
@@ -776,7 +746,7 @@ if (!isset($_SESSION['user_username'])) {
         echo "No Records Found!";
       }
     ?>
-    </div>
+  </div>
   </section>
   
 
