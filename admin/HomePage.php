@@ -518,120 +518,48 @@ if (!isset($_SESSION['user_username'])) {
       }
       .movies-container-wrapper {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
         gap: 10px;
-        padding: 20px;
+        overflow-x: auto;
+        padding: 10px;
+        background-color: #000;
+        margin-left: 181px;
       }
 
       .movies-container {
-        overflow: hidden; 
-        border-radius: 6px; 
-        max-width: 968px;
-        margin-left: 157px;
-        margin-right: auto;
-        margin-bottom: 1rem;
-        padding-bottom: 3rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(266px, 1fr));
-        margin-top: 2rem;
-        font-size: 12px;
+        flex: 0 0 auto;
+        width: 150px;
+        text-align: center;
+        color: white;
+        font-family: Arial, sans-serif;
       }
       .movies-container img {
         width: 100%;
         height: auto;
-        max-height: 240px; /* Adjust the maximum height of the images as needed */
-        object-fit: cover;
-        transition: transform 0.2s ease;
+        border-radius: 5px;
+        transition: transform 0.3s ease;
       }
 
       .movies-container img:hover {
-        transform: translateY(-10px);
+        transform: scale(1.05);
       }
 
-
-      .date_min {
-        display: flex;
-        justify-content: space-between;
+      .movies-container-title {
+          font-size: 14px;
+          margin-top: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
       }
 
-      .box h3 {
-        font-size: 0.9rem;
-        font-weight: 500;
+      .movies-container {
+          padding: 20px;
       }
 
-      .box span {
-        font-size: 12px;
-        margin-bottom: 6px;
-        padding-bottom: 6px;
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      .card-details span {
-        color: rgba(255, 255, 255, 0.7); /* Transparent white color */
-      }
-
-
-
-      @media only screen and (max-witdh: 767px){
-        width: 100%;      }
-      .movies-container-wrapper .movies-container img{
-        width: 100%;
-        max-width: 100%
-        height: auto;
-        object-fit: cover;
-      }
-      /* .movies-container{
-        
-      } */
-      
-      .box .box-img {
-        width: 100%;
-        height: 270px;
-        overflow: hidden; 
-        border-radius: 6px;
-      }
-
-      .box .box-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; 
-        transition: transform 0.2s ease;
-      }
-
-      .box .box-img img:hover {
-        transform: translateY(-10px);
-      }
-
-      .date_min{ 
-        display: flex;
-        justify-content: space-between;
-      }
-      .box h3{
-        font-size: 0.9rem;
-        font-weight: 500;
-      }
-      .box span{
-        font-size: 12px;
-        margin-bottom: 6px;
-        padding-bottom: 6px;
-        color: rgba(255, 255, 255, 0.5);
-
-      }
-
-      .watchlist-btn {
-        background-color: transparent; /* Transparent background */
-        color: #01939c; /* Text color matching the color of the heading */
-        border: 1px solid #01939c; /* Add border */
-        padding: 0.5rem 1rem; /* Adjust padding */
-        border-radius: 5px; /* Add border radius for rounded corners */
-        cursor: pointer; /* Change cursor on hover */
-        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
-      }
-
-      .watchlist-btn:hover {
-        background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
-        color: #fff; /* Change text color to white on hover */
+      .movies-container {
+          color: white;
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
       }
 
   </style>
@@ -735,28 +663,6 @@ if (!isset($_SESSION['user_username'])) {
               <!-- Movie Poster Section -->
               <div class="card-img">
                 <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-              </div>
-          
-              <!-- Movie Details Section -->
-              <div class="card-details">
-                <span class="date_min">
-                  <p><?php echo $row['release_year']; ?></p>
-                  <p><?php echo $row['duration']; ?> min</p>
-                  <p><?php echo $row['type']; ?></p>
-                </span>
-                <h3><?php echo $row['title']; ?></h3>
-              </div>
-              
-              <div class="card-watchlist">
-                <form action="manage_watchlist.php" method="POST">
-                  <button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>
-                  <input type="hidden" name="duration" value="<?php echo $row['duration']; ?>">
-                  <input type="hidden" name="quality" value="<?php echo $row['quality']; ?>">
-                  <input type="hidden" name="poster_img" value="<?php echo $row['poster_img']; ?>">
-                  <input type="hidden" name="title" value="<?php echo $row['title']; ?>">
-                  <input type="hidden" name="release_year" value="<?php echo $row['release_year']; ?>">
-                  <input type="hidden" name="type" value="<?php echo $row['type']; ?>">
-                </form>
               </div>
             </div>
           </div>
