@@ -388,6 +388,62 @@ if (!isset($_SESSION['user_username'])) {
         .movie-info .watch-trailer:hover {
             background-color: #4fa8c7;
         }
+        /* Related Movies Section */
+        .related-movies {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-left: -76px;
+        }
+
+        .related-movies h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #61DAFB;
+            margin-left: 162px;
+        }
+
+        .related-movies-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .related-movie {
+            flex: 1 1 calc(16.666% - 1rem); /* 6 items per row */
+            max-width: 150px;
+            text-align: center;
+        }
+
+        .related-movie img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .related-movie img:hover {
+            transform: scale(1.05);
+        }
+
+        .related-movie h3 {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            color: #f2f5f7;
+        }
+
+        @media (max-width: 768px) {
+            .related-movie {
+                flex: 1 1 calc(33.333% - 1rem); /* 3 items per row on smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .related-movie {
+                flex: 1 1 calc(50% - 1rem); /* 2 items per row on mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -427,7 +483,7 @@ if (!isset($_SESSION['user_username'])) {
             <div class="profile-text-container">           
                 <ul>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">rus@gmail.com</a>
+                        <a href="#" class="dropdown-toggle"><?php echo $_SESSION['user_username']?></a>
                         <ul class="dropdown-content">
                             <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
                             <li>
@@ -452,7 +508,7 @@ if (!isset($_SESSION['user_username'])) {
             <h1>Movie Title</h1>
             <p class="label">Release Date: <span><?php echo $row['release_year']; ?></span></p>
             <p class="label">Director: <span>Christopher Nolan</span></p>
-            <p class="label">Runtime: <span>2h 30m</span></p>
+            <p class="label">Runtime: <span><?php echo $row['duration']; ?></span></p>
             <div class="genre-list">
                 <span>Action</span>
                 <span>Sci-Fi</span>
@@ -462,7 +518,7 @@ if (!isset($_SESSION['user_username'])) {
                 <i class="fas fa-star"></i>
                 <span>8.5/10</span>
             </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris molestie elit, et lacinia ipsum quam nec dui.</p>
+            <p><?php echo $row['description']; ?></p>
             <p class="label">Cast:</p>
             <div class="cast-list">
                 <span>Leonardo DiCaprio</span>
@@ -473,6 +529,32 @@ if (!isset($_SESSION['user_username'])) {
             <a href="#" class="watch-trailer">Watch Trailer</a>
         </div>
     </div>
+    <!-- Related Movies Section -->
+    <section class="related-movies">
+        <h2>Related Movies</h2>
+        <div class="related-movies-container">
+            <?php
+            // Query to fetch related movies (e.g., movies of the same genre)
+            $related_query = "SELECT * FROM moviedetails";
+            $related_result = mysqli_query($connection, $related_query);
+
+            if (mysqli_num_rows($related_result) > 0) {
+                while ($row = mysqli_fetch_assoc($related_result)) {
+                    ?>
+                    <div class="related-movie">
+                        <a href="movie_details.php?id=<?php echo $row['id']; ?>">
+                            <img src="upload/<?php echo $row['poster_img']; ?>" alt="<?php echo $row['title']; ?>">
+                        </a>
+                        <h3><?php echo $row['title']; ?></h3>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo "<p>No related movies found.</p>";
+            }
+            ?>
+        </div>
+    </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
