@@ -282,70 +282,6 @@ h2{
   align-items: center;
   margin-left:15px;
 }
-.dropdown-button{
-  background-color: #131418; /* Match background color */
-    color: #f2f5f7;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px; /* Adjust button radius */
-    cursor: pointer;
-    
-}
-
-.dropdown-filter-container {
-    display: flex;
-    justify-content: flex-start; /* Adjusts alignment of dropdowns */
-    gap: 20px; /* Space between the dropdowns */
-    margin-bottom: 20px; /* Add space below the container */
-    margin-left:10px;
-    
-}
-  
-.dropdown-filter-container a:hover{
-  color: #61DAFB;
-  
-}
-
-.dropdown-filter-container{
-  display: flex;
-    align-items: center; /* Aligns items vertically in the center */
-    gap: 15px; 
-}
-.filter-button {
-    background-color: #61DAFB; /* Match background color */
-    color: #131418 ;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-/* Style the select element */
-select {
-    width: 150px; /* Adjust the width as needed */
-    padding: 10px 15px; /* Adjust padding as needed */
-    border-radius: 5px; /* Adjust border radius as needed */
-    border: 1px solid #ccc; /* Add a border */
-    background-color: #131418; /* Match background color */
-    color: #f2f5f7; /* Match text color */
-    font-family: "Open Sans", sans-serif; /* Match font family */
-    cursor: pointer; /* Add cursor pointer */
-    outline: none; /* Remove focus outline */
-    transition: background-color 0.3s, color 0.3s; /* Add transitions */
-}
-
-/* Style the select element on hover */
-select:hover {
-    background-color: #61DAFB; /* Match hover background color */
-    color: #131418; /* Match hover text color */
-}
-
-/* Style the option elements */
-option {
-    background-color: #131418; /* Match background color */
-    color: #f2f5f7; /* Match text color */
-}
 
 /* Container for all movie cards */
 .movies-container {
@@ -446,63 +382,9 @@ option {
 
 
 <h2>Movies</h2>
-<form method="POST" action="action.php">
-<div class="dropdown-filter-container"> 
-<div class="dropdown">
-    <label for="type-select">Type:</label>
-    <select id="type-select" name="type">
-        <option value="">Select Type</option>
-        <option value="Movie">Movies</option>
-        <option value="TV shows">TV shows</option>
-    </select>
-</div>
 
-<div class="dropdown">
-<label for="genre-select">Genre:</label>
-    <select id="genre-select" name="genre" >
-        <option value="">Select Genre</option>
-        <option value="Action">Action</option>
-        <option value="Adventure">Adventure</option>
-        <option value="Biography">Biography</option>
-        <option value="Comedy">Comedy</option>
-        <option value="Documentary">Documentary</option>
-        <option value="Drama">Drama</option>
-        <option value="Fantasy">Fantasy</option>
-        <option value="Horror">Horror</option>
-        <option value="Romance">Romance</option>
-        <option value="Sci-fi">Sci-Fi</option>
-        <option value="Thriller">Thriller</option>
-    </select>
-</div>
-
-
-<div class="dropdown">
-    <label for="quality-select">Quality:</label>
-    <select id="quality-select" name="quality">
-        <option value="">Select Quality</option>
-        <option value="CAM">CAM</option>
-        <option value="HD">HD</option>
-    </select>
-</div>
-
-<div class="dropdown">
-    <label for="year-select">Year:</label>
-    <select id="year-select" name="year">
-        <option value="">Select Year</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-    </select>
-</div>
-
-
-    <!-- Add the filter button -->
-    <input type="submit" id="filter-button" name="submit" class="filter-button">
-</div>
-</form>
 
 <?php
-// Include the database connection file if not already included
-// include('security.php');
 
 
 // Query to fetch all movies from the moviedetails table
