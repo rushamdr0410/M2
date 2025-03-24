@@ -1,5 +1,4 @@
 <?php
-session_start();
 include('security.php'); // Ensure session security
 
 $connection = mysqli_connect("localhost", "root", "", "moviemagic");

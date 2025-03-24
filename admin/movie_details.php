@@ -375,8 +375,17 @@ if (!isset($_SESSION['user_username'])) {
             font-size: 0.9rem;
         }
 
-        .movie-info .watch-trailer {
+        .button-container {
+            display: flex;
+            gap: 10px; /* Add spacing between buttons */
+            margin-top: 1rem; /* Add some space above the buttons */
+        }
+
+        .movie-info .watch-trailer,
+        .movie-info .watch-now,
+        .movie-info form .add-to-watchlist {
             display: inline-block;
+            margin-right: 10px;
             background-color: #61DAFB;
             color: #131418;
             padding: 0.8rem 1.5rem;
@@ -384,9 +393,19 @@ if (!isset($_SESSION['user_username'])) {
             text-decoration: none;
             font-weight: bold;
             transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
         }
 
-        .movie-info .watch-trailer:hover {
+        .movie-info .watch-trailer:hover,
+        .movie-info .watch-now:hover,
+        .movie-info  form .add-to-watchlist:hover {
+            background-color: #4fa8c7;
+        }
+
+        .movie-info .watch-trailer:hover,
+        .movie-info .watch-now:hover,
+        .movie-info .add-to-watchlist:hover {
             background-color: #4fa8c7;
         }
         /* Related Movies Section */
@@ -527,9 +546,25 @@ if (!isset($_SESSION['user_username'])) {
                 <span>Elliot Page</span>
                 <span>Tom Hardy</span>
             </div>
-            <a href="#" class="watch-trailer">Watch Trailer</a>
-            <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" class="watch-trailer">Watch Now</a>
-            <a href="#" class="watch-trailer">WatchList</a>
+            <div class="button-container">
+                <a href="#" class="watch-trailer">Watch Trailer</a>
+                <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" class="watch-now">Watch Now</a>
+                <form action="add_to_watchlist.php" method="POST">
+                    <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                    <button type="submit" class="add-to-watchlist">WatchList</button>
+                </form>
+            </div>
+            <?php
+                if (isset($_GET['status'])) {
+                    if ($_GET['status'] === 'added') {
+                        echo '<p style="color: green;">Movie added to watchlist successfully!</p>';
+                    } elseif ($_GET['status'] === 'error') {
+                        echo '<p style="color: red;">Failed to add movie to watchlist. Please try again.</p>';
+                    } elseif ($_GET['status'] === 'invalid') {
+                        echo '<p style="color: red;">Invalid request.</p>';
+                    }
+                }
+            ?>
         </div>
     </div>
     <!-- Related Movies Section -->
