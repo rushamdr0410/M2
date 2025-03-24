@@ -10,7 +10,8 @@ if (!isset($_SESSION['user_username'])) {
 
 
   // Query for fetching movie details
-  $query = "SELECT * FROM moviedetails";
+  $id = $_GET['id'];
+  $query = "SELECT * FROM moviedetails where id= $id";
   $result = mysqli_query($connection, $query);
 
     if (mysqli_num_rows($result) > 0) {
@@ -527,6 +528,8 @@ if (!isset($_SESSION['user_username'])) {
                 <span>Tom Hardy</span>
             </div>
             <a href="#" class="watch-trailer">Watch Trailer</a>
+            <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" class="watch-trailer">Watch Now</a>
+            <a href="#" class="watch-trailer">WatchList</a>
         </div>
     </div>
     <!-- Related Movies Section -->
