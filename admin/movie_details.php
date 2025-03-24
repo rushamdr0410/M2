@@ -1,3 +1,25 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+include('user_auth.php');
+
+if (!isset($_SESSION['user_username'])) {
+  header("Location: userlogin.php");
+  exit();
+}
+
+
+  // Query for fetching movie details
+  $query = "SELECT * FROM moviedetails";
+  $result = mysqli_query($connection, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result); // Fetch the movie details
+    } else {
+        echo "No movie found with the provided ID.";
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -424,11 +446,11 @@
     </nav>
     <div class="movie-details-container">
         <div class="movie-poster">
-            <img src="https://via.placeholder.com/400x600" alt="Movie Poster">
+            <img src="upload/<?php echo $row['poster_img']; ?>" alt="Movie Poster">
         </div>
         <div class="movie-info">
             <h1>Movie Title</h1>
-            <p class="label">Release Date: <span>2023-10-15</span></p>
+            <p class="label">Release Date: <span><?php echo $row['release_year']; ?></span></p>
             <p class="label">Director: <span>Christopher Nolan</span></p>
             <p class="label">Runtime: <span>2h 30m</span></p>
             <div class="genre-list">
