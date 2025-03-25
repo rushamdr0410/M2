@@ -298,7 +298,7 @@ h2{
     gap: 20px; /* Space between the dropdowns */
     margin-bottom: 20px; /* Add space below the container */
     margin-left:10px;
-    
+    margin-top: 35px;
 }
   
 .dropdown-filter-container a:hover{
