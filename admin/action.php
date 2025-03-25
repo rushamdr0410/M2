@@ -288,7 +288,7 @@ h2{
     padding: 10px 15px;
     border: none;
     border-radius: 3px; /* Adjust button radius */
-    cursor: pointer;]
+    cursor: pointer;
     
 }
 
