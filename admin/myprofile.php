@@ -322,13 +322,14 @@ $result = mysqli_query($connection, $query);
             background-color: #ddd;
             margin-right: 20px;
             position: relative;
+            margin-top: -37px;
         }
         
         .change-photo {
-            color: #0095f6;
+            color: #61DAFB;
             font-size: 14px;
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: -19px;
         }
         
         .username {
@@ -400,6 +401,227 @@ $result = mysqli_query($connection, $query);
             font-size: 12px;
             margin-top: 5px;
         }
+    .edit-form input[type="text"],
+    .edit-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        background-color: #232323;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+    }
+    
+    .edit-form textarea {
+        height: 100px;
+        resize: vertical;
+    }
+    
+    .save-btn {
+        background-color: #61DAFB;
+        color: #131418;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 20px;
+    }
+    
+    .save-btn:hover {
+        background-color: #4fa8c7;
+    }
+    
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #61DAFB;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .toggle-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .radio-option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .radio-option input {
+        margin-right: 10px;
+    }
+    .modal {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #232323;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #444;
+    position: relative;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    color: #f2f5f7;
+  }
+  
+  .close-modal {
+    position: absolute;
+    right: 20px;
+    top: 16px;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+  }
+  
+  .close-modal:hover {
+    color: #f2f5f7;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .upload-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .upload-btn, .remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+    width: 100%;
+  }
+  
+  .upload-btn {
+    background-color: #0095f6;
+    color: white;
+  }
+  
+  .upload-btn:hover {
+    background-color: #0077cc;
+  }
+  
+  .remove-btn {
+    background-color: #444;
+    color: #f2f5f7;
+  }
+  
+  .remove-btn:hover {
+    background-color: #555;
+  }
+  
+  .upload-btn i, .remove-btn i {
+    margin-right: 8px;
+    font-size: 18px;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .cancel-btn {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .cancel-btn:hover {
+    color: #0077cc;
+  }
+  
+  /* Preview styles */
+  .photo-preview {
+    display: none;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .photo-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+  }
   </style>
 </head>
 <body>
@@ -459,65 +681,241 @@ $result = mysqli_query($connection, $query);
   </nav>
 
     
-    <div class="edit-profile-container">
-    <div class="profile-header">
-        <div class="profile-pic"></div>
-        <div>
-            <div class="username">rus.mdr</div>
-            <div class="category">SSRIT HTT-FERAP</div>
-            <div class="change-photo">Change photo</div>
+  <div class="edit-profile-container">
+    <h1>Edit profile</h1>
+    
+    <form class="edit-form" method="POST" action="">
+        <div class="profile-header">
+            <div class="profile-pic"></div>
+            <div>
+                <div class="form-group">
+                    <label for="username" style="display: block; margin-bottom: 5px;">Username</label>
+                    <input type="text" id="username" name="username" value="">
+                </div>
+                <div class="change-photo">
+                    <button type="submit" class="save-btn">Change Profile</button>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <hr>
-    
-    <div class="section">
-        <h2>Website</h2>
-        <h3>Website</h3>
-        <p class="note">Editing your links is only available on mobile. Visit the Instagram app and edit your profile to change the websites in your bio.</p>
-    </div>
-    
-    <hr>
-    
-    <div class="section">
-        <h2>Bio</h2>
-        <div class="bio-text">
-            LIVE[ILOVE][LAUGH]<br>
-            19 / 150
+        
+        <hr>
+        
+        <div class="section">
+            <h2>Website</h2>
+            <div class="form-group">
+                <label for="website" style="display: block; margin-bottom: 5px;">E-Mail</label>
+                <input type="text" id="website" name="website" value="">
+                <p class="note">Enter your e-mail (e.g., example@gmail.com)</p>
+            </div>
         </div>
-    </div>
-    
-    <hr>
-    
-    <div class="section">
-        <h2>Show Threads badge</h2>
-        <div class="toggle-item">
-            <span>Show Threads badge</span>
+        
+        <hr>
+        
+        <div class="section">
+            <h2>Bio</h2>
+            <div class="form-group">
+                <label for="bio" style="display: block; margin-bottom: 5px;">About You</label>
+                <textarea id="bio" name="bio"></textarea>
+            </div>
         </div>
-    </div>
-    
-    <hr>
-    
-    <div class="section">
-        <h2>Gender</h2>
-        <table class="gender-options">
-            <tr>
-                <td>Prefer not to say</td>
-            </tr>
-            <tr>
-                <td>
-                    Activate Windows<br>
-                    <span class="activate-warning">Go to Settings to activate Windows</span>
-                </td>
-            </tr>
-        </table>
-    </div>
+        
+        <hr>
+        
+        <div class="section">
+            <h2>Show Threads badge</h2>
+            <div class="toggle-container">
+                <span>Show Threads badge</span>
+                <label class="switch">
+                    <input type="checkbox" name="threads_badge" >
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div class="section">
+            <h2>Gender</h2>
+            <div class="form-group">
+                <div class="radio-option">
+                    <input type="radio" id="male" name="gender" value="Male" >
+                    <label for="male">Male</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="female" name="gender" value="Female" >
+                    <label for="female">Female</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="prefer-not" name="gender" value="Prefer not to say" >
+                    <label for="prefer-not">Prefer not to say</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="other" name="gender" value="Other" >
+                    <label for="other">Other</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="submit" class="save-btn">Cancel</button>
+    </form>
+  </div>
 
+  <div id="photoUploadModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Change Profile Photo</h3>
+      <span class="close-modal">&times;</span>
     </div>
+    <div class="modal-body">
+      <form id="photoUploadForm" enctype="multipart/form-data">
+        <div class="upload-options">
+          <div class="upload-btn">
+            <label for="profilePhoto">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Upload Photo</span>
+              <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" style="display: none;">
+            </label>
+          </div>
+          <button type="button" class="remove-btn" id="removePhotoBtn">
+            <i class="fas fa-trash-alt"></i>
+            <span>Remove Current Photo</span>
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" id="cancelPhotoUpload">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="Homepage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('photoUploadModal');
+    const changePhotoBtn = document.querySelector('.change-photo');
+    const closeModal = document.querySelector('.close-modal');
+    const cancelBtn = document.getElementById('cancelPhotoUpload');
+    
+    // Show modal when change photo button is clicked
+    changePhotoBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent default link behavior
+        e.stopPropagation(); // Stop event bubbling
+        modal.style.display = 'flex';
+    });
+    
+    // Close modal when X is clicked
+    closeModal.addEventListener('click', function(e) {
+        e.stopPropagation();
+        modal.style.display = 'none';
+        resetForm();
+    });
+    
+    // Close modal when cancel is clicked
+    cancelBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        modal.style.display = 'none';
+        resetForm();
+    });
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            e.stopPropagation();
+            modal.style.display = 'none';
+            resetForm();
+        }
+    });
+    
+    // Prevent modal content from closing when clicking inside
+    document.querySelector('.modal-content').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('photoUploadModal');
+        const changePhotoBtn = document.querySelector('.change-photo');
+        const closeModal = document.querySelector('.close-modal');
+        const cancelBtn = document.getElementById('cancelPhotoUpload');
+        const removeBtn = document.getElementById('removePhotoBtn');
+        const fileInput = document.getElementById('profilePhoto');
+        const photoPreview = document.createElement('div');
+        photoPreview.className = 'photo-preview';
+        document.querySelector('.modal-body').prepend(photoPreview);
+        
+        // Show modal when change photo button is clicked
+        changePhotoBtn.addEventListener('click', function() {
+        modal.style.display = 'flex';
+        });
+        
+        // Close modal when X is clicked
+        closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+        resetForm();
+        });
+        
+        // Close modal when cancel is clicked
+        cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        resetForm();
+        });
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            resetForm();
+        }
+        });
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                photoPreview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                photoPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            }
+        }
+        });
+        
+        // Handle remove photo
+        removeBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to remove your profile photo?')) {
+            // Here you would send an AJAX request to remove the photo
+            alert('Profile photo removed!');
+            modal.style.display = 'none';
+            resetForm();
+        }
+        });
+        
+        // Reset form function
+        function resetForm() {
+        fileInput.value = '';
+        photoPreview.innerHTML = '';
+        photoPreview.style.display = 'none';
+        }
+        
+        // Form submission (you would need to implement AJAX submission)
+        document.getElementById('photoUploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Implement AJAX file upload here
+        alert('Profile photo updated!');
+        modal.style.display = 'none';
+        resetForm();
+        });
+    });
+});
+
+    </script>
 </body>
 </html>
 
