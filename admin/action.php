@@ -448,71 +448,101 @@ option {
 </div>
 </nav>
 
-
-<h2>action Movies,tv shows</h2>
+<h2>Action Movies & TV Shows</h2>
 <form method="POST" action="action.php">
 <div class="dropdown-filter-container"> 
-<div class="dropdown">
-    <label for="type-select">Type:</label>
-    <select id="type-select" name="type">
-        <option value="">Select Type</option>
-        <option value="Movie">Movies</option>
-        <option value="TV shows">TV shows</option>
-    </select>
-</div>
+    <div class="dropdown">
+        <label for="type-select">Type:</label>
+        <select id="type-select" name="type">
+            <option value="">All Types</option>
+            <option value="Movie">Movies</option>
+            <option value="TV shows">TV shows</option>
+        </select>
+    </div>
 
-<div class="dropdown">
-<label for="genre-select">Genre:</label>
-    <select id="genre-select" name="genre" >
-        <option value="">Select Genre</option>
-        <option value="Action">Action</option>
-        <option value="Adventure">Adventure</option>
-        <option value="Biography">Biography</option>
-        <option value="Comedy">Comedy</option>
-        <option value="Documentary">Documentary</option>
-        <option value="Drama">Drama</option>
-        <option value="Fantasy">Fantasy</option>
-        <option value="Horror">Horror</option>
-        <option value="Romance">Romance</option>
-        <option value="Sci-fi">Sci-Fi</option>
-        <option value="Thriller">Thriller</option>
-    </select>
-</div>
+    <div class="dropdown">
+        <label for="quality-select">Quality:</label>
+        <select id="quality-select" name="quality">
+            <option value="">All Qualities</option>
+            <option value="CAM">CAM</option>
+            <option value="HD">HD</option>
+        </select>
+    </div>
 
+    <div class="dropdown">
+        <label for="year-select">Year:</label>
+        <select id="year-select" name="year">
+            <option value="">All Years</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+        </select>
+    </div>
 
-<div class="dropdown">
-    <label for="quality-select">Quality:</label>
-    <select id="quality-select" name="quality">
-        <option value="">Select Quality</option>
-        <option value="CAM">CAM</option>
-        <option value="HD">HD</option>
-    </select>
-</div>
-
-<div class="dropdown">
-    <label for="year-select">Year:</label>
-    <select id="year-select" name="year">
-        <option value="">Select Year</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
-    </select>
-</div>
-
-
-    <!-- Add the filter button -->
-    <input type="submit" id="filter-button" name="submit" class="filter-button">
+    <input type="submit" id="filter-button" name="submit" class="filter-button" value="Filter">
 </div>
 </form>
 
 <?php
+function displayMovies($result) {
+    echo '<div class="movies-container">';
+    
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<div class="card">';
+            
+            // Movie Poster Section
+            echo '<div class="card-img">';
+            echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
+            echo '</div>';
+            
+            // Movie Details Section
+            echo '<div class="card-details">';
+            echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
+            echo '<p>' . $row['release_year'] . '</p>';
+            echo '<p>' . $row['type'] . '</p>';
+            echo '<p>' . $row['duration'] . ' mins</p>';
+            echo '</span>';
+            echo '<h3>' . $row['title'] . '</h3>';
+            echo '</div>';
+            
+            // Add to Watchlist Button Section
+            echo '<div class="card-watchlist">';
+            echo '<form action="manage_watchlist.php" method="POST">';
+            echo '<button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>';
+            echo '<input type="hidden" name="title" value="' . $row['title'] . '">';
+            echo '<input type="hidden" name="release_year" value="' . $row['release_year'] . '">';
+            echo '<input type="hidden" name="type" value="' . $row['type'] . '">';
+            echo '</form>';
+            echo '</div>';
+            
+            echo '</div>';
+        }
+    } else {
+        echo '<p>No movies found matching your filters.</p>';
+    }
+    
+    echo '</div>';
+}
+
+// Show all action movies by default when page first loads
+if (!isset($_POST['submit'])) {
+    $default_query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails WHERE genreid='5'";
+    $result = mysqli_query($connection, $default_query);
+    
+    if (!$result) {
+        die("Query failed: " . mysqli_error($connection));
+    }
+    
+    displayMovies($result);
+}
+
 if (isset($_POST['submit'])) {
     // Retrieve filter inputs
     $type = isset($_POST['type']) ? $_POST['type'] : '';
     $quality = isset($_POST['quality']) ? $_POST['quality'] : '';
-    $genre = isset($_POST['genre']) ? $_POST['genre'] : '';
     $year = isset($_POST['year']) ? $_POST['year'] : '';
 
-    // Construct query
+    // Construct query - start with base Action genre filter
     $query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails WHERE genreid='5'";
 
     // Add filters to query
@@ -522,15 +552,20 @@ if (isset($_POST['submit'])) {
     if (!empty($quality)) {
         $query .= " AND quality = '$quality'";
     }
-    if (!empty($genre)) {
-        $query .= " AND genreid = '$genre'";
-    }
     if (!empty($year)) {
         $query .= " AND release_year = '$year'";
     }
 
     // Execute query
     $result = mysqli_query($connection, $query);
+    
+    // Check for errors
+    if (!$result) {
+        die("Query failed: " . mysqli_error($connection));
+    }
+    
+    displayMovies($result);
+
 
     // Display results in card form
     echo '<div class="movies-container">'; // Container for all cards
