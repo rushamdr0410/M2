@@ -606,11 +606,12 @@ if (!isset($_SESSION['user_username'])) {
             <a href="#" class="dropdown-toggle"><?php echo $_SESSION['user_username']?></a>
             <ul class="dropdown-content">
             <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+            <li><a href="#" class="genre-link"><i class="fa-solid fa-user"></i>My Profile</a></li>
             <li>
             <form action="logout.php" method="POST">
-            <button type="submit" name="userlogout_btn" class="dropdown-btn">
-            <i class="fas fa-arrow-right-from-bracket"></i> Logout
-            </button>
+              <button type="submit" name="userlogout_btn" class="dropdown-btn">
+              <i class="fas fa-arrow-right-from-bracket"></i> Logout
+              </button>
             </form>
             </ul>
           </li>
