@@ -1,8 +1,31 @@
 <?php
-   include('security.php');
-  
-?>
+include('user_auth.php');
 
+if (!isset($_SESSION['user_username'])) {
+    header("Location: userlogin.php");
+    exit();
+}
+
+// Handle adding to watchlist
+if (isset($_POST['add_to_watchlist'])) {
+    $movie_id = $_POST['movie_id'];
+    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
+    
+    // Check if already in watchlist
+    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
+    $check_result = mysqli_query($connection, $check_query);
+    
+    if (mysqli_num_rows($check_result) == 0) {
+        // Add to watchlist
+        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
+        mysqli_query($connection, $insert_query);
+    }
+}
+
+// Query to fetch TV shows
+$query = "SELECT * FROM moviedetails WHERE type = 'TV-Show'";
+$result = mysqli_query($connection, $query);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -273,54 +296,73 @@
       color: #61DAFB;
     }
 
-    h2{
-      margin-top: 6rem;
-      color: ffffff;
-      font-size: 2.2rem;
+    .watchlist-container {
+      max-width: 1200px;
+      margin: 100px auto 50px;
+      padding: 20px;
+    }
+        
+    .watchlist-header {
+      font-size: 2.5rem;
+      color: #61DAFB;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+        
+    .watchlist-movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+        
+    .watchlist-movie {
+      background: #232323;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+        
+    .watchlist-movie:hover {
+      transform: translateY(-5px);
+    }
+        
+    .watchlist-movie img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+        
+    .watchlist-movie-info {
+      padding: 15px;
+    }
+        
+    .watchlist-movie-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #f2f5f7;
+    }
+    .watchlist-btn {
+      background-color: #61DAFB;
+      color: #131418;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
       font-weight: bold;
-      text-transform: uppercase;
-      align-items: center;
-      margin-left:100px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
     }
-
-    /* Container for all movie cards */
-    .movies-container {
-        display: flex; /* Arrange child elements in a row */
-        flex-wrap: wrap; /* Allow cards to wrap to the next line if necessary */
-        gap: 16px; /* Space between cards */
-        justify-content: flex-start; /* Align cards to the start */
-        margin-left: 100px;
-        margin-top:35px
-    }
-
-    /* Style for individual movie cards */
-    .card {
-        width: 250px; /* Set a fixed width for each card */
-        padding: 16px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-        transition: box-shadow 0.3s ease;
-    }
-
-    /* Hover effect for movie cards */
-    .card:hover {
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .watchlist-btn{
-      background-color: transparent; /* Transparent background */
-            color: #01939c; /* Text color matching the color of the heading */
-            border: 1px solid #01939c; /* Add border */
-            padding: 0.5rem 1rem; /* Adjust padding */
-            border-radius: 5px; /* Add border radius for rounded corners */
-            cursor: pointer; /* Change cursor on hover */
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
-    }
-
+    
     .watchlist-btn:hover {
-            background-color: rgba(1, 147, 156, 0.1); /* Light background color on hover */
-            color: #fff; /* Change text color to white on hover */
+      background-color: #4fa8c7;
+    }
+    
+    .watchlist-btn.added {
+      background-color: #4CAF50;
+    }
+    
+    .watchlist-btn.added:hover {
+      background-color: #3e8e41;
     }
   </style>
 </head>
@@ -379,68 +421,35 @@
     </div>
   </nav>
 
-  <h2>TV-Shows</h2>
+  <div class="watchlist-container">
+  <h1 class="watchlist-header">TV-Shows</h1>
+        
+  <?php if (mysqli_num_rows($result) > 0): ?>
+  <div class="watchlist-movies">
+    <?php while ($movie = mysqli_fetch_assoc($result)): ?>
+      <div class="watchlist-movie">
+        <img src="upload/<?php echo $movie['poster_img']; ?>" alt="<?php echo $movie['title']; ?>">
+          <div class="watchlist-movie-info">
+            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+            <div class="watchlist-movie-actions">
+            <form method="POST" action="">
+                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+            </form>
+            </div>
+          </div>
+      </div>
+    <?php endwhile; ?>
+  </div>
+  <?php else: ?>
+  <p class="empty-watchlist">Your watchlist is empty. Add some movies!</p>
+  <?php endif; ?>
+</div>
 
-
-  <?php
-
-
-    // Query to fetch all movies from the moviedetails table
-    $query = "SELECT title, description, release_year, duration, type, poster_img, quality FROM moviedetails where type='TV-Show'";
-
-    // Execute the query
-    $result = mysqli_query($connection, $query);
-
-    // Check if there are results
-    if ($result && mysqli_num_rows($result) > 0) {
-        echo '<div class="movies-container">'; // Container for all movie cards
-
-        // Loop through each movie and display it as a card
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<div class="card">';
-            
-            // Movie Poster Section
-            echo '<div class="card-img">';
-            echo '<img src="upload/' . htmlspecialchars($row['poster_img']) . '" alt="Movie Poster" style="width: 200px; height: 300px;">';
-            echo '</div>';
-            
-            
-            // Movie Details Section
-            echo '<div class="card-details">';
-            echo '<span class="date_min" style="display:flex; justify-content:space-between; margin-top:5px;">';
-            echo '<p>' . htmlspecialchars($row['release_year']) . '</p>';
-            echo '<p>' . htmlspecialchars($row['duration']) . ' mins</p>';
-            echo '<p>' . htmlspecialchars($row['quality']) . '</p>';
-            echo '</span>';
-            echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
-            echo '</div>';
-            
-            // Add to Watchlist Button Section
-            echo '<div class="card-watchlist">';
-            echo '<form action="manage_watchlist.php" method="POST">';
-            echo '<button type="submit" name="watchlist" class="watchlist-btn">Add to Watchlist</button>';
-            echo '<input type="hidden" name="title" value="' . htmlspecialchars($row['title']) . '">';
-            echo '<input type="hidden" name="release_year" value="' . htmlspecialchars($row['release_year']) . '">';
-            echo '<input type="hidden" name="type" value="' . htmlspecialchars($row['type']) . '">';
-            echo '</form>';
-            echo '</div>';
-            
-            echo '</div>'; // Close card
-        }
-
-        echo '</div>'; // Close movies container
-    } else {
-        echo '<p>No movies found.</p>'; // Display a message if no movies are found
-    }
-
-  // Close the database connection if needed
-  // mysqli_close($connection);
-  ?>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-<script src="Homepage.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script src="Homepage.js"></script>
 </body>
 </html>
 
