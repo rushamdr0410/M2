@@ -428,16 +428,20 @@ $result = mysqli_query($connection, $query);
   <div class="watchlist-movies">
     <?php while ($movie = mysqli_fetch_assoc($result)): ?>
       <div class="watchlist-movie">
-        <img src="upload/<?php echo $movie['poster_img']; ?>" alt="<?php echo $movie['title']; ?>">
-          <div class="watchlist-movie-info">
-            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
-            <div class="watchlist-movie-actions">
+        <div class="img">
+          <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
+            <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
+          </a>
+        </div>
+        <div class="watchlist-movie-info">
+          <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+          <div class="watchlist-movie-actions">
             <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
-                <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+              <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+              <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
             </form>
-            </div>
           </div>
+        </div>
       </div>
     <?php endwhile; ?>
   </div>
