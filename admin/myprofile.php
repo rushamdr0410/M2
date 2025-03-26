@@ -1,6 +1,32 @@
 <?php
-  include('user_auth.php');
+include('user_auth.php');
+
+if (!isset($_SESSION['user_username'])) {
+    header("Location: userlogin.php");
+    exit();
+}
+
+// Handle adding to watchlist
+if (isset($_POST['add_to_watchlist'])) {
+    $movie_id = $_POST['movie_id'];
+    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
+    
+    // Check if already in watchlist
+    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
+    $check_result = mysqli_query($connection, $check_query);
+    
+    if (mysqli_num_rows($check_result) == 0) {
+        // Add to watchlist
+        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
+        mysqli_query($connection, $insert_query);
+    }
+}
+
+// Query to fetch TV shows
+$query = "SELECT * FROM moviedetails WHERE type = 'Movie'";
+$result = mysqli_query($connection, $query);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,10 +58,10 @@
       background-color: #131418;
     }
     body{
-      overflow-y: scroll;
-      overflow-x: hidden;
-      background-color: #131418;
-      padding-top: 0.1rem;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background-color: #131418;
+        padding-top: 0.1rem;
     }
     nav{
       height: 4.5rem;
@@ -269,16 +295,111 @@
     .profile-text-container .dropdown-btn:hover {
       color: #61DAFB;
     }
+    h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            margin-top:100px;
+        }
 
-    h2{
-      margin-top: 6rem;
-      color: ffffff;
-      font-size: 2.2rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      align-items: center;
-      margin-left:100px;
-    }
+        .edit-profile-container{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            margin-top:100px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 20px;
+            position: relative;
+        }
+        
+        .change-photo {
+            color: #0095f6;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .username {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .category {
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+        
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #dbdbdb;
+            margin: 20px 0;
+        }
+        
+        h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8e8e8e;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .bio-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+        
+        .gender-options {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .gender-options td {
+            padding: 15px 0;
+            border-bottom: 1px solid #dbdbdb;
+            font-size: 14px;
+        }
+        
+        .note {
+            font-size: 12px;
+            color: #8e8e8e;
+            margin-top: 5px;
+        }
+        
+        .activate-warning {
+            color: #ed4956;
+            font-size: 12px;
+            margin-top: 5px;
+        }
   </style>
 </head>
 <body>
@@ -337,9 +458,62 @@
     </div>
   </nav>
 
+    
+    <div class="edit-profile-container">
+    <div class="profile-header">
+        <div class="profile-pic"></div>
+        <div>
+            <div class="username">rus.mdr</div>
+            <div class="category">SSRIT HTT-FERAP</div>
+            <div class="change-photo">Change photo</div>
+        </div>
+    </div>
+    
+    <hr>
+    
+    <div class="section">
+        <h2>Website</h2>
+        <h3>Website</h3>
+        <p class="note">Editing your links is only available on mobile. Visit the Instagram app and edit your profile to change the websites in your bio.</p>
+    </div>
+    
+    <hr>
+    
+    <div class="section">
+        <h2>Bio</h2>
+        <div class="bio-text">
+            LIVE[ILOVE][LAUGH]<br>
+            19 / 150
+        </div>
+    </div>
+    
+    <hr>
+    
+    <div class="section">
+        <h2>Show Threads badge</h2>
+        <div class="toggle-item">
+            <span>Show Threads badge</span>
+        </div>
+    </div>
+    
+    <hr>
+    
+    <div class="section">
+        <h2>Gender</h2>
+        <table class="gender-options">
+            <tr>
+                <td>Prefer not to say</td>
+            </tr>
+            <tr>
+                <td>
+                    Activate Windows<br>
+                    <span class="activate-warning">Go to Settings to activate Windows</span>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-  <h2> Top IMDB</h2>
-
+    </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>

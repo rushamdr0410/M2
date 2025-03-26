@@ -426,11 +426,12 @@ option {
 <div class="profile-text-container">           
 <ul>
 <li class="dropdown">
-<a href="#" class="dropdown-toggle">rus@gmail.com</a>
+<a href="#" class="dropdown-toggle"><?php echo $_SESSION['user_username']?></a>
 <ul class="dropdown-content">
 <li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
 <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+<li><a href="myprofile.php" class="genre-link"><i class="fa-solid fa-user"></i>My Profile</a></li>
 <li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
 <li>
 <form action="logout.php" method="POST">
