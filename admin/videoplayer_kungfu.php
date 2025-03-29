@@ -31,6 +31,58 @@
       echo "No movie found with the provided ID.";
       exit();
   }
+  // Handle review submission with prepared statement
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
+    $rating = intval($_POST['reviewRating']);
+    $review_text = $_POST['reviewText'];
+    $user_id = $_SESSION['user_id'];
+    
+    // Fetch username from register table
+    $user_query = $connection->prepare("SELECT username FROM register WHERE id = ?");
+    $user_query->bind_param("i", $user_id);
+    $user_query->execute();
+    $user_result = $user_query->get_result();
+    $user = $user_result->fetch_assoc();
+    $username = $user['username'];
+    $user_query->close();
+    
+    $stmt = $connection->prepare("INSERT INTO reviews (movie_id, user_id, review_text, rating) 
+                                VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("iisi", $id, $user_id, $review_text, $rating);
+    
+    if ($stmt->execute()) {
+        header("Location: ".$_SERVER['PHP_SELF']."?video_id=".$id);
+        exit();
+    } else {
+        $review_error = "Error submitting review: ".$stmt->error;
+    }
+    $stmt->close();
+  }
+
+  // Fetch existing reviews with username from register table
+  $reviews_query = $connection->prepare("
+    SELECT r.*, reg.username 
+    FROM reviews r
+    JOIN register reg ON r.user_id = reg.id
+    WHERE r.movie_id = ? 
+    ORDER BY r.review_date DESC
+  ");
+  $reviews_query->bind_param("i", $id);
+  $reviews_query->execute();
+  $reviews_result = $reviews_query->get_result();
+  $reviews = [];
+  while ($review = $reviews_result->fetch_assoc()) {
+    $reviews[] = $review;
+  }
+  $reviews_query->close();
+
+  // Calculate average rating
+  $avg_rating_query = $connection->prepare("SELECT AVG(rating) as avg_rating FROM reviews WHERE movie_id = ?");
+  $avg_rating_query->bind_param("i", $id);
+  $avg_rating_query->execute();
+  $avg_rating_result = $avg_rating_query->get_result();
+  $avg_rating = $avg_rating_result->fetch_assoc()['avg_rating'] ?? 0;
+  $avg_rating_query->close();
 ?>
 
 <!DOCTYPE html>
@@ -660,67 +712,62 @@
         
   <!-- Reviews Section -->
   <div class="reviews-section">
-    <h2 class="section-title">Reviews</h2>
-            
-    <!-- Add Review Form -->
-    <div class="add-review">
-      <h3>Add Your Review</h3>
-      <form class="review-form" id="reviewForm">
-        <div class="form-group">
-          <label for="reviewText">Your Review</label>
-          <textarea id="reviewText" name="reviewText" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="reviewRating">Your Rating</label>
-          <div class="rating-input">
-            <select id="reviewRating" name="reviewRating" required>
-              <option value="">Select rating</option>
-              <option value="5">5 ★</option>
-              <option value="4">4 ★</option>
-              <option value="3">3 ★</option>
-              <option value="2">2 ★</option>
-              <option value="1">1 ★</option>
-            </select>
-            <span>(1 = Poor, 5 = Excellent)</span>
-          </div>
-        </div>
-        <button type="submit" class="submit-btn">Submit Review</button>
-      </form>
-    </div>  
-    <!-- Reviews List -->
-    <div class="reviews-list" id="reviewsList">
-      <!-- Sample Review 1 -->
-      <div class="review">
-        <div class="review-header">
-          <div>
-            <span class="review-author">MovieFan123</span>
-            <span class="review-rating">★★★★★</span>
-          </div>
-          <span class="review-date">June 15, 2023</span>
-        </div>
-        <div class="review-content">
-          <p>One of the best movies I've ever seen. The concept is mind-blowing and the execution is flawless. 
-          Christopher Nolan outdid himself with this masterpiece. The visual effects are stunning and the 
-          performances are top-notch, especially from Leonardo DiCaprio.</p>
-        </div>
+      <h2 class="section-title">Reviews</h2>
+      
+      <!-- Add Review Form -->
+      <div class="add-review">
+          <h3>Add Your Review</h3>
+          <form class="review-form" method="POST">
+              <?php if (isset($review_error)): ?>
+                  <div style="color: red; margin-bottom: 15px;"><?php echo $review_error; ?></div>
+              <?php endif; ?>
+              <div class="form-group">
+                  <label for="reviewText">Your Review</label>
+                  <textarea id="reviewText" name="reviewText" required></textarea>
+              </div>
+              <div class="form-group">
+                  <label for="reviewRating">Your Rating</label>
+                  <div class="rating-input">
+                      <select id="reviewRating" name="reviewRating" required>
+                          <option value="">Select rating</option>
+                          <option value="5">5 ★</option>
+                          <option value="4">4 ★</option>
+                          <option value="3">3 ★</option>
+                          <option value="2">2 ★</option>
+                          <option value="1">1 ★</option>
+                      </select>
+                      <span>(1 = Poor, 5 = Excellent)</span>
+                  </div>
+              </div>
+              <button type="submit" name="submit_review" class="submit-btn">Submit Review</button>
+          </form>
       </div>
-                
-      <!-- Sample Review 2 -->
-      <div class="review">
-        <div class="review-header">
-          <div>
-            <span class="review-author">CinemaLover</span>
-            <span class="review-rating">★★★★☆</span>
-          </div>
-          <span class="review-date">May 22, 2023</span>
-        </div>
-        <div class="review-content">
-          <p>Inception is a visually stunning and intellectually engaging film that challenges the viewer 
-          to keep up with its complex narrative. While it can be confusing at times, the payoff is 
-          worth the effort. The action sequences are breathtaking, and Hans Zimmer's score is phenomenal.</p>
-        </div>
+      
+      <!-- Reviews List -->
+      <div class="reviews-list" id="reviewsList">
+          <?php if (empty($reviews)): ?>
+              <p>No reviews yet. Be the first to review!</p>
+          <?php else: ?>
+              <?php foreach ($reviews as $review): ?>
+                  <div class="review">
+                      <div class="review-header">
+                          <div>
+                              <span class="review-author"><?php echo htmlspecialchars($review['username']); ?></span>
+                              <span class="review-rating">
+                                  <?php echo str_repeat('★', $review['rating']).str_repeat('☆', 5 - $review['rating']); ?>
+                              </span>
+                          </div>
+                          <span class="review-date">
+                              <?php echo date('F j, Y', strtotime($review['review_date'])); ?>
+                          </span>
+                      </div>
+                      <div class="review-content">
+                          <p><?php echo nl2br(htmlspecialchars($review['review_text'])); ?></p>
+                      </div>
+                  </div>
+              <?php endforeach; ?>
+          <?php endif; ?>
       </div>
-    </div>
   </div>
 
   <script>
