@@ -8,18 +8,26 @@ if (!isset($_SESSION['user_username'])) {
   exit();
 }
 
+// Query for fetching movie details
+$id = $_GET['id'];
+$query = "SELECT m.*, GROUP_CONCAT(g.genre_name SEPARATOR ', ') AS genres,
+          GROUP_CONCAT(DISTINCT c.cast_name SEPARATOR ', ') AS cast_names
+          FROM moviedetails m
+          LEFT JOIN cast_info c ON m.cast_id = c.cast_id
+          LEFT JOIN genre_info g ON m.genreid = g.genreid
+          WHERE m.id = $id
+          GROUP BY m.id";
+$result = mysqli_query($connection, $query);
 
-  // Query for fetching movie details
-  $id = $_GET['id'];
-  $query = "SELECT * FROM moviedetails where id= $id";
-  $result = mysqli_query($connection, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result); // Fetch the movie details
-    } else {
-        echo "No movie found with the provided ID.";
-        exit();
-    }
+if (mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result); // Fetch the movie details
+    // Split the genres into an array
+    $genres = !empty($row['genres']) ? explode(', ', $row['genres']) : [];
+    $cast_names = !empty($row['cast_names']) ? explode(', ', $row['cast_names']) : [];
+} else {
+    echo "No movie found with the provided ID.";
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -527,12 +535,12 @@ if (!isset($_SESSION['user_username'])) {
         <div class="movie-info">
             <h1>Movie Title</h1>
             <p class="label">Release Date: <span><?php echo $row['release_year']; ?></span></p>
-            <p class="label">Director: <span>Christopher Nolan</span></p>
+            <p class="label">Director: <span><?php echo $row['director']; ?></span></p>
             <p class="label">Runtime: <span><?php echo $row['duration']; ?></span></p>
             <div class="genre-list">
-                <span>Action</span>
-                <span>Sci-Fi</span>
-                <span>Thriller</span>
+                <?php foreach ($genres as $genre): ?>
+                    <span><?php echo htmlspecialchars($genre); ?></span>
+                <?php endforeach; ?>
             </div>
             <div class="rating">
                 <i class="fas fa-star"></i>
@@ -541,10 +549,9 @@ if (!isset($_SESSION['user_username'])) {
             <p><?php echo $row['description']; ?></p>
             <p class="label">Cast:</p>
             <div class="cast-list">
-                <span>Leonardo DiCaprio</span>
-                <span>Joseph Gordon-Levitt</span>
-                <span>Elliot Page</span>
-                <span>Tom Hardy</span>
+                <?php foreach ($cast_names as $cast_name): ?>
+                    <span><?php echo htmlspecialchars($cast_name); ?></span>
+                <?php endforeach; ?>
             </div>
             <div class="button-container">
                 <a href="#" class="watch-trailer">Watch Trailer</a>
