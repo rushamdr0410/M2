@@ -1,5 +1,43 @@
 <?php
-  include('user_auth.php');
+include('user_auth.php');
+
+if (!isset($_SESSION['user_username'])) {
+    header("Location: userlogin.php");
+    exit();
+}
+
+// Handle adding to watchlist
+if (isset($_POST['add_to_watchlist'])) {
+    $movie_id = $_POST['movie_id'];
+    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
+    
+    // Check if already in watchlist
+    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
+    $check_result = mysqli_query($connection, $check_query);
+    
+    if (mysqli_num_rows($check_result) == 0) {
+        // Add to watchlist
+        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
+        mysqli_query($connection, $insert_query);
+    }
+}
+
+// Replace your current query with this debug version
+$query = "SELECT m.*, ROUND(AVG(NULLIF(r.rating, 0)), 1) AS avg_rating 
+          FROM moviedetails m 
+          JOIN reviews r ON m.id = r.movie_id 
+          WHERE r.rating BETWEEN 1 AND 5  -- Only include valid ratings
+          GROUP BY m.id 
+          HAVING avg_rating >= 4.0
+          ORDER BY avg_rating DESC";
+
+$result = mysqli_query($connection, $query);
+
+// Add error checking
+if (!$result) {
+    die("Query failed: " . mysqli_error($connection));
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -279,6 +317,75 @@
       align-items: center;
       margin-left:100px;
     }
+    .watchlist-container {
+      max-width: 1200px;
+      margin: 100px auto 50px;
+      padding: 20px;
+    }
+        
+    .watchlist-header {
+      font-size: 2.5rem;
+      color: #61DAFB;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+        
+    .watchlist-movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: -68px;
+    }
+        
+    .watchlist-movie {
+      background: #232323;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+        
+    .watchlist-movie:hover {
+      transform: translateY(-5px);
+    }
+        
+    .watchlist-movie img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+        
+    .watchlist-movie-info {
+      padding: 15px;
+    }
+        
+    .watchlist-movie-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #f2f5f7;
+    }
+    .watchlist-btn {
+      background-color: #61DAFB;
+      color: #131418;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    
+    .watchlist-btn:hover {
+      background-color: #4fa8c7;
+    }
+    
+    .watchlist-btn.added {
+      background-color: #4CAF50;
+    }
+    
+    .watchlist-btn.added:hover {
+      background-color: #3e8e41;
+    }
   </style>
 </head>
 <body>
@@ -339,6 +446,34 @@
 
 
   <h2> Top IMDB</h2>
+
+  <div class="watchlist-container">
+          
+    <?php if (mysqli_num_rows($result) > 0): ?>
+    <div class="watchlist-movies">
+      <?php while ($movie = mysqli_fetch_assoc($result)): ?>
+        <div class="watchlist-movie">
+          <div class="img">
+            <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
+              <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
+            </a>
+          </div>
+            <div class="watchlist-movie-info">
+              <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+              <div class="watchlist-movie-actions">
+              <form method="POST" action="">
+                  <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                  <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+              </form>
+              </div>
+            </div>
+        </div>
+      <?php endwhile; ?>
+    </div>
+    <?php else: ?>
+    <p class="empty-watchlist">No movies found with Good Rating</p>
+    <?php endif; ?>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
