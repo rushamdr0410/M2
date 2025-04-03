@@ -11,27 +11,40 @@ if (!isset($_SESSION['user_username'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the movie ID from the form
     $movie_id = $_POST['movie_id'];
-
-    // Get the user ID from the session (assuming you store user ID in the session)
+    
+    // Get the user ID from the session
     $user_id = $_SESSION['user_id'];
 
-    // Insert the movie into the watchlist table
-    $query = "INSERT INTO watchlist (user_id, movie_id) VALUES (?, ?)";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "ii", $user_id, $movie_id);
+    // First check if the movie is already in the user's watchlist
+    $check_query = "SELECT id FROM watchlist WHERE user_id = ? AND movie_id = ?";
+    $check_stmt = mysqli_prepare($connection, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "ii", $user_id, $movie_id);
+    mysqli_stmt_execute($check_stmt);
+    mysqli_stmt_store_result($check_stmt);
 
-    if (mysqli_stmt_execute($stmt)) {
-        // Success: Redirect back to the movie details page with a success message
+    if (mysqli_stmt_num_rows($check_stmt) > 0) {
+        // Movie already in watchlist - redirect with message
+        header("Location: movie_details.php?id=$movie_id&status=exists");
+        exit();
+    }
+
+    // If not exists, insert the movie into the watchlist table
+    $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES (?, ?)";
+    $insert_stmt = mysqli_prepare($connection, $insert_query);
+    mysqli_stmt_bind_param($insert_stmt, "ii", $user_id, $movie_id);
+
+    if (mysqli_stmt_execute($insert_stmt)) {
+        // Success: Redirect back to the movie details page with success message
         header("Location: movie_details.php?id=$movie_id&status=added");
         exit();
     } else {
-        // Error: Redirect back to the movie details page with an error message
+        // Error: Redirect back to the movie details page with error message
         header("Location: movie_details.php?id=$movie_id&status=error");
         exit();
     }
 } else {
     // Invalid request method
-    header("Location: movie_details.php?id=$movie_id&status=invalid");
+    header("Location: index.php?status=invalid_request");
     exit();
 }
 ?>

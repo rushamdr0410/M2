@@ -9,8 +9,8 @@ if (!isset($_SESSION['user_username'])) {
 // Get the current user's ID
 $user_id = $_SESSION['user_id'];
 
-// Query to fetch watchlist items for the current user
-$query = "SELECT m.* FROM moviedetails m 
+// Modified query to fetch DISTINCT watchlist items for the current user
+$query = "SELECT DISTINCT m.* FROM moviedetails m 
           JOIN watchlist w ON m.id = w.movie_id 
           WHERE w.user_id = $user_id";
 $result = mysqli_query($connection, $query);
@@ -27,7 +27,6 @@ $result = mysqli_query($connection, $query);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
   <style>
-
     *{
       margin: 0;
       padding: 0;
@@ -135,8 +134,6 @@ $result = mysqli_query($connection, $query);
     .dropdown {
       position: relative;
       display:inline;
-      
-      
     }
 
     .dropdown-content {
@@ -184,7 +181,6 @@ $result = mysqli_query($connection, $query);
     }
     .profile-text-container{
       margin: 0 20px;
-      
     }
     .profile-text-container ul {
       display: flex;
@@ -259,8 +255,8 @@ $result = mysqli_query($connection, $query);
       color: #f2f5f7;
       background-color: transparent;
       border: none;
-      padding: 12px 16px; /* Adjust padding to match other list items */
-      margin: 0 0.7vw; /* Adjust margin to match other list items */
+      padding: 12px 16px;
+      margin: 0 0.7vw;
       cursor: pointer;
       transition: color 0.3s;
       text-align: left;
@@ -456,9 +452,3 @@ $result = mysqli_query($connection, $query);
 <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-
