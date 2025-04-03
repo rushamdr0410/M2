@@ -735,7 +735,7 @@ $result = mysqli_query($connection, $query);
         <hr>
         
         <div class="section">
-            <h2>Gender</h2>
+            <h2>Subscription/ Mermbership</h2>
             <div class="form-group">
                 <div class="radio-option">
                     <input type="radio" id="male" name="gender" value="Male" >
