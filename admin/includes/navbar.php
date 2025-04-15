@@ -46,7 +46,7 @@
             <h6 class="collapse-header">Uploads</h6>
             <a class="collapse-item" href="movie_info.php">Movies & TV-Shows</a>
             <a class="collapse-item" href="#">TV-Shows</a>
-            <a class="collapse-item" href="utilities-animation.html">Trailers</a>
+            <a class="collapse-item" href="#">Trailers</a>
             <a class="collapse-item" href="metadata.php">MetaData</a>
             <a class="collapse-item" href="genre_info.php">GENRE</a>
         </div>
@@ -71,13 +71,13 @@
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">UPLOADS:</h6>
-            <a class="collapse-item" href="login.html">HOME</a>
+            <a class="collapse-item" href="#">HOME</a>
             <a class="collapse-item" href="about.php">ABOUT</a>
             <a class="collapse-item" href="service.php">SERVICES</a>
             <a class="collapse-item" href="contactus.php">CONTACT</a>
             <div class="collapse-divider"></div>
             <h6 class="collapse-header">Other Pages:</h6>
-            <a class="collapse-item" href="404.html">404 Page</a>
+            <a class="collapse-item" href="#">404 Page</a>
             <!--<a class="collapse-item" href="blank.html">Blank Page</a>-->
         </div>
     </div>

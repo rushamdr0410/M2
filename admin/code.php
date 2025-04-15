@@ -78,20 +78,31 @@ if(isset($_POST['updatebtn']))
 if(isset($_POST['delete_btn']))
 {
     $id = $_POST['delete_id'];
-    $query="DELETE FROM register WHERE id='$id'";
-    $result= mysqli_query($connection, $query);
+    
+    // First delete dependent records (reviews, watchlist, etc.)
+    $delete_reviews = "DELETE FROM reviews WHERE user_id='$id'";
+    mysqli_query($connection, $delete_reviews);
+    
+    $delete_watchlist = "DELETE FROM watchlist WHERE user_id='$id'";
+    mysqli_query($connection, $delete_watchlist);
+    
+    // Then delete the user
+    $query = "DELETE FROM register WHERE id='$id'";
+    $result = mysqli_query($connection, $query);
 
     if($result)
     {
-        $_SESSION['success']="Your Data is Deleted";
+        $_SESSION['success'] = "User Data Deleted Successfully";
         $_SESSION['success_code'] = "success";
-        header('Location: register.php');
+        header('Location: register.php');  // Make sure this redirects to register.php
+        exit();
     }
     else
     {
-        $_SESSION['status']="Your Data is not Deleted";
+        $_SESSION['status'] = "Deletion Failed: " . mysqli_error($connection);
         $_SESSION['status_code'] = "error";
         header('Location: register.php');
+        exit();
     }
 }
 
@@ -436,24 +447,6 @@ if(isset($_POST['delete_btn'])) {
     } else {
         $_SESSION['status'] = "Your data is not deleted ";
         header('Location: contactus.php');
-    }
-}
-
-
-if (isset($_POST['delete_id'])) {
-    $delete_id = mysqli_real_escape_string($connection, $_POST['delete_id']);
-
-    // Delete the data from the watchlist table
-    $query = "DELETE FROM watchlist WHERE user_id = '$delete_id'";
-    $result = mysqli_query($connection, $query);
-
-    // Check if the deletion was successful
-    if ($result) {
-        // Redirect back to the watchlist page
-        header('Location: watchlist.php');
-        exit;
-    } else {
-        echo 'Error deleting data from watchlist table: '. mysqli_error($connection);
     }
 }
 
