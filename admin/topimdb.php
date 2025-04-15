@@ -358,9 +358,11 @@ if (!$result) {
 
     h2{
       margin-top: 6rem;
-      color: ffffff;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
+      color: #01939c;
       font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
       text-transform: uppercase;
       align-items: center;
       margin-left:100px;
@@ -369,13 +371,6 @@ if (!$result) {
       max-width: 1200px;
       margin: 100px auto 50px;
       padding: 20px;
-    }
-        
-    .watchlist-header {
-      font-size: 2.5rem;
-      color: #61DAFB;
-      margin-bottom: 30px;
-      text-align: center;
     }
         
     .watchlist-movies {

@@ -343,7 +343,6 @@ $result = mysqli_query($connection, $query);
       text-align: center;
       font-size: 1rem;
     }
-
     .watchlist-container {
       max-width: 1200px;
       margin: 100px auto 50px;
@@ -352,7 +351,8 @@ $result = mysqli_query($connection, $query);
         
     .watchlist-header {
       font-size: 2.5rem;
-      color: #61DAFB;
+      color: #01939c;
+      font-weight: bold;
       margin-bottom: 30px;
       text-align: center;
     }

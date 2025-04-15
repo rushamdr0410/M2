@@ -356,7 +356,8 @@ if (!$result) {
         
     .watchlist-header {
       font-size: 2.5rem;
-      color: #61DAFB;
+      color: #01939c;
+      font-weight: bold;
       margin-bottom: 30px;
       text-align: center;
     }
