@@ -499,7 +499,7 @@ if (!$result) {
     <?php endwhile; ?>
   </div>
   <?php else: ?>
-  <p class="empty-watchlist">Your watchlist is empty. Add some movies!</p>
+  <p class="empty-watchlist">No Result Found!!</p>
   <?php endif; ?>
 </div>
 

@@ -1,15 +1,48 @@
+<?php
+include('user_auth.php');
+
+if (!isset($_SESSION['user_username'])) {
+    header("Location: userlogin.php");
+    exit();
+}
+
+// Handle adding to watchlist
+if (isset($_POST['add_to_watchlist'])) {
+    $movie_id = $_POST['movie_id'];
+    $user_id = $_SESSION['user_id'];
+    
+    // Check if already in watchlist
+    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
+    $check_result = mysqli_query($connection, $check_query);
+    
+    if (mysqli_num_rows($check_result) == 0) {
+        // Add to watchlist
+        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
+        mysqli_query($connection, $insert_query);
+    }
+}
+
+// Query to fetch only Action movies (genreid = 1)
+$query = "SELECT * FROM moviedetails WHERE genreid = '8'";
+$result = mysqli_query($connection, $query);
+
+if (!$result) {
+    die("Database error: " . mysqli_error($connection));
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>MovieMagic | Where Every Frame Tells A Story</title>
-<link rel="website icon" type="JPG" href="#">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MovieMagic | Where Every Frame Tells A Story</title>
+  <link rel="website icon" type="JPG" href="#">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
+  <style>
 
     *{
       margin: 0;
@@ -315,207 +348,165 @@
       font-size: 1rem;
     }
 
-    h2{
-      margin-top: 6rem;
-      color: ffffff;
-      font-size: 2.2rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      align-items: center;
-      margin-left:15px;
+    .watchlist-container {
+      max-width: 1200px;
+      margin: 100px auto 50px;
+      padding: 20px;
     }
-    .dropdown-button{
-      background-color: #131418; /* Match background color */
-        color: #f2f5f7;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 3px; /* Adjust button radius */
-        cursor: pointer;
         
-    }
-
-    .dropdown-filter-container {
-        display: flex;
-        justify-content: flex-start; /* Adjusts alignment of dropdowns */
-        gap: 20px; /* Space between the dropdowns */
-        margin-bottom: 20px; /* Add space below the container */
-        margin-left:10px;
-        margin-top: 35px;
-    }
-      
-    .dropdown-filter-container a:hover{
+    .watchlist-header {
+      font-size: 2.5rem;
       color: #61DAFB;
-      
+      margin-bottom: 30px;
+      text-align: center;
     }
-
-    .dropdown-filter-container{
-      display: flex;
-        align-items: center; /* Aligns items vertically in the center */
-        gap: 15px; 
+        
+    .watchlist-movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
     }
-    .filter-button {
-        background-color: #61DAFB; /* Match background color */
-        color: #131418 ;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
+        
+    .watchlist-movie {
+      background: #232323;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
     }
-
-    /* Style the select element */
-    select {
-        width: 150px; /* Adjust the width as needed */
-        padding: 10px 15px; /* Adjust padding as needed */
-        border-radius: 5px; /* Adjust border radius as needed */
-        border: 1px solid #ccc; /* Add a border */
-        background-color: #131418; /* Match background color */
-        color: #f2f5f7; /* Match text color */
-        font-family: "Open Sans", sans-serif; /* Match font family */
-        cursor: pointer; /* Add cursor pointer */
-        outline: none; /* Remove focus outline */
-        transition: background-color 0.3s, color 0.3s; /* Add transitions */
+        
+    .watchlist-movie:hover {
+      transform: translateY(-5px);
     }
-
-    /* Style the select element on hover */
-    select:hover {
-        background-color: #61DAFB; /* Match hover background color */
-        color: #131418; /* Match hover text color */
+        
+    .watchlist-movie img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
     }
-
-    /* Style the option elements */
-    option {
-        background-color: #131418; /* Match background color */
-        color: #f2f5f7; /* Match text color */
+        
+    .watchlist-movie-info {
+      padding: 15px;
     }
-
-
-
-
-
-</style>
+        
+    .watchlist-movie-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #f2f5f7;
+    }
+    .watchlist-btn {
+      background-color: #61DAFB;
+      color: #131418;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    
+    .watchlist-btn:hover {
+      background-color: #4fa8c7;
+    }
+    
+    .watchlist-btn.added {
+      background-color: #4CAF50;
+    }
+    
+    .watchlist-btn.added:hover {
+      background-color: #3e8e41;
+    }
+  </style>
 </head>
 <body>
-<nav>
-<div class="logo" style="display: flex;align-items: center;">
-<span style="color:#01939c; font-size:26px; font-weight:bold; letter-spacing: 1px;margin-left: 20px;">MovieMagic</span>
-</div>
-<ul class="nav-links">
-<li><a href="HomePage.php">Home</a></li>
-<li class="dropdown">
-<a href="#" class="dropdown-toggle">Genre</a>
-<ul class="dropdown-content">
-<li><a href="action.php" class="genre-link">Action</a></li>
-<li><a href="adventure.php" class="genre-link">Adventure</a></li>
-<li><a href="biography.php" class="genre-link">Biography</a></li>
-<li><a href="comedy.php" class="genre-link">Comedy</a></li>
-<li><a href="documentary.php" class="genre-link">Documentary</a></li>
-<li><a href="drama.php" class="genre-link">Drama</a></li>
-<li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
-<li><a href="horror.php" class="genre-link">Horror</a></li>
-<li><a href="romance.php" class="genre-link">Romance</a></li>
-<li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
-<li><a href="thriller.php" class="genre-link">Thriller</a></li>
-</ul>
-</li>
-<li><a href="topimdb.php">Top IMdb</a></li>
-<li><a href="movies.php">Movies</a></li>
-<li><a href="tvshows.php">TV-Shows</a></li>
-<li class="search-bar">
-<form action="#">
-<input type="text" placeholder="Search">
-<button type="submit"><ion-icon name="search"></ion-icon></button>
-</form>
-</li>
-</ul>
-<div class="profile" style="display: flex;align-items: center;">
-<div class="profile-text-container">           
-<ul>
-<li class="dropdown">
-<a href="#" class="dropdown-toggle">rus@gmail.com</a>
-<ul class="dropdown-content">
-<li><a href="#" class="genre-link"><i class="fas fa-user"></i>Profile</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-play"></i>Continue-Watching</a></li>
-<li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
-<li><a href="#" class="genre-link"><i class="fas fa-gear"></i>Settings</a></li>
-<li>
-<form action="logout.php" method="POST">
-<button type="submit" name="userlogout_btn" class="dropdown-btn">
-<i class="fas fa-arrow-right-from-bracket"></i> Logout
-</button>
-</form>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
-</div>
-</nav>
+  <nav>
+    <div class="logo" style="display: flex;align-items: center;">
+      <span style="color:#01939c; font-size:26px; font-weight:bold; letter-spacing: 1px;margin-left: 20px;">MovieMagic</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="HomePage.php">Home</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle">Genre</a>
+        <ul class="dropdown-content">
+          <li><a href="action.php" class="genre-link">Action</a></li>
+          <li><a href="adventure.php" class="genre-link">Adventure</a></li>
+          <li><a href="biography.php" class="genre-link">Biography</a></li>
+          <li><a href="comedy.php" class="genre-link">Comedy</a></li>
+          <li><a href="documentary.php" class="genre-link">Documentary</a></li>
+          <li><a href="drama.php" class="genre-link">Drama</a></li>
+          <li><a href="fantasy.php" class="genre-link">Fantasy</a></li>
+          <li><a href="horror.php" class="genre-link">Horror</a></li>
+          <li><a href="romance.php" class="genre-link">Romance</a></li>
+          <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
+          <li><a href="thriller.php" class="genre-link">Thriller</a></li>
+        </ul>
+      </li>
+      <li><a href="topimdb.php">Top IMdb</a></li>
+      <li><a href="movies.php">Movies</a></li>
+      <li><a href="tvshows.php">TV-Shows</a></li>
+      <li class="search-bar">
+        <form action="#">
+          <input type="text" placeholder="Search">
+          <button type="submit"><ion-icon name="search"></ion-icon></button>
+        </form>
+      </li>
+    </ul>
+    <div class="profile" style="display: flex;align-items: center;">
+      <div class="profile-text-container">           
+        <ul>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle"><?php echo $_SESSION['user_username']?></a>
+            <ul class="dropdown-content">
+              <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
+              <li><a href="myprofile.php" class="genre-link"><i class="fa-solid fa-user"></i>My Profile</a></li>
+              <li>
+                <form action="logout.php" method="POST">
+                  <button type="submit" name="userlogout_btn" class="dropdown-btn">
+                    <i class="fas fa-arrow-right-from-bracket"></i> Logout
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
+    </div>
+  </nav>
 
-
-<h2> Biography Movies,tv shows</h2>
-<div class="dropdown-filter-container">
-<div class="dropdown">
-    <label for="type-select">Type:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">Select Type</option>
-        <option value="#">Movies</option>
-        <option value="#">TV shows</option>
-    </select>
-</div>
-
-<div class="dropdown-container">
-<div class="dropdown">
-<label for="genre-select">Genre:</label>
-    <select id="genre-select" onchange="navigateToGenrePage(this)">
-        <option value="">Select Genre</option>
-        <option value="action.php">Action</option>
-        <option value="adventure.php">Adventure</option>
-        <option value="biography.php">Biography</option>
-        <option value="comedy.php">Comedy</option>
-        <option value="documentary.php">Documentary</option>
-        <option value="drama.php">Drama</option>
-        <option value="fantasy.php">Fantasy</option>
-        <option value="horror.php">Horror</option>
-        <option value="romance.php">Romance</option>
-        <option value="sci-fi.php">Sci-Fi</option>
-        <option value="thriller.php">Thriller</option>
-    </select>
-</div>
-    
-    
-
-
-
-<div class="dropdown">
-    <label for="type-select">Quality:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">Select Quality</option>
-        <option value="#">CAM</option>
-        <option value="#">HD</option>
-    </select>
+  <div class="watchlist-container">
+  <h1 class="watchlist-header">Biography</h1>
+        
+  <?php if (mysqli_num_rows($result) > 0): ?>
+  <div class="watchlist-movies">
+    <?php while ($movie = mysqli_fetch_assoc($result)): ?>
+      <div class="watchlist-movie">
+        <div class="img">
+          <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
+            <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
+          </a>
+        </div>
+          <div class="watchlist-movie-info">
+            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+            <div class="watchlist-movie-actions">
+            <form method="POST" action="">
+                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+            </form>
+            </div>
+          </div>
+      </div>
+    <?php endwhile; ?>
+  </div>
+  <?php else: ?>
+  <p class="empty-watchlist">No Result Found!</p>
+  <?php endif; ?>
 </div>
 
-<div class="dropdown">
-    <label for="type-select">Year:</label>
-    <select id="type-select" onchange="navigateToTypePage(this)">
-        <option value="">Select Year</option>
-        <option value="#">2024</option>
-        <option value="#">2023</option>
-    </select>
-</div>
-
-    <!-- Add the filter button -->
-    <button id="filter-button" class="filter-button">Filter</button>
-</div>
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-<script src="Homepage.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script src="Homepage.js"></script>
 </body>
 </html>
 
