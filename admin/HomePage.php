@@ -52,7 +52,6 @@ if (!isset($_SESSION['user_username'])) {
     }
 
     .logo {
-      flex: 1;
       font-size: 24px;
       font-weight: bold;
       color: #01939c;
@@ -84,6 +83,25 @@ if (!isset($_SESSION['user_username'])) {
     .nav-links li a:hover {
       color: #61DAFB;
       border-bottom: 2px solid #61DAFB;
+    }
+
+    .nav-links .dropdown {
+      position: relative;
+    }
+
+    .nav-links .dropdown-content {
+      position: absolute;
+      top: 100%; /* Positions directly below parent */
+      left: 0;
+      min-width: 160px;
+      background-color: #131418;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 100;
+      border-radius: 5px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
     }
 
     .dropdown-content {
@@ -159,13 +177,45 @@ if (!isset($_SESSION['user_username'])) {
       cursor: pointer;
     }
 
+    .profile-text-container {
+      position: relative;
+      margin: 0 20px;
+    }
+
+    .profile-text-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .profile-text-container li a{
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s;
+    }
+    .profile-text-container li a:hover {
+      color: #61DAFB;
+    }
+
+    .profile-text-container > ul > li {
+      position: relative;
+    }
+
+    .profile-text-container .dropdown-toggle {
+      border-bottom: none !important;
+      padding-bottom: 10px !important;
+    }
+
+    .profile-text-container .dropdown-toggle:hover {
+      border-bottom: none !important;
+    }
+
     .profile-picture {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid #61DAFB;
-      transition: all 0.3s ease;
     }
 
     .profile-picture:hover {
@@ -173,14 +223,101 @@ if (!isset($_SESSION['user_username'])) {
       box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
     }
 
-    .profile-name {
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: color 0.3s ease;
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: #131418;
+      min-width: 200px;
+      border-radius: 5px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 100;
     }
 
-    .profile:hover .profile-name {
+    .profile-text-container > ul > li:hover > .dropdown-content {
+      display: block;
+    }
+
+    .profile:hover .dropdown-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-content a {
+      color: #f2f5f7;
+      padding: 12px 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dropdown-content a, .dropdown-btn {
+      color: #f2f5f7;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-content a i {
+      width: 20px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .dropdown-content a:hover {
+      background-color: rgba(97, 218, 251, 0.1);
       color: #61DAFB;
+      padding-left: 25px;
+    }
+
+    .dropdown-content a:hover, .dropdown-btn:hover {
+      background-color: rgba(97, 218, 251, 0.1);
+      color: #61DAFB;
+    }
+
+    .dropdown-content {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    /* Logout Button - Enhanced */
+    .dropdown-btn {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      color: #f2f5f7;
+      padding: 12px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-btn:hover {
+      background-color: rgba(97, 218, 251, 0.1);
+      color: #61DAFB;
+      padding-left: 25px;
+    }
+
+    .dropdown-btn i {
+      width: 20px;
+      text-align: center;
+      font-size: 1rem;
     }
 
     /* ===== Main Content ===== */
@@ -270,13 +407,16 @@ if (!isset($_SESSION['user_username'])) {
     }
 
     .heading {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #01939c;
-      text-transform: uppercase; /* Added to capitalize titles */
-      letter-spacing: 1px;
-      position: relative;
-      padding-bottom: 5px;
+      max-width: 968px;
+        margin-left: 0;
+        margin-right: auto;
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #01939c;
+        display: flex;
+        align-items: center;
+        margin:0;
     }
 
     .heading::after {
@@ -340,89 +480,6 @@ if (!isset($_SESSION['user_username'])) {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    /* ===== Responsive Design ===== */
-    @media (max-width: 1024px) {
-      .nav-links {
-        display: none;
-      }
-      
-      .search-bar {
-        margin-left: auto;
-      }
-      
-      .swiper {
-        height: 400px;
-      }
-      
-      .swiper-slide {
-        padding: 30px;
-      }
-      
-      .swiper-slide h2 {
-        font-size: 1.8rem;
-      }
-    }
-
-    @media (max-width: 768px) {
-      nav {
-        padding: 0 15px;
-        height: 60px;
-      }
-      
-      .logo {
-        font-size: 20px;
-        margin-left: 10px;
-      }
-      
-      .search-bar input {
-        width: 120px;
-      }
-      
-      .swiper {
-        height: 350px;
-      }
-      
-      .movies-container-wrapper {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .logo {
-        font-size: 18px;
-      }
-      
-      .search-bar input {
-        width: 100px;
-      }
-      
-      .swiper {
-        height: 300px;
-      }
-      
-      .swiper-slide {
-        padding: 20px;
-      }
-      
-      .swiper-slide h2 {
-        font-size: 1.5rem;
-      }
-      
-      .swiper-slide p {
-        font-size: 14px;
-      }
-      
-      .movies-container-wrapper {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 10px;
-      }
-      
-      .heading {
-        font-size: 1.5rem;
-      }
     }
   </style>
 </head>
