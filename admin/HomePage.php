@@ -419,16 +419,6 @@ if (!isset($_SESSION['user_username'])) {
         margin:0;
     }
 
-    .heading::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 50px;
-      height: 3px;
-      background-color: #61DAFB;
-    }
-
     .titlebtn {
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.3);
