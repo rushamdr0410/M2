@@ -51,7 +51,7 @@ if(isset($_POST['registerbtn']))
 
  
 
-if(isset($_POST['updatebtn']))
+if(isset($_POST['userupdatebtn']))
 {
     $id=$_POST['edit_id'];
     $username=$_POST['edit_username'];
@@ -357,46 +357,57 @@ if(isset($_POST['m_insertbtn'])) {
     }
 }
 
-if(isset($_POST['updatebtn']))
-{
-    $id=$_POST['edit_id'];
-    $m_title=$_POST['m_title'];
+if(isset($_POST['videoupdatebtn'])) {
+    $id = $_POST['edit_id'];
+    $m_title = $_POST['m_title'];
     $description = $_POST['description'];
-    $gid=$_POST['gid'];
-    $m_year=$_POST['m_year'];
-    $m_duration=$_POST['m_duration'];
-    $m_type=$_POST['m_type'];
-    $m_img=$_FILES['m_img']['name'];
-    $m_video=$_FILES['m_video']['name'];
-    $m_quality=$_POST['m_quality'];
-
-    $validate_img_extension=$_FILES['m_img']['type']=="image/jpeg"||$_FILES['m_img']['type']=="image/png"||$_FILES['m_img']['type']=="image/jpg";
-
-    $validate_video_extension=$_FILES['m_video']['type']=="video/mp4";
-
-    if($validate_img_extension && $validate_video_extension)
-    {
+    $gid = $_POST['gid'];
+    $m_year = $_POST['m_year'];
+    $m_duration = $_POST['m_duration'];
+    $m_type = $_POST['m_type'];
+    $m_quality = $_POST['m_quality'];
     
-        $query=  "UPDATE moviedetails SET 	title='$m_title', description='$description', genreid='$gid', release_year='$m_year', duration='$m_duration', 	type='$m_type', poster_img='$m_img', video_url='$m_video' quality='$m_quality' WHERE id='$id'";
-        $result=mysqli_query($connection, $query);
-        if($result)
-        {
-            move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]);
-            move_uploaded_file($_FILES["m_video"]['tmp_name'], "upload/".$_FILES["m_video"]["name"]);
-            $_SESSION['success'] = "Your Data is Updated";
-            header('Location: movie_info.php');
-        }
-        else
-        {
-            $_SESSION['status']="Your Data is not Updated";
-            header('Location: movie_info.php');
-        }
+    // Handle image upload
+    if(!empty($_FILES['m_img']['name'])) {
+        $m_img = $_FILES['m_img']['name'];
+        move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]);
+    } else {
+        $m_img = $_POST['current_image'];
     }
-    else
-    {
-        $_SESSION['status'] = "Only PNG/JPG/JPEG Files are Supported " . mysqli_error($connection);
+    
+    // Handle video upload if needed
+    $video_url = '';
+    if(!empty($_FILES['m_video']['name'])) {
+        $m_video = $_FILES['m_video']['name'];
+        move_uploaded_file($_FILES["m_video"]['tmp_name'], "upload/".$_FILES["m_video"]["name"]);
+        $video_url = "upload/" . $m_video;
+    }
+    
+    // Build update query
+    $query = "UPDATE moviedetails SET 
+              title='$m_title', 
+              description='$description', 
+              genreid='$gid', 
+              release_year='$m_year', 
+              duration='$m_duration', 
+              type='$m_type', 
+              poster_img='$m_img', ";
+              
+    if(!empty($video_url)) {
+        $query .= "video_url='$video_url', ";
+    }
+    
+    $query .= "quality='$m_quality' WHERE id='$id'";
+    
+    $result = mysqli_query($connection, $query);
+    
+    if($result) {
+        $_SESSION['success'] = "Movie details updated successfully";
         header('Location: movie_info.php');
-    } 
+    } else {
+        $_SESSION['status'] = "Update failed: " . mysqli_error($connection);
+        header('Location: movie_info.php');
+    }
 }
 
 if(isset($_POST['movie_delete_btn'])) {

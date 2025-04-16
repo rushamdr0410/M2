@@ -54,7 +54,7 @@ include('includes/navbar.php');
                             </select>
                         </div>
                         <a href="register.php" class="btn btn-danger">CANCEL</a>
-                        <button type="submit" name="updatebtn" class="btn btn-primary">Update</button>
+                        <button type="submit" name="userupdatebtn" class="btn btn-primary">Update</button>
                     </form>
             <?php
                 } 

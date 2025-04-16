@@ -20,7 +20,7 @@ include('includes/navbar.php');
 
             if (isset($_POST['edit_btn'])) {
                 $id = $_POST['edit_id'];
-                $query = "SELECT * FROM genre_info WHERE genre_id='$id'";
+                $query = "SELECT * FROM genre_info WHERE genreid='$id'";
                 $run = mysqli_query($connection, $query);
                 if (!$run) {
                     die("Query failed: " . mysqli_error($connection));
@@ -31,7 +31,7 @@ include('includes/navbar.php');
                     
             ?>
                     <form action="code.php" method="POST">
-                        <input type="hidden" name="edit_id" value="<?php echo $row['genre_id']; ?>">
+                        <input type="hidden" name="edit_id" value="<?php echo $row['genreid']; ?>">
 
                         <div class="form-group">
                             <label> Genre </label>
