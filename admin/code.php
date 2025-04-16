@@ -169,7 +169,7 @@ if(isset($_POST['update_btn'])) {
     exit();
 }
 
-if(isset($_POST['delete_btn'])) {
+if(isset($_POST['aboutdelete_btn'])) {
 
     $id= $_POST['delete_id'];
     $query = "DELETE FROM about where id='$id' ";
