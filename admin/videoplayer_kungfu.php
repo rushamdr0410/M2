@@ -3,6 +3,8 @@
   ini_set('display_errors', 1);
   include('user_auth.php');
 
+  $_SESSION['has_watched'] = true;
+
   if (!isset($_SESSION['user_username'])) {
       header("Location: userlogin.php");
       exit();

@@ -8,10 +8,14 @@ if (!isset($_SESSION['user_username'])) {
   exit();
 }
 
+// Initialize watched status if not set
+if (!isset($_SESSION['has_watched'])) {
+  $_SESSION['has_watched'] = false;
+}
 
-  // Query for fetching movie details
-  $query = "SELECT * FROM moviedetails";
-  $result = mysqli_query($connection, $query);
+// Query for fetching movie details
+$query = "SELECT * FROM moviedetails";
+$result = mysqli_query($connection, $query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -554,7 +558,8 @@ if (!isset($_SESSION['user_username'])) {
       </div>
     </div>
   </main>
-  <section class="movies" id="movies">
+  <?php if ($_SESSION['has_watched']): ?>
+<section class="movies" id="movies">
   <div class="title">
     <h2 class="heading">recommended</h2>
     <form>
@@ -590,6 +595,7 @@ if (!isset($_SESSION['user_username'])) {
     ?>
   </div>
 </section>
+<?php endif; ?>
 
 <section class="movies" id="movies">
     <div class="title">
