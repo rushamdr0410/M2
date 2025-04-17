@@ -38,7 +38,6 @@ $result = mysqli_query($connection, $query);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    /* ===== Homepage CSS ===== */
     * {
       margin: 0;
       padding: 0;
@@ -54,7 +53,6 @@ $result = mysqli_query($connection, $query);
       overflow-x: hidden;
     }
 
-    /* ===== Navigation ===== */
     nav {
       height: 70px;
       width: 100%;
@@ -107,7 +105,7 @@ $result = mysqli_query($connection, $query);
 
     .nav-links .dropdown-content {
       position: absolute;
-      top: 100%; /* Positions directly below parent */
+      top: 100%; 
       left: 0;
       min-width: 160px;
       background-color: #131418;
@@ -572,14 +570,12 @@ $result = mysqli_query($connection, $query);
     </div>
   </main>
   <?php if ($_SESSION['has_watched']): ?>
-    <?php if ($_SESSION['has_watched']): ?>
 <section class="movies" id="movies">
   <div class="title">
     <h2 class="heading">recommended</h2>
   </div>
   <div class="movies-container-wrapper">
     <?php
-      // Get genres of movies the user has watched
       $user_id = $_SESSION['user_id'];
       $genre_query = "SELECT g.genre_name 
                      FROM genre_info g
@@ -589,7 +585,6 @@ $result = mysqli_query($connection, $query);
                      GROUP BY g.genre_name";
       $genre_result = mysqli_query($connection, $genre_query);
       
-      // Build recommendation query based on watched genres
       $recommend_query = "SELECT DISTINCT m.* 
                          FROM moviedetails m
                          JOIN genre_info g ON m.genreid = g.genreid
@@ -602,11 +597,10 @@ $result = mysqli_query($connection, $query);
       
       if (!empty($genres)) {
           $recommend_query .= implode(",", $genres) . ")";
-          // Exclude already watched movies
           $recommend_query .= " AND m.id NOT IN (
                               SELECT movie_id FROM user_watched_movies 
                               WHERE user_id = $user_id)";
-          $recommend_query .= " LIMIT 12"; // Limit to 12 recommendations
+          $recommend_query .= " LIMIT 12"; 
           
           $result = mysqli_query($connection, $recommend_query);
           if(mysqli_num_rows($result) > 0) {
@@ -636,7 +630,7 @@ $result = mysqli_query($connection, $query);
   </div>
 </section>
 <?php endif; ?>
-<?php endif; ?>
+
 <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Movies</h2>
