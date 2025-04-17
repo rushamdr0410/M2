@@ -3,11 +3,25 @@
   ini_set('display_errors', 1);
   include('user_auth.php');
 
-  $_SESSION['has_watched'] = true;
-
   if (!isset($_SESSION['user_username'])) {
       header("Location: userlogin.php");
       exit();
+  }
+
+  // Add this right after including user_auth.php in videoplayer_kungfu.php
+  if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $movie_id = $_GET['video_id'];
+    
+    // Check if already watched to avoid duplicates
+    $check_query = "SELECT * FROM user_watched_movies WHERE user_id = $user_id AND movie_id = $movie_id";
+    $check_result = mysqli_query($connection, $check_query);
+    
+    if (mysqli_num_rows($check_result) == 0) {
+        // Record this viewing
+        $insert_query = "INSERT INTO user_watched_movies (user_id, movie_id) VALUES ($user_id, $movie_id)";
+        mysqli_query($connection, $insert_query);
+    }
   }
 
   // Query for fetching movie details

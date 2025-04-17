@@ -8,9 +8,21 @@ if (!isset($_SESSION['user_username'])) {
   exit();
 }
 
-// Initialize watched status if not set
 if (!isset($_SESSION['has_watched'])) {
   $_SESSION['has_watched'] = false;
+}
+
+// With this:
+$_SESSION['has_watched'] = false; // Default to false
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $watched_query = "SELECT COUNT(*) as count FROM user_watched_movies WHERE user_id = $user_id";
+    $watched_result = mysqli_query($connection, $watched_query);
+    $watched_data = mysqli_fetch_assoc($watched_result);
+    
+    if ($watched_data['count'] > 0) {
+        $_SESSION['has_watched'] = true;
+    }
 }
 
 // Query for fetching movie details
@@ -560,44 +572,71 @@ $result = mysqli_query($connection, $query);
     </div>
   </main>
   <?php if ($_SESSION['has_watched']): ?>
+    <?php if ($_SESSION['has_watched']): ?>
 <section class="movies" id="movies">
   <div class="title">
     <h2 class="heading">recommended</h2>
-    <form>
-      <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
-    </form>
   </div>
   <div class="movies-container-wrapper">
     <?php
-      $query = "SELECT * FROM moviedetails";
-      $result = mysqli_query($connection, $query);
-      if(mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-          ?>
-          <div class="movies-container">
-            <div class="card">
-              <!-- Movie Poster Section -->
-              <div class="img">
-                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-                </a>
-            ` </div>
-              <div class="movies-title">
-                <h3><?php echo $row['title']; ?></h3>
-              </div>
-            </div>
-          </div>
-          <?php
-        }
-      } 
-      else {
-        echo "No Records Found!";
+      // Get genres of movies the user has watched
+      $user_id = $_SESSION['user_id'];
+      $genre_query = "SELECT g.genre_name 
+                     FROM genre_info g
+                     JOIN moviedetails m ON g.genreid = m.genreid
+                     JOIN user_watched_movies w ON m.id = w.movie_id
+                     WHERE w.user_id = $user_id
+                     GROUP BY g.genre_name";
+      $genre_result = mysqli_query($connection, $genre_query);
+      
+      // Build recommendation query based on watched genres
+      $recommend_query = "SELECT DISTINCT m.* 
+                         FROM moviedetails m
+                         JOIN genre_info g ON m.genreid = g.genreid
+                         WHERE g.genre_name IN (";
+      
+      $genres = [];
+      while ($genre_row = mysqli_fetch_assoc($genre_result)) {
+          $genres[] = "'" . mysqli_real_escape_string($connection, $genre_row['genre_name']) . "'";
+      }
+      
+      if (!empty($genres)) {
+          $recommend_query .= implode(",", $genres) . ")";
+          // Exclude already watched movies
+          $recommend_query .= " AND m.id NOT IN (
+                              SELECT movie_id FROM user_watched_movies 
+                              WHERE user_id = $user_id)";
+          $recommend_query .= " LIMIT 12"; // Limit to 12 recommendations
+          
+          $result = mysqli_query($connection, $recommend_query);
+          if(mysqli_num_rows($result) > 0) {
+              while($row = mysqli_fetch_assoc($result)) {
+                  ?>
+                  <div class="movies-container">
+                    <div class="card">
+                      <div class="img">
+                        <a href="movie_details.php?id=<?php echo $row['id']; ?>">
+                            <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                        </a>
+                      </div>
+                      <div class="movies-title">
+                        <h3><?php echo $row['title']; ?></h3>
+                      </div>
+                    </div>
+                  </div>
+                  <?php
+              }
+          } else {
+              echo "<p>No recommendations found based on your viewing history.</p>";
+          }
+      } else {
+          echo "<p>Watch some movies to get recommendations!</p>";
       }
     ?>
   </div>
 </section>
 <?php endif; ?>
-
+<?php endif; ?>
 <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Movies</h2>
