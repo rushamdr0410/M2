@@ -629,20 +629,52 @@ if (mysqli_num_rows($result) > 0) {
         <h2>Related Movies</h2>
         <div class="related-movies-container">
             <?php
-            // Query to fetch related movies (e.g., movies of the same genre)
-            $related_query = "SELECT * FROM moviedetails";
-            $related_result = mysqli_query($connection, $related_query);
-
-            if (mysqli_num_rows($related_result) > 0) {
-                while ($row = mysqli_fetch_assoc($related_result)) {
-                    ?>
-                    <div class="related-movie">
-                        <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                            <img src="upload/<?php echo $row['poster_img']; ?>" alt="<?php echo $row['title']; ?>">
-                        </a>
-                        <h3><?php echo $row['title']; ?></h3>
-                    </div>
-                    <?php
+            // Get the current movie's genres
+            $current_genres = $genres;
+            
+            // Query to fetch related movies (movies that share at least one genre with the current movie)
+            if (!empty($current_genres)) {
+                $genre_conditions = [];
+                foreach ($current_genres as $genre) {
+                    $genre_conditions[] = "g.genre_name = '" . mysqli_real_escape_string($connection, $genre) . "'";
+                }
+                
+                $related_query = "SELECT DISTINCT m.* 
+                                FROM moviedetails m
+                                JOIN genre_info g ON m.genreid = g.genreid
+                                WHERE (" . implode(" OR ", $genre_conditions) . ")
+                                AND m.id != $id
+                                ORDER BY RAND()
+                                LIMIT 6"; // Limit to 6 related movies
+                
+                $related_result = mysqli_query($connection, $related_query);
+                
+                if (mysqli_num_rows($related_result) > 0) {
+                    while ($related_row = mysqli_fetch_assoc($related_result)) {
+                        ?>
+                        <div class="related-movie">
+                            <a href="movie_details.php?id=<?php echo $related_row['id']; ?>">
+                                <img src="upload/<?php echo $related_row['poster_img']; ?>" alt="<?php echo $related_row['title']; ?>">
+                            </a>
+                            <h3><?php echo $related_row['title']; ?></h3>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    // Fallback if no related movies found - show random movies
+                    $fallback_query = "SELECT * FROM moviedetails WHERE id != $id ORDER BY RAND() LIMIT 6";
+                    $fallback_result = mysqli_query($connection, $fallback_query);
+                    
+                    while ($fallback_row = mysqli_fetch_assoc($fallback_result)) {
+                        ?>
+                        <div class="related-movie">
+                            <a href="movie_details.php?id=<?php echo $fallback_row['id']; ?>">
+                                <img src="upload/<?php echo $fallback_row['poster_img']; ?>" alt="<?php echo $fallback_row['title']; ?>">
+                            </a>
+                            <h3><?php echo $fallback_row['title']; ?></h3>
+                        </div>
+                        <?php
+                    }
                 }
             } else {
                 echo "<p>No related movies found.</p>";

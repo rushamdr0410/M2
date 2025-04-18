@@ -5,34 +5,40 @@ include('includes/header.php');
 include('includes/navbar.php');
 ?>
 
-<div class="modal fade" id="aboutus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addadminprofile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title" id="exampleModalLabel">Modal Title</h1>
+        <h5 class="modal-title" id="exampleModalLabel">Add Cast Details</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="code.php" method="POST">
+      <form action="code.php" method="POST" enctype="multipart/form-data">
       <div class="modal-body">
         <div class="form-group">
-            <label> Title </label>
-            <input type="text" name="title" class="form-control" placeholder="Enter title ">
+            <label> Cast Name </label>
+            <input type="text" name="c_name" class="form-control" placeholder="Enter Cast Name" required>
         </div>
         <div class="form-group">
-            <label> Description </label>
-            <input type="text" name="description" class="form-control" placeholder="Enter Description">
+            <label> Biography</label>
+            <textarea name="biography" class="form-control" required rows="3"></textarea>
         </div>
         <div class="form-group">
-            <label> Links </label>
-            <input type="text" name="links" class="form-control" placeholder="Enter links">
+            <label> Birth Date </label>
+            <input type="text" name="dob" class="form-control" placeholder="Enter Date of Birth" required>
         </div>
-        <input type="hidden" name="usertype" value="admin">
+        <div class="form-group">
+            <label> Birth Place </label>
+            <input type="text" name="pob" class="form-control" placeholder="Enter Place of Birth" required>
+        <div class="form-group">
+            <label>Cast Image</label>
+            <input type="file" name="c_img" id="c_img" class="form-control" required>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" name="service_save" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" name="c_insertbtn" class="btn btn-primary">Save</button>
       </div>
     </form>
     </div>
@@ -41,9 +47,9 @@ include('includes/navbar.php');
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Service Provided
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#aboutus">
-                Add Services
+        <h6 class="m-0 font-weight-bold text-primary">Cast Details
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addadminprofile">
+                Add Cast Details
             </button>
         </h6>
 </div>
@@ -62,7 +68,7 @@ include('includes/navbar.php');
     
     <?php
         
-        $query="SELECT * FROM service";
+        $query="SELECT* FROM moviedetails";
         $result=mysqli_query($connection, $query);
     
     ?>
@@ -70,9 +76,9 @@ include('includes/navbar.php');
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>TITLE</th>
-                    <th>DESCRIPTION</th>
-                    <th>LINKS</th>
+                    <th>CAST NAME</th>
+                    <th>BIRTH DATE</th>
+                    <th>BIRTH PLACE</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -82,24 +88,24 @@ include('includes/navbar.php');
                     if(mysqli_num_rows($result)>0)
                     {
                         while($row=mysqli_fetch_assoc($result))
-                        {
+                        { 
                             ?>
                             
                             <tr>
-                                <td><?php echo $row['id']; ?></td>
-                                <td><?php echo $row['title']; ?></td>
-                                <td><?php echo $row['description']; ?></td>
-                                <td><?php echo $row['links']; ?></td>
+                                <td><?php echo $row['cast_id']; ?></td>
+                                <td><?php echo $row['cast_name']; ?></td>
+                                <td><?php echo $row['birth_date']; ?></td>
+                                <td><?php echo $row['birth_place']; ?></td>
                                 <td>
-                                    <form action="service_edit.php" method="POST">
-                                        <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit" name="edit_btn" class="btn btn-success">EDIT</button>
+                                    <form action="castdetails.php" method="POST">
+                                        <input type="hidden" name="castedit_id" value="<?php echo $row['cast_id']; ?>">
+                                        <button type="submit" name="castedit_btn" class="btn btn-success">EDIT</button>
                                     </form>
                                 </td>
                                 <td>
                                     <form action="code.php" method="POST">
-                                    <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit" name="servicedelete_btn" class="btn btn-danger">DELETE</button>
+                                    <input type="hidden" name="delete_id" value="<?php echo $row['cast_id']; ?>">
+                                        <button type="submit" name="cast_delete_btn" class="btn btn-danger">DELETE</button>
                                     </form>
                                 </td>
                             </tr>
@@ -116,7 +122,7 @@ include('includes/navbar.php');
    
     </div>
 </div>
-
+</div>
 <?php
 include('includes/scripts.php');
 include('includes/footer.php');

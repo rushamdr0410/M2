@@ -221,7 +221,7 @@ if(isset($_POST['serviceupdate_btn']))
     exit();
 }
 
-if(isset($_POST['delete_btn'])) {
+if(isset($_POST['servicedelete_btn'])) {
 
     $id= $_POST['delete_id'];
     $query = "DELETE FROM service where id='$id' ";
