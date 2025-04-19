@@ -48,7 +48,7 @@
             <a class="collapse-item" href="#">TV-Shows</a>
             <a class="collapse-item" href="#">Trailers</a>
             <a class="collapse-item" href="metadata.php">MetaData</a>
-            <a class="collapse-item" href="cast.php">Casts</a>
+            <a class="collapse-item" href="#">Casts</a>
             <a class="collapse-item" href="genre_info.php">GENRE</a>
         </div>
     </div>

@@ -12,8 +12,7 @@ if (!isset($_SESSION['has_watched'])) {
   $_SESSION['has_watched'] = false;
 }
 
-// With this:
-$_SESSION['has_watched'] = false; // Default to false
+$_SESSION['has_watched'] = false; 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $watched_query = "SELECT COUNT(*) as count FROM user_watched_movies WHERE user_id = $user_id";
@@ -25,7 +24,6 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// Query for fetching movie details
 $query = "SELECT * FROM moviedetails";
 $result = mysqli_query($connection, $query);
 ?>
