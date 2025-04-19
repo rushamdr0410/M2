@@ -464,61 +464,61 @@ if (mysqli_num_rows($result) > 0) {
         .movie-info .add-to-watchlist:hover {
             background-color: #4fa8c7;
         }
-        /* Related Movies Section */
         .related-movies {
             padding: 2rem;
             max-width: 1200px;
             margin: 0 auto;
-            margin-left: -76px;
+            margin-top: 2rem;
         }
 
         .related-movies h2 {
             font-size: 2rem;
             margin-bottom: 1.5rem;
             color: #61DAFB;
-            margin-left: 162px;
+            text-align: left;
+            width: 100%;
         }
 
         .related-movies-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
+            justify-content: left;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding: 0 1rem;
         }
 
         .related-movie {
-            flex: 1 1 calc(16.666% - 1rem); /* 6 items per row */
-            max-width: 150px;
+            flex: 0 0 calc(16.666% - 1.5rem); /* 6 items per row */
+            max-width: 160px;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .related-movie:hover {
+            transform: translateY(-5px);
         }
 
         .related-movie img {
             width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
 
         .related-movie img:hover {
-            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(97, 218, 251, 0.3);
         }
 
         .related-movie h3 {
-            font-size: 1rem;
-            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            margin-top: 0.8rem;
             color: #f2f5f7;
-        }
-
-        @media (max-width: 768px) {
-            .related-movie {
-                flex: 1 1 calc(33.333% - 1rem); /* 3 items per row on smaller screens */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .related-movie {
-                flex: 1 1 calc(50% - 1rem); /* 2 items per row on mobile */
-            }
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
