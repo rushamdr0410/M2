@@ -14,7 +14,7 @@ include('includes/navbar.php');
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="code.php" method="POST" enctype="multipart/form-data">
+      <form action="code.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
       <div class="modal-body">
         <div class="form-group">
             <label> Title </label>
@@ -75,10 +75,42 @@ include('includes/navbar.php');
             <label> Quality </label>
             <input type="text" name="m_quality" class="form-control" placeholder="Enter Quality" required>
         </div>
+        <div class="form-group">
+            <label>Select Casts</label>
+            <select name="cid" class="form-control">
+                <?php
+                    $sql = "SELECT * FROM cast_info";
+                    $res = mysqli_query($connection, $sql);
+                    $count = mysqli_num_rows($res);
+                    if($count>0)
+                    {
+                        while($row=mysqli_fetch_assoc($res)) 
+                        {
+                            $cast_name = $row['cast_name'];
+                            $cast_id = $row['cast_id'];
+                            ?>
+                                            
+                            <option value="<?php echo $cast_id; ?>"><?= $row['cast_name']?></option>
+
+                            <?php
+                        }
+                    }
+                    else
+                    {
+                        echo "<option value='0'>Casts Not Available</option>";
+                    }
+
+                ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label> Director </label>
+            <input type="text" name="m_dname" class="form-control" placeholder="Enter Director Name" required>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" name="m_insertbtn" class="btn btn-primary">Save</button>
+        <button type="submit" name="movie_insertbtn" class="btn btn-primary">Save</button>
       </div>
     </form>
     </div>

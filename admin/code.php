@@ -1,5 +1,9 @@
 <?php
 
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include('security.php');
 
 if(isset($_POST['registerbtn']))
@@ -310,50 +314,85 @@ if(isset($_POST['genredelete_btn']))
     }
 }
 
-if(isset($_POST['m_insertbtn'])) {
+if(isset($_POST['movie_insertbtn'])) {
+    // Debug: Check what's being received
+    echo "<pre>";
+    print_r($_POST);
+    print_r($_FILES);
+    echo "</pre>";
+    
+    // Verify database connection
+    if (!$connection) {
+        die("Database connection failed: " . mysqli_connect_error());
+    }
+
     $title = mysqli_real_escape_string($connection, $_POST['m_title']);
     $description = mysqli_real_escape_string($connection, $_POST['description']);
     $genreid = mysqli_real_escape_string($connection, $_POST['gid']);
     $release_year = mysqli_real_escape_string($connection, $_POST['m_year']);
     $duration = mysqli_real_escape_string($connection, $_POST['m_duration']);
     $m_type = mysqli_real_escape_string($connection, $_POST['m_type']);
-    $poster_img= $_FILES['m_img']['name'];
-    $m_video=$_FILES['m_video']['name'];
     $quality = mysqli_real_escape_string($connection, $_POST['m_quality']);
+    $cast_id = mysqli_real_escape_string($connection, $_POST['cid']);
+    $d_name = mysqli_real_escape_string($connection, $_POST['m_dname']);
 
-    $validate_img_extension=$_FILES['m_img']['type']=="image/jpeg"||$_FILES['m_img']['type']=="image/png"||$_FILES['m_img']['type']=="image/jpg";
-    $validate_video_extension=$_FILES['m_video']['type']=="video/mp4";
+    // File handling
+    $poster_img = $_FILES['m_img']['name'];
+    $poster_tmp = $_FILES['m_img']['tmp_name'];
+    $m_video = $_FILES['m_video']['name'];
+    $video_tmp = $_FILES['m_video']['tmp_name'];
 
-    if($validate_img_extension && $validate_video_extension)
-    {
-         if(file_exists("upload/".$_FILES["m_img"]["name"]) && file_exists("upload/".$_FILES["m_video"]["name"]))
-        {
-            $store = $_FILES["m_img"]["name"];
-            $store = $_FILES["m_video"]["name"];
-            $_SESSION['status']= "Image/Video already exists. '.$store.'";
-            header('Location: movie_info.php');
-        }
-        else
-        {
-            $video_url = "upload/" . $_FILES["m_video"]["name"];
-            $query = "INSERT INTO moviedetails(title, 	description, genreid, release_year, duration, type, poster_img, video_url, quality) VALUES ('$title','$description', '$genreid', '$release_year', '$duration', '$m_type', '$poster_img', '$video_url', '$quality')";
-            $query_run = mysqli_query($connection, $query);
-
-            if($query_run) {
-                if(move_uploaded_file($_FILES["m_img"]['tmp_name'], "upload/".$_FILES["m_img"]["name"]) && move_uploaded_file($_FILES["m_video"]['tmp_name'], "upload/".$_FILES["m_video"]["name"])) {
-                    $_SESSION['success'] = "Movie Details Added";
-                    header('Location: movie_info.php');
-                } else {
-                    $_SESSION['status'] = "File upload failed";
-                    header('Location: movie_info.php');
-                }
-            } 
-        }
+    // Check if files were uploaded
+    if(empty($poster_img)) {
+        die("Please select a poster image");
     }
-    else
-    {
-        $_SESSION['status'] = "Only PNG/JPG/JPEG/MP4 Files are Supported " . mysqli_error($connection);
-        header('Location: movie_info.php');
+    if(empty($m_video)) {
+        die("Please select a video file");
+    }
+
+    // Generate unique filenames to prevent overwrites
+    $unique_id = uniqid();
+    $new_poster_name = $unique_id . '_' . $poster_img;
+    $new_video_name = $unique_id . '_' . $m_video;
+
+    // Paths for upload
+    $upload_dir = "upload/";
+    $img_path = $upload_dir . $new_poster_name;
+    $video_path = $upload_dir . $new_video_name;
+
+    // Create upload directory if it doesn't exist
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    // Check directory permissions
+    if (!is_writable($upload_dir)) {
+        die("Upload directory is not writable. Please check permissions.");
+    }
+
+    // Move uploaded files
+    if(move_uploaded_file($poster_tmp, $img_path) && move_uploaded_file($video_tmp, $video_path)) {
+        // Files uploaded successfully, now insert into database
+        $query = "INSERT INTO moviedetails 
+                 (title, description, genreid, release_year, duration, type, poster_img, video_url, quality, cast_id, director) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, 'ssissssssis', $title, $description, $genreid, $release_year, 
+                              $duration, $m_type, $new_poster_name, $video_path, $quality, $cast_id, $d_name);
+        
+        if(mysqli_stmt_execute($stmt)) {
+            $_SESSION['success'] = "Movie Details Added Successfully!";
+            header('Location: movie_info.php');
+            exit();
+        } else {
+            // Delete the uploaded files if database insert failed
+            unlink($img_path);
+            unlink($video_path);
+            die("Database error: " . mysqli_error($connection));
+        }
+    } else {
+        die("File upload failed. Error: " . $_FILES['m_img']['error'] . " and " . $_FILES['m_video']['error']);
     }
 }
 
