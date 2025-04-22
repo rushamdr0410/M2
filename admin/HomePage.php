@@ -24,6 +24,14 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; 
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+
+// Fetch popular movies for swiper from TMDb
+$swiper_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+$swiper_data = json_decode(file_get_contents($swiper_url), true);
+$swiper_movies = $swiper_data['results'] ?? [];
+
 $query = "SELECT * FROM moviedetails";
 $result = mysqli_query($connection, $query);
 ?>
@@ -403,9 +411,9 @@ $result = mysqli_query($connection, $query);
       box-shadow: 0 5px 15px rgba(97, 218, 251, 0.4);
     }
 
-    /* Movie Sections */
+    /* ===== Movie Sections ===== */
     .movies {
-      margin: 40px 80px;
+      margin: 40px 0;
       padding: 0 20px;
       width: 100%;
     }
@@ -414,74 +422,197 @@ $result = mysqli_query($connection, $query);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      width:100%;
+      margin-bottom: 30px;
+      padding: 0 20px;
     }
 
     .heading {
-      max-width: 968px;
-        margin-left: 0;
-        margin-right: auto;
-        font-size: 2.2rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #01939c;
-        display: flex;
-        align-items: center;
-        margin:0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #61DAFB;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #61DAFB, transparent);
     }
 
     .titlebtn {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(97, 218, 251, 0.3);
+      color: #61DAFB;
       padding: 8px 20px;
-      border-radius: 5px;
+      border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 5px;
-      margin-right: 100px;
+      gap: 8px;
+      font-size: 0.9rem;
     }
 
     .titlebtn:hover {
-      border-color: #61DAFB;
-      color: #61DAFB;
+      background: rgba(97, 218, 251, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .titlebtn i {
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+
+    .titlebtn:hover i {
+      transform: translateX(3px);
     }
 
     .movies-container-wrapper {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 25px;
+      padding: 0 20px;
     }
 
     .movies-container {
       transition: all 0.3s;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     .movies-container:hover {
       transform: translateY(-5px);
     }
 
+    .movies-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+
+    .movies-container:hover::before {
+      opacity: 1;
+    }
+
     .movies-container img {
       width: 100%;
-      border-radius: 5px;
+      border-radius: 8px;
       transition: all 0.3s;
       aspect-ratio: 2/3;
       object-fit: cover;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
     .movies-container:hover img {
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      transform: scale(1.03);
     }
 
     .movies-title {
-      margin-top: 8px;
-      font-size: 14px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      transition: color 0.3s;
+    }
+
+    .movies-container:hover .movies-title {
+      color: #61DAFB;
+    }
+
+    .movies-container > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .movies-container::before {
+      z-index: 0;
+    }
+
+    /* Rating Badge */
+    .rating-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0,0,0,0.7);
+      color: #FFD700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .movies-container:hover .rating-badge {
+      opacity: 1;
+    }
+
+    /* Hover Play Button */
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(97, 218, 251, 0.9);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .play-button i {
+      color: #131418;
+      font-size: 1.5rem;
+      margin-left: 3px;
+    }
+
+    .movies-container:hover .play-button {
+      opacity: 1;
+    }
+    .movie-link {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card a {
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .card a:hover {
+      color: #61DAFB;
+    }
+
+    .img {
+      flex:1;
     }
   </style>
 </head>
@@ -546,24 +677,34 @@ $result = mysqli_query($connection, $query);
   <main>
     <div class="swiper">
       <div class="swiper-wrapper">
-        <?php
-        if(mysqli_num_rows($result) > 0) {
-          while($row = mysqli_fetch_assoc($result)) {
-        ?>
-        <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
-          <div>
-            <h2><?php echo $row['title']; ?></h2>
-            <p><?php echo $row['description']; ?></p>
-            <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
-          </div>
-        </div>
-
-        <?php
-          }
-        } else {
-          echo "No Records Found!";
-        }
-        ?>
+        <?php if (!empty($swiper_movies)): ?>
+          <?php foreach (array_slice($swiper_movies, 0, 5) as $movie): ?>
+            <div class="swiper-slide" style="background: url('https://image.tmdb.org/t/p/original<?php echo htmlspecialchars($movie['backdrop_path']); ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
+              <div>
+                <h2><?php echo htmlspecialchars($movie['title']); ?></h2>
+                <p><?php echo htmlspecialchars($movie['overview'] ?? 'No description available'); ?></p>
+                <a href="movie_details.php?id=<?php echo $movie['id']; ?>" target="_blank">Watch Now</a>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <!-- Fallback to local database if API fails -->
+          <?php if(mysqli_num_rows($result) > 0): ?>
+            <?php while($row = mysqli_fetch_assoc($result)): ?>
+              <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
+                <div>
+                  <h2><?php echo $row['title']; ?></h2>
+                  <p><?php echo $row['description']; ?></p>
+                  <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
+                </div>
+              </div>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <div class="swiper-slide" style="background: #131418; display: flex; justify-content: center; align-items: center;">
+              <h2>No movies found</h2>
+            </div>
+          <?php endif; ?>
+        <?php endif; ?>
       </div>
     </div>
   </main>
@@ -605,16 +746,16 @@ $result = mysqli_query($connection, $query);
               while($row = mysqli_fetch_assoc($result)) {
                   ?>
                   <div class="movies-container">
-                    <div class="card">
-                      <div class="img">
-                        <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                            <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
-                        </a>
+                    <a href="movie_details.php?id=<?php echo $id; ?>" class="movie-link">
+                      <div class="card">
+                        <div class="img">
+                          <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
+                        </div>
+                        <div class="movies-title">
+                          <h3><?php echo htmlspecialchars($title); ?></h3>
+                        </div>
                       </div>
-                      <div class="movies-title">
-                        <h3><?php echo $row['title']; ?></h3>
-                      </div>
-                    </div>
+                    </a>
                   </div>
                   <?php
               }
@@ -631,75 +772,83 @@ $result = mysqli_query($connection, $query);
 
 <section class="movies" id="movies">
     <div class="title">
-      <h2 class="heading">Movies</h2>
-      <form>
+      <h2 class="heading">Popular Movies</h2>
+      <form action="movies.php" method="get">
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
     <div class="movies-container-wrapper">
     <?php
-      $query = "SELECT * FROM moviedetails where type='Movie'";
-      $result = mysqli_query($connection, $query);
-      if(mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-          ?>
+        $popular_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+        $popular_response = file_get_contents($popular_url);
+        $popular_data = json_decode($popular_response, true);
+
+        if (isset($popular_data['results'])) {
+            foreach (array_slice($popular_data['results'], 0, 12) as $movie) {
+                $image = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+                $title = $movie['title'];
+                $id = $movie['id'];
+                ?>
           <div class="movies-container">
             <div class="card">
-              <!-- Movie Poster Section -->
               <div class="img">
-                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                <a href="movie_details.php?id=<?php echo $id; ?>">
+                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
                 </a>
-            ` </div>
+              </div>
               <div class="movies-title">
-                <h3><?php echo $row['title']; ?></h3>
+                <h3><?php echo htmlspecialchars($title); ?></h3>
               </div>
             </div>
           </div>
           <?php
+            }
+        } 
+        else {
+            echo "No Records Found!";
         }
-      } 
-      else {
-        echo "No Records Found!";
-      }
     ?>
-  </div>
-</section>
+    </div>
+  </section>
   <section class="movies" id="movies">
     <div class="title">
-      <h2 class="heading">TV-Shows</h2>
-      <form>
+      <h2 class="heading">Popular TV Shows</h2>
+      <form action="tvshows.php" method="get">
         <button type="submit" class="titlebtn">view more<i class="fas fa-arrow-up-right-from-square" style="color:rgba(255, 255, 255, 0.5);"></i></button>
       </form>
     </div>
     <div class="movies-container-wrapper">
     <?php
-      $query = "SELECT * FROM moviedetails where type='TV-Show'";
-      $result = mysqli_query($connection, $query);
-      if(mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-          ?>
+        $tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+        $tv_response = file_get_contents($tv_url);
+        $tv_data = json_decode($tv_response, true);
+
+        if (isset($tv_data['results'])) {
+            foreach (array_slice($tv_data['results'], 0, 12) as $show) {
+                $image = "https://image.tmdb.org/t/p/w500" . $show['poster_path'];
+                $title = $show['name'];
+                $id = $show['id'];
+                ?>
           <div class="movies-container">
             <div class="card">
-              <!-- Movie Poster Section -->
               <div class="img">
-                <a href="movie_details.php?id=<?php echo $row['id']; ?>">
-                    <?php echo '<img src="upload/'.$row['poster_img'].'" alt="Movie Poster">'; ?>
+                <a href="tvshow_details.php?id=<?php echo $id; ?>">
+                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
                 </a>
-            ` </div>
+              </div>
               <div class="movies-title">
-                <h3><?php echo $row['title']; ?></h3>
+                <h3><?php echo htmlspecialchars($title); ?></h3>
               </div>
             </div>
           </div>
           <?php
+            }
+        } 
+        else {
+            echo "No Records Found!";
         }
-      } 
-      else {
-        echo "No Records Found!";
-      }
     ?>
-  </div>
+    </div>
   </section>
   
 
@@ -707,5 +856,6 @@ $result = mysqli_query($connection, $query);
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="js/Homepage.js"></script>
+  
 </body>
 </html>

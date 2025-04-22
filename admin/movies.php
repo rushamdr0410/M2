@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_username'])) {
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
     $movie_id = $_POST['movie_id'];
-    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
+    $user_id = $_SESSION['user_id'];
     
     // Check if already in watchlist
     $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
@@ -22,9 +22,27 @@ if (isset($_POST['add_to_watchlist'])) {
     }
 }
 
-// Query to fetch TV shows
-$query = "SELECT * FROM moviedetails WHERE type = 'Movie'";
-$result = mysqli_query($connection, $query);
+// TMDb API Integration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; // Replace with your actual API key
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+
+// Function to fetch movies from TMDb API
+function fetch_tmdb_movies($url) {
+    $response = @file_get_contents($url);
+    if ($response === FALSE) {
+        return null;
+    }
+    return json_decode($response, true);
+}
+
+// Fetch popular movies from TMDb
+$tmdb_movies_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+$tmdb_data = fetch_tmdb_movies($tmdb_movies_url);
+$api_movies = $tmdb_data['results'] ?? [];
+
+// Query to fetch local movies
+$local_movies_query = "SELECT * FROM moviedetails WHERE type = 'Movie'";
+$local_movies_result = mysqli_query($connection, $local_movies_query);
 ?>
 
 <!DOCTYPE html>
@@ -361,6 +379,7 @@ $result = mysqli_query($connection, $query);
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 20px;
+      align-items: stretch;
     }
         
     .watchlist-movie {
@@ -368,6 +387,9 @@ $result = mysqli_query($connection, $query);
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
         
     .watchlist-movie:hover {
@@ -382,27 +404,45 @@ $result = mysqli_query($connection, $query);
         
     .watchlist-movie-info {
       padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
         
     .watchlist-movie-title {
       font-size: 1.2rem;
       margin-bottom: 10px;
       color: #f2f5f7;
+      min-height: 3.6rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .watchlist-movie-actions {
+      margin-top: auto;
+      padding-top: 10px;
     }
     .watchlist-btn {
       background-color: #61DAFB;
       color: #131418;
       border: none;
-      padding: 8px 15px;
+      padding: 10px 15px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 0.9rem;
+      white-space: nowrap;
     }
     
     .watchlist-btn:hover {
       background-color: #4fa8c7;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
     .watchlist-btn.added {
@@ -472,33 +512,35 @@ $result = mysqli_query($connection, $query);
   </nav>
 
   <div class="watchlist-container">
-  <h1 class="watchlist-header">Movies</h1>
-        
-  <?php if (mysqli_num_rows($result) > 0): ?>
-  <div class="watchlist-movies">
-    <?php while ($movie = mysqli_fetch_assoc($result)): ?>
-      <div class="watchlist-movie">
-        <div class="img">
-          <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
-            <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
-          </a>
-        </div>
+    <h1 class="watchlist-header">Movies</h1>
+   
+    
+    <!-- TMDb API Movies -->
+    <?php if (!empty($api_movies)): ?>
+    <div class="watchlist-movies">
+      <?php foreach ($api_movies as $movie): ?>
+        <div class="watchlist-movie">
+          <div class="img">
+            <a href="movie_details.php?tmdb_id=<?php echo $movie['id']; ?>">
+              <img src="https://image.tmdb.org/t/p/w500<?php echo $movie['poster_path']; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+            </a>
+          </div>
           <div class="watchlist-movie-info">
-            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+            <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
             <div class="watchlist-movie-actions">
-            <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+              <form method="POST" action="">
+                <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
-            </form>
+              </form>
             </div>
           </div>
-      </div>
-    <?php endwhile; ?>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+      <p class="empty-watchlist">Could not load movies from TMDb API.</p>
+    <?php endif; ?>
   </div>
-  <?php else: ?>
-  <p class="empty-watchlist">Your watchlist is empty. Add some movies!</p>
-  <?php endif; ?>
-</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
