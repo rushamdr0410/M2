@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_username'])) {
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
     $movie_id = $_POST['movie_id'];
-    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
+    $user_id = $_SESSION['user_id'];
     
     // Check if already in watchlist
     $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
@@ -22,23 +22,39 @@ if (isset($_POST['add_to_watchlist'])) {
     }
 }
 
-// Replace your current query with this debug version
-$query = "SELECT m.*, ROUND(AVG(NULLIF(r.rating, 0)), 1) AS avg_rating 
-          FROM moviedetails m 
-          JOIN reviews r ON m.id = r.movie_id 
-          WHERE r.rating BETWEEN 1 AND 5  -- Only include valid ratings
-          GROUP BY m.id 
-          HAVING avg_rating >= 4.0
-          ORDER BY avg_rating DESC";
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+$tmdb_base_url = 'https://api.themoviedb.org/3';
 
-$result = mysqli_query($connection, $query);
-
-// Add error checking
-if (!$result) {
-    die("Query failed: " . mysqli_error($connection));
+// Function to fetch data from TMDb API
+function fetch_tmdb_data($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    
+    curl_close($ch);
+    return json_decode($response, true);
 }
 
+// Fetch top rated movies from TMDb
+$top_movies_url = "$tmdb_base_url/movie/top_rated?api_key=$tmdb_api_key&language=en-US&page=1";
+$movies_data = fetch_tmdb_data($top_movies_url);
+$top_movies = $movies_data['results'] ?? [];
+
+// Fetch top rated TV shows from TMDb
+$top_tv_url = "$tmdb_base_url/tv/top_rated?api_key=$tmdb_api_key&language=en-US&page=1";
+$tv_data = fetch_tmdb_data($top_tv_url);
+$top_tvshows = $tv_data['results'] ?? [];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,11 +64,9 @@ if (!$result) {
   <title>MovieMagic | Where Every Frame Tells A Story</title>
   <link rel="website icon" type="JPG" href="#">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-
-    *{
+    * {
       margin: 0;
       padding: 0;
       color: #f2f5f7;
@@ -62,19 +76,13 @@ if (!$result) {
       font-weight: 300;
     }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: #131418;
-    }
-    body{
+    body {
       overflow-y: scroll;
       overflow-x: hidden;
       background-color: #131418;
       padding-top: 0.1rem;
     }
+
     nav {
       height: 70px;
       width: 100%;
@@ -356,78 +364,157 @@ if (!$result) {
       font-size: 1rem;
     }
 
-    h2{
-      margin-top: 6rem;
+    .watchlist-container {
+      max-width: 1200px;
+      margin: 10px auto 50px;
+      padding: 20px;
+    }
+        
+    .watchlist-header {
       font-size: 2.5rem;
       color: #01939c;
       font-weight: bold;
       margin-bottom: 30px;
       text-align: center;
-      text-transform: uppercase;
-      align-items: center;
-      margin-left:100px;
-    }
-    .watchlist-container {
-      max-width: 1200px;
-      margin: 100px auto 50px;
-      padding: 20px;
     }
         
     .watchlist-movies {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: -68px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      align-items: stretch;
     }
         
     .watchlist-movie {
       background: #232323;
       border-radius: 10px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
         
     .watchlist-movie:hover {
       transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
         
     .watchlist-movie img {
       width: 100%;
-      height: 300px;
+      height: 240px;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+        
+    .watchlist-movie:hover img {
+      transform: scale(1.03);
     }
         
     .watchlist-movie-info {
-      padding: 15px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
         
     .watchlist-movie-title {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
       color: #f2f5f7;
+      min-height: 2.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
     }
+
+    .watchlist-movie-actions {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    
     .watchlist-btn {
       background-color: #61DAFB;
       color: #131418;
       border: none;
-      padding: 8px 15px;
+      padding: 8px 12px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 0.85rem;
+      white-space: nowrap;
     }
     
     .watchlist-btn:hover {
       background-color: #4fa8c7;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
-    .watchlist-btn.added {
-      background-color: #4CAF50;
+    /* Pagination Styles */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin: 40px 0 20px;
     }
     
-    .watchlist-btn.added:hover {
-      background-color: #3e8e41;
+    .pagination {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .page-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #232323;
+      color: #f2f5f7;
+      border: 1px solid rgba(97, 218, 251, 0.3);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .page-link:hover {
+      border-color: #61DAFB;
+      color: #61DAFB;
+    }
+    
+    .page-link.active {
+      background: #61DAFB;
+      color: #131418;
+      font-weight: bold;
+      border-color: #61DAFB;
+    }
+    
+    .page-link.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .empty-watchlist {
+      text-align: center;
+      color: #61DAFB;
+      font-size: 1.2rem;
+      grid-column: 1 / -1;
+      padding: 40px 0;
+    }
+    h2{
+      margin-top: 6rem;
+      font-size: 2.5rem;
+      color: #01939c;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      align-items: center;
+      margin-left:5px;
+      margin-bottom: 1px;
     }
   </style>
 </head>
@@ -488,36 +575,64 @@ if (!$result) {
     </div>
   </nav>
 
+  <h2>Top IMDB</h2>
 
-  <h2> Top IMDB</h2>
-
-  <div class="watchlist-container">
-          
-    <?php if (mysqli_num_rows($result) > 0): ?>
-    <div class="watchlist-movies">
-      <?php while ($movie = mysqli_fetch_assoc($result)): ?>
-        <div class="watchlist-movie">
-          <div class="img">
-            <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
-              <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
-            </a>
-          </div>
-            <div class="watchlist-movie-info">
-              <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
-              <div class="watchlist-movie-actions">
-              <form method="POST" action="">
-                  <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
-                  <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
-              </form>
-              </div>
-            </div>
+<div class="watchlist-container">
+  <!-- Top Rated Movies Section -->
+  <h3 style="color: #61DAFB; margin: 20px 0; text-align: center;">Top Rated Movies</h3>
+  <?php if (!empty($top_movies)): ?>
+  <div class="watchlist-movies">
+    <?php foreach ($top_movies as $movie): ?>
+      <div class="watchlist-movie">
+        <div class="img">
+          <a href="movie_details.php?tmdb_id=<?php echo $movie['id']; ?>">
+            <img src="https://image.tmdb.org/t/p/w500<?php echo $movie['poster_path']; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+          </a>
         </div>
-      <?php endwhile; ?>
-    </div>
-    <?php else: ?>
-    <p class="empty-watchlist">No movies found with Good Rating</p>
-    <?php endif; ?>
+        <div class="watchlist-movie-info">
+          <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
+          <div class="watchlist-movie-actions">
+            <form method="POST" action="">
+              <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
+              <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
   </div>
+  <?php else: ?>
+    <p class="empty-watchlist">Could not load top rated movies.</p>
+  <?php endif; ?>
+
+  <!-- Top Rated TV Shows Section -->
+  <h3 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Top Rated TV Shows</h3>
+  <?php if (!empty($top_tvshows)): ?>
+  <div class="watchlist-movies">
+    <?php foreach ($top_tvshows as $tvshow): ?>
+      <div class="watchlist-movie">
+        <div class="img">
+          <a href="tvshow_details.php?tmdb_id=<?php echo $tvshow['id']; ?>">
+            <img src="https://image.tmdb.org/t/p/w500<?php echo $tvshow['poster_path']; ?>" alt="<?php echo htmlspecialchars($tvshow['name']); ?>">
+          </a>
+        </div>
+        <div class="watchlist-movie-info">
+          <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($tvshow['name']); ?></h3>
+          <div class="watchlist-movie-actions">
+            <form method="POST" action="">
+              <input type="hidden" name="movie_id" value="tmdb_<?php echo $tvshow['id']; ?>">
+              <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+  <?php else: ?>
+    <p class="empty-watchlist">Could not load top rated TV shows.</p>
+  <?php endif; ?>
+</div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -525,9 +640,3 @@ if (!$result) {
   <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-

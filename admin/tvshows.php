@@ -22,8 +22,8 @@ if (isset($_POST['add_to_watchlist'])) {
     }
 }
 
-// TMDb API Integration
-$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; // Your actual API key
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
 
 // Function to fetch TV shows from TMDb API
@@ -44,8 +44,11 @@ function fetch_tmdb_tvshows($url) {
     return json_decode($response, true);
 }
 
-// Fetch popular TV shows from TMDb
-$tmdb_tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+// Get current page from URL or default to 1
+$current_page = isset($_GET['page']) ? max(1, min(5, (int)$_GET['page'])) : 1;
+
+// Fetch TV shows from TMDb API for current page
+$tmdb_tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&page=$current_page";
 $tmdb_data = fetch_tmdb_tvshows($tmdb_tv_url);
 $api_tvshows = $tmdb_data['results'] ?? [];
 
@@ -63,11 +66,9 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
   <title>MovieMagic | Where Every Frame Tells A Story</title>
   <link rel="website icon" type="JPG" href="#">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-
-    *{
+    * {
       margin: 0;
       padding: 0;
       color: #f2f5f7;
@@ -77,19 +78,13 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
       font-weight: 300;
     }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: #131418;
-    }
-    body{
+    body {
       overflow-y: scroll;
       overflow-x: hidden;
       background-color: #131418;
       padding-top: 0.1rem;
     }
+
     nav {
       height: 70px;
       width: 100%;
@@ -370,6 +365,7 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
       text-align: center;
       font-size: 1rem;
     }
+
     .watchlist-container {
       max-width: 1200px;
       margin: 100px auto 50px;
@@ -386,8 +382,8 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
         
     .watchlist-movies {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
       align-items: stretch;
     }
         
@@ -395,7 +391,7 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
       background: #232323;
       border-radius: 10px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -403,48 +399,57 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
         
     .watchlist-movie:hover {
       transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
         
     .watchlist-movie img {
       width: 100%;
-      height: 300px;
+      height: 240px;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+        
+    .watchlist-movie:hover img {
+      transform: scale(1.03);
     }
         
     .watchlist-movie-info {
-      padding: 15px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
     }
         
     .watchlist-movie-title {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
       color: #f2f5f7;
-      min-height: 3.6rem;
+      min-height: 2.4rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
+
     .watchlist-movie-actions {
       margin-top: auto;
-      padding-top: 10px;
+      padding-top: 8px;
     }
+    
     .watchlist-btn {
       background-color: #61DAFB;
       color: #131418;
       border: none;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
       transition: all 0.3s;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       white-space: nowrap;
     }
     
@@ -454,12 +459,53 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
-    .watchlist-btn.added {
-      background-color: #4CAF50;
+    /* Pagination Styles */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin: 40px 0 20px;
     }
     
-    .watchlist-btn.added:hover {
-      background-color: #3e8e41;
+    .pagination {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .page-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #232323;
+      color: #f2f5f7;
+      border: 1px solid rgba(97, 218, 251, 0.3);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .page-link:hover {
+      border-color: #61DAFB;
+      color: #61DAFB;
+    }
+    
+    .page-link.active {
+      background: #61DAFB;
+      color: #131418;
+      font-weight: bold;
+      border-color: #61DAFB;
+    }
+    
+    .page-link.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .empty-watchlist {
+      text-align: center;
+      color: #61DAFB;
+      font-size: 1.2rem;
+      grid-column: 1 / -1;
+      padding: 40px 0;
     }
   </style>
 </head>
@@ -530,7 +576,7 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
         <div class="watchlist-movie">
           <div class="img">
             <a href="tvshow_details.php?tmdb_id=<?php echo $tvshow['id']; ?>">
-              <img src="https://image.tmdb.org/t/p/w500<?php echo $tvshow['poster_path']; ?>" alt="<?php echo htmlspecialchars($tvshow['name']); ?> Poster">
+              <img src="https://image.tmdb.org/t/p/w500<?php echo $tvshow['poster_path']; ?>" alt="<?php echo htmlspecialchars($tvshow['name']); ?>">
             </a>
           </div>
           <div class="watchlist-movie-info">
@@ -545,6 +591,27 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
         </div>
       <?php endforeach; ?>
     </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-container">
+      <div class="pagination">
+        <?php if ($current_page > 1): ?>
+          <a href="?page=<?php echo $current_page - 1; ?>" class="page-link">« Previous</a>
+        <?php else: ?>
+          <span class="page-link disabled">« Previous</span>
+        <?php endif; ?>
+        
+        <?php for ($i = 1; $i <= 5; $i++): ?>
+          <a href="?page=<?php echo $i; ?>" class="page-link <?php echo $i == $current_page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+        <?php endfor; ?>
+        
+        <?php if ($current_page < 5): ?>
+          <a href="?page=<?php echo $current_page + 1; ?>" class="page-link">Next »</a>
+        <?php else: ?>
+          <span class="page-link disabled">Next »</span>
+        <?php endif; ?>
+      </div>
+    </div>
     <?php else: ?>
       <p class="empty-watchlist">Could not load TV shows from TMDb API.</p>
     <?php endif; ?>
@@ -556,9 +623,3 @@ $local_tv_result = mysqli_query($connection, $local_tv_query);
   <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-
