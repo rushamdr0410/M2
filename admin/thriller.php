@@ -25,7 +25,7 @@ if (isset($_POST['add_to_watchlist'])) {
 // TMDb API Configuration
 $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
-$comedy_genre_id = 53; // TMDb genre ID for Action
+$comedy_genre_id = 53; 
 
 // Function to fetch data from TMDb API
 function fetch_tmdb_data($url) {
@@ -645,7 +645,7 @@ if (!$result) {
         <?php endif; ?>
         
         <?php 
-        // Show page numbers (max 5 around current page)
+        
         $start_page = max(1, $current_page - 2);
         $end_page = min($total_pages, $current_page + 2);
         
