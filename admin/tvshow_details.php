@@ -16,45 +16,48 @@ $tmdb_base_url = 'https://api.themoviedb.org/3';
 $tmdb_id = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
 
 if ($tmdb_id === 0) {
-    die("Invalid movie ID");
+    die("Invalid TV show ID");
 }
 
-// Fetch movie details from TMDb API
-$movie_url = "$tmdb_base_url/tv-show/$tmdb_id?api_key=$tmdb_api_key&append_to_response=credits";
-$movie_data = json_decode(file_get_contents($movie_url), true);
+// Fetch TV show details from TMDb API
+$tv_url = "$tmdb_base_url/tv/$tmdb_id?api_key=$tmdb_api_key&append_to_response=credits";
+$tv_data = json_decode(file_get_contents($tv_url), true);
 
-if (!$movie_data || isset($movie_data['status_code'])) {
-    die("Movie not found or API error");
+if (!$tv_data || isset($tv_data['status_code'])) {
+    die("TV show not found or API error");
 }
 
-// Extract relevant data
-$title = $movie_data['title'] ?? 'No title';
-$release_date = $movie_data['release_date'] ?? 'Unknown';
-$runtime = $movie_data['runtime'] ?? 0;
-$overview = $movie_data['overview'] ?? 'No description available';
-$poster_path = $movie_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie_data['poster_path'] : 'placeholder.jpg';
-$backdrop_path = $movie_data['backdrop_path'] ? "https://image.tmdb.org/t/p/original" . $movie_data['backdrop_path'] : 'placeholder.jpg';
-$vote_average = $movie_data['vote_average'] ?? 0;
-$genres = array_map(function($g) { return $g['name']; }, $movie_data['genres'] ?? []);
+// Extract relevant data for TV shows
+$title = $tv_data['name'] ?? 'No title';
+$first_air_date = $tv_data['first_air_date'] ?? 'Unknown';
+$last_air_date = $tv_data['last_air_date'] ?? null;
+$number_of_seasons = $tv_data['number_of_seasons'] ?? 0;
+$number_of_episodes = $tv_data['number_of_episodes'] ?? 0;
+$episode_run_time = !empty($tv_data['episode_run_time']) ? min($tv_data['episode_run_time']) . ' min' : 'Unknown';
+$overview = $tv_data['overview'] ?? 'No description available';
+$poster_path = $tv_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $tv_data['poster_path'] : 'placeholder.jpg';
+$backdrop_path = $tv_data['backdrop_path'] ? "https://image.tmdb.org/t/p/original" . $tv_data['backdrop_path'] : 'placeholder.jpg';
+$vote_average = $tv_data['vote_average'] ?? 0;
+$genres = array_map(function($g) { return $g['name']; }, $tv_data['genres'] ?? []);
 
-// Get director (first person in crew with job "Director")
-$director = '';
-$crew = $movie_data['credits']['crew'] ?? [];
+// Get creator (first person in crew with job "Creator")
+$creator = '';
+$crew = $tv_data['credits']['crew'] ?? [];
 foreach ($crew as $person) {
-    if ($person['job'] === 'Director') {
-        $director = $person['name'];
+    if ($person['job'] === 'Creator') {
+        $creator = $person['name'];
         break;
     }
 }
 
 // Get main cast (first 5 cast members)
-$cast = array_slice($movie_data['credits']['cast'] ?? [], 0, 5);
+$cast = array_slice($tv_data['credits']['cast'] ?? [], 0, 5);
 $cast_names = array_map(function($c) { return $c['name']; }, $cast);
 
-// Fetch similar movies for recommendations
-$similar_url = "$tmdb_base_url/movie/$tmdb_id/similar?api_key=$tmdb_api_key";
+// Fetch similar TV shows for recommendations
+$similar_url = "$tmdb_base_url/tv/$tmdb_id/similar?api_key=$tmdb_api_key";
 $similar_data = json_decode(file_get_contents($similar_url), true);
-$similar_movies = $similar_data['results'] ?? [];
+$similar_tvshows = $similar_data['results'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -611,10 +614,20 @@ $similar_movies = $similar_data['results'] ?? [];
             <img src="<?php echo $poster_path; ?>" alt="<?php echo htmlspecialchars($title); ?>">
         </div>
         <div class="movie-info">
-            <p class="label">Movie Name: <span><?php echo htmlspecialchars($title); ?></span></p>
-            <p class="label">Release Date: <span><?php echo $release_date; ?></span></p>
-            <p class="label">Director: <span><?php echo htmlspecialchars($director); ?></span></p>
-            <p class="label">Runtime: <span><?php echo $runtime; ?> minutes</span></p>
+            <h1><?php echo htmlspecialchars($title); ?></h1>
+            
+            <!-- TV Show Specific Information -->
+            <p class="label">First Air Date: <span><?php echo $first_air_date; ?></span></p>
+            <?php if ($last_air_date): ?>
+                <p class="label">Last Air Date: <span><?php echo $last_air_date; ?></span></p>
+            <?php endif; ?>
+            <p class="label">Creator: <span><?php echo htmlspecialchars($creator); ?></span></p>
+            <div class="seasons">
+                <p class="label">Seasons: <span><?php echo $number_of_seasons; ?></span></p>
+                <p class="label">Episodes: <span><?php echo $number_of_episodes; ?></span></p>
+                <p class="label">Runtime: <span><?php echo $episode_run_time; ?></span></p>
+            </div>
+            
             <div class="genre-list">
                 <?php foreach ($genres as $genre): ?>
                     <span><?php echo htmlspecialchars($genre); ?></span>
@@ -635,16 +648,16 @@ $similar_movies = $similar_data['results'] ?? [];
                 <a href="#" class="watch-trailer">Watch Trailer</a>
                 <a href="#" class="watch-now">Watch Now</a>
                 <form action="add_to_watchlist.php" method="POST">
-                    <input type="hidden" name="movie_id" value="tmdb_<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="tvshow_id" value="tmdb_<?php echo $tmdb_id; ?>">
                     <button type="submit" class="add-to-watchlist">WatchList</button>
                 </form>
             </div>
             <?php
                 if (isset($_GET['status'])) {
                     if ($_GET['status'] === 'added') {
-                        echo '<p style="color: green;">Movie added to watchlist successfully!</p>';
+                        echo '<p style="color: green;">TV show added to watchlist successfully!</p>';
                     } elseif ($_GET['status'] === 'error') {
-                        echo '<p style="color: red;">Failed to add movie to watchlist. Please try again.</p>';
+                        echo '<p style="color: red;">Failed to add TV show to watchlist. Please try again.</p>';
                     } elseif ($_GET['status'] === 'invalid') {
                         echo '<p style="color: red;">Invalid request.</p>';
                     }
@@ -653,20 +666,21 @@ $similar_movies = $similar_data['results'] ?? [];
         </div>
     </div>
     
+    <!-- Related TV Shows Section -->
     <section class="related-movies">
-        <h2>Related Movies</h2>
+        <h2>Related TV Shows</h2>
         <div class="related-movies-container">
-            <?php if (!empty($similar_movies)): ?>
-                <?php foreach (array_slice($similar_movies, 0, 6) as $similar): ?>
+            <?php if (!empty($similar_tvshows)): ?>
+                <?php foreach (array_slice($similar_tvshows, 0, 6) as $similar): ?>
                     <div class="related-movie">
-                        <a href="movie_details.php?tmdb_id=<?php echo $similar['id']; ?>">
-                            <img src="https://image.tmdb.org/t/p/w500<?php echo $similar['poster_path']; ?>" alt="<?php echo htmlspecialchars($similar['title']); ?>">
+                        <a href="tvshow_details.php?tmdb_id=<?php echo $similar['id']; ?>">
+                            <img src="https://image.tmdb.org/t/p/w500<?php echo $similar['poster_path']; ?>" alt="<?php echo htmlspecialchars($similar['name']); ?>">
                         </a>
-                        <h3><?php echo htmlspecialchars($similar['title']); ?></h3>
+                        <h3><?php echo htmlspecialchars($similar['name']); ?></h3>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p>No related movies found.</p>
+                <p>No related TV shows found.</p>
             <?php endif; ?>
         </div>
     </section>
