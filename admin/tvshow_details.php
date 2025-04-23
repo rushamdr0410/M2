@@ -15,16 +15,45 @@ $tmdb_base_url = 'https://api.themoviedb.org/3';
 // Get the TMDB ID from URL
 $tmdb_id = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
 
-if ($tmdb_id === 0) {
-    die("Invalid TV show ID");
+// Function to make API requests with cURL
+function fetch_tmdb_data($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($http_code != 200) {
+        error_log("TMDb API Error: HTTP $http_code - URL: $url");
+        return null;
+    }
+    
+    return json_decode($response, true);
 }
 
 // Fetch TV show details from TMDb API
 $tv_url = "$tmdb_base_url/tv/$tmdb_id?api_key=$tmdb_api_key&append_to_response=credits";
-$tv_data = json_decode(file_get_contents($tv_url), true);
+$tv_data = fetch_tmdb_data($tv_url);
 
-if (!$tv_data || isset($tv_data['status_code'])) {
-    die("TV show not found or API error");
+if (!$tv_data) {
+    // Debug output
+    echo "<div style='color: white; background: #d32f2f; padding: 20px; margin: 20px; border-radius: 5px;'>";
+    echo "<h3>Error Details</h3>";
+    echo "<p>Could not fetch TV show details from TMDb API.</p>";
+    echo "<p>TV Show ID: $tmdb_id</p>";
+    echo "<p>API URL: " . htmlspecialchars($tv_url) . "</p>";
+    echo "<p>Please verify the TV show exists at <a href='https://www.themoviedb.org/tv/$tmdb_id' style='color: #61DAFB;'>TMDb website</a></p>";
+    echo "</div>";
+    exit();
 }
 
 // Extract relevant data for TV shows
@@ -56,10 +85,12 @@ $cast_names = array_map(function($c) { return $c['name']; }, $cast);
 
 // Fetch similar TV shows for recommendations
 $similar_url = "$tmdb_base_url/tv/$tmdb_id/similar?api_key=$tmdb_api_key";
-$similar_data = json_decode(file_get_contents($similar_url), true);
+$similar_data = fetch_tmdb_data($similar_url);
 $similar_tvshows = $similar_data['results'] ?? [];
 ?>
+
 <!DOCTYPE html>
+<!-- Rest of your HTML remains the same -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -614,9 +645,8 @@ $similar_tvshows = $similar_data['results'] ?? [];
             <img src="<?php echo $poster_path; ?>" alt="<?php echo htmlspecialchars($title); ?>">
         </div>
         <div class="movie-info">
-            <h1><?php echo htmlspecialchars($title); ?></h1>
             
-            <!-- TV Show Specific Information -->
+            <p class="label">Show Name: <span><?php echo htmlspecialchars($title); ?></span></p>
             <p class="label">First Air Date: <span><?php echo $first_air_date; ?></span></p>
             <?php if ($last_air_date): ?>
                 <p class="label">Last Air Date: <span><?php echo $last_air_date; ?></span></p>

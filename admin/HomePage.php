@@ -832,7 +832,7 @@ $result = mysqli_query($connection, $query);
           <div class="movies-container">
             <div class="card">
               <div class="img">
-                <a href="tvshow_details.php?tmdb_id=<?php echo $movie['id'];?>">
+                <a href="tvshow_details.php?tmdb_id=<?php echo $show['id'];?>">
                   <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
                 </a>
               </div>
