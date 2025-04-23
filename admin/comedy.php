@@ -389,6 +389,7 @@ if (!$result) {
       color: #01939c;
       font-weight: bold;
       margin-bottom: 30px;
+      margin-top:100px;
       text-align: center;
     }
         
