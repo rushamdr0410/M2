@@ -25,7 +25,7 @@ if (isset($_POST['add_to_watchlist'])) {
 // TMDb API Configuration
 $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
-$comedy_genre_id = 53; 
+$biography_genre_id = 53; 
 
 // Function to fetch data from TMDb API
 function fetch_tmdb_data($url) {
@@ -48,15 +48,15 @@ function fetch_tmdb_data($url) {
 $current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 
 // Fetch action movies from TMDb with pagination
-$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc&page=$current_page";
+$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$biography_genre_id&sort_by=popularity.desc&page=$current_page";
 $movies_data = fetch_tmdb_data($movies_url);
-$comedy_movies = $movies_data['results'] ?? [];
+$biography_movies = $movies_data['results'] ?? [];
 $total_pages = min($movies_data['total_pages'] ?? 10, 10); // Limit to max 10 pages
 
-// Fetch comedy TV shows from TMDb with pagination
-$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc&page=$current_page";
+// Fetch biography TV shows from TMDb with pagination
+$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$biography_genre_id&sort_by=popularity.desc&page=$current_page";
 $tv_data = fetch_tmdb_data($tv_url);
-$comedy_tvshows = $tv_data['results'] ?? [];
+$biography_tvshows = $tv_data['results'] ?? [];
 
 // Query to fetch only Action movies (genreid = 1)
 $query = "SELECT * FROM moviedetails WHERE genreid = '8'";
