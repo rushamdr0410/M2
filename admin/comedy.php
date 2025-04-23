@@ -45,13 +45,16 @@ function fetch_tmdb_data($url) {
     return json_decode($response, true);
 }
 
-// Fetch action movies from TMDb
-$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc";
+$current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// Fetch action movies from TMDb with pagination
+$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc&page=$current_page";
 $movies_data = fetch_tmdb_data($movies_url);
 $comedy_movies = $movies_data['results'] ?? [];
+$total_pages = min($movies_data['total_pages'] ?? 10, 10); // Limit to max 10 pages
 
-// Fetch action TV shows from TMDb
-$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc";
+// Fetch comedy TV shows from TMDb with pagination
+$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$comedy_genre_id&sort_by=popularity.desc&page=$current_page";
 $tv_data = fetch_tmdb_data($tv_url);
 $comedy_tvshows = $tv_data['results'] ?? [];
 
@@ -450,6 +453,54 @@ if (!$result) {
     .watchlist-btn.added:hover {
       background-color: #3e8e41;
     }
+    /* Pagination Styles */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin: 40px 0 20px;
+    }
+    
+    .pagination {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .page-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #232323;
+      color: #f2f5f7;
+      border: 1px solid rgba(97, 218, 251, 0.3);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .page-link:hover {
+      border-color: #61DAFB;
+      color: #61DAFB;
+    }
+    
+    .page-link.active {
+      background: #61DAFB;
+      color: #131418;
+      font-weight: bold;
+      border-color: #61DAFB;
+    }
+    
+    .page-link.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .empty-watchlist {
+      text-align: center;
+      color: #61DAFB;
+      font-size: 1.2rem;
+      grid-column: 1 / -1;
+      padding: 40px 0;
+    }
   </style>
 </head>
 <body>
@@ -566,6 +617,33 @@ if (!$result) {
       <p class="empty-watchlist"></p>
     <?php endif; ?>
   </div>
+
+  <div class="pagination-container">
+    <div class="pagination">
+        <?php if ($current_page > 1): ?>
+            <a href="?page=<?php echo $current_page - 1; ?>" class="page-link">« Previous</a>
+        <?php else: ?>
+            <span class="page-link disabled">« Previous</span>
+        <?php endif; ?>
+        
+        <?php 
+        // Show page numbers (max 5 around current page)
+        $start_page = max(1, $current_page - 2);
+        $end_page = min($total_pages, $current_page + 2);
+        
+        for ($i = $start_page; $i <= $end_page; $i++): ?>
+            <a href="?page=<?php echo $i; ?>" class="page-link <?php echo $i == $current_page ? 'active' : ''; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+        
+        <?php if ($current_page < $total_pages): ?>
+            <a href="?page=<?php echo $current_page + 1; ?>" class="page-link">Next »</a>
+        <?php else: ?>
+            <span class="page-link disabled">Next »</span>
+        <?php endif; ?>
+    </div>
+</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
