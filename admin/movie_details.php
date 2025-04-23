@@ -4,30 +4,57 @@ ini_set('display_errors', 1);
 include('user_auth.php');
 
 if (!isset($_SESSION['user_username'])) {
-  header("Location: userlogin.php");
-  exit();
-}
-
-// Query for fetching movie details
-$id = $_GET['id'];
-$query = "SELECT m.*, GROUP_CONCAT(g.genre_name SEPARATOR ', ') AS genres,
-          GROUP_CONCAT(DISTINCT c.cast_name SEPARATOR ', ') AS cast_names
-          FROM moviedetails m
-          LEFT JOIN cast_info c ON m.cast_id = c.cast_id
-          LEFT JOIN genre_info g ON m.genreid = g.genreid
-          WHERE m.id = $id
-          GROUP BY m.id";
-$result = mysqli_query($connection, $query);
-
-if (mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result); // Fetch the movie details
-    // Split the genres into an array
-    $genres = !empty($row['genres']) ? explode(', ', $row['genres']) : [];
-    $cast_names = !empty($row['cast_names']) ? explode(', ', $row['cast_names']) : [];
-} else {
-    echo "No movie found with the provided ID.";
+    header("Location: userlogin.php");
     exit();
 }
+
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+
+// Get the TMDB ID from URL
+$tmdb_id = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
+
+if ($tmdb_id === 0) {
+    die("Invalid movie ID");
+}
+
+// Fetch movie details from TMDb API
+$movie_url = "$tmdb_base_url/movie/$tmdb_id?api_key=$tmdb_api_key&append_to_response=credits";
+$movie_data = json_decode(file_get_contents($movie_url), true);
+
+if (!$movie_data || isset($movie_data['status_code'])) {
+    die("Movie not found or API error");
+}
+
+// Extract relevant data
+$title = $movie_data['title'] ?? 'No title';
+$release_date = $movie_data['release_date'] ?? 'Unknown';
+$runtime = $movie_data['runtime'] ?? 0;
+$overview = $movie_data['overview'] ?? 'No description available';
+$poster_path = $movie_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie_data['poster_path'] : 'placeholder.jpg';
+$backdrop_path = $movie_data['backdrop_path'] ? "https://image.tmdb.org/t/p/original" . $movie_data['backdrop_path'] : 'placeholder.jpg';
+$vote_average = $movie_data['vote_average'] ?? 0;
+$genres = array_map(function($g) { return $g['name']; }, $movie_data['genres'] ?? []);
+
+// Get director (first person in crew with job "Director")
+$director = '';
+$crew = $movie_data['credits']['crew'] ?? [];
+foreach ($crew as $person) {
+    if ($person['job'] === 'Director') {
+        $director = $person['name'];
+        break;
+    }
+}
+
+// Get main cast (first 5 cast members)
+$cast = array_slice($movie_data['credits']['cast'] ?? [], 0, 5);
+$cast_names = array_map(function($c) { return $c['name']; }, $cast);
+
+// Fetch similar movies for recommendations
+$similar_url = "$tmdb_base_url/movie/$tmdb_id/similar?api_key=$tmdb_api_key";
+$similar_data = json_decode(file_get_contents($similar_url), true);
+$similar_movies = $similar_data['results'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -365,6 +392,7 @@ if (mysqli_num_rows($result) > 0) {
 
         .movie-info {
             flex: 2;
+            margin-top: 45px;
         }
 
         .movie-info h1 {
@@ -580,13 +608,13 @@ if (mysqli_num_rows($result) > 0) {
     </nav>
     <div class="movie-details-container">
         <div class="movie-poster">
-            <img src="upload/<?php echo $row['poster_img']; ?>" alt="Movie Poster">
+            <img src="<?php echo $poster_path; ?>" alt="<?php echo htmlspecialchars($title); ?>">
         </div>
         <div class="movie-info">
-            <h1>Movie Title</h1>
-            <p class="label">Release Date: <span><?php echo $row['release_year']; ?></span></p>
-            <p class="label">Director: <span><?php echo $row['director']; ?></span></p>
-            <p class="label">Runtime: <span><?php echo $row['duration']; ?></span></p>
+            <p class="label">Movie Name: <span><?php echo htmlspecialchars($title); ?></span></p>
+            <p class="label">Release Date: <span><?php echo $release_date; ?></span></p>
+            <p class="label">Director: <span><?php echo htmlspecialchars($director); ?></span></p>
+            <p class="label">Runtime: <span><?php echo $runtime; ?> minutes</span></p>
             <div class="genre-list">
                 <?php foreach ($genres as $genre): ?>
                     <span><?php echo htmlspecialchars($genre); ?></span>
@@ -594,9 +622,9 @@ if (mysqli_num_rows($result) > 0) {
             </div>
             <div class="rating">
                 <i class="fas fa-star"></i>
-                <span>8.5/10</span>
+                <span><?php echo number_format($vote_average, 1); ?>/10</span>
             </div>
-            <p><?php echo $row['description']; ?></p>
+            <p><?php echo htmlspecialchars($overview); ?></p>
             <p class="label">Cast:</p>
             <div class="cast-list">
                 <?php foreach ($cast_names as $cast_name): ?>
@@ -605,9 +633,9 @@ if (mysqli_num_rows($result) > 0) {
             </div>
             <div class="button-container">
                 <a href="#" class="watch-trailer">Watch Trailer</a>
-                <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" class="watch-now">Watch Now</a>
+                <a href="#" class="watch-now">Watch Now</a>
                 <form action="add_to_watchlist.php" method="POST">
-                    <input type="hidden" name="movie_id" value="<?php echo $row['id']; ?>">
+                    <input type="hidden" name="movie_id" value="tmdb_<?php echo $tmdb_id; ?>">
                     <button type="submit" class="add-to-watchlist">WatchList</button>
                 </form>
             </div>
@@ -624,62 +652,22 @@ if (mysqli_num_rows($result) > 0) {
             ?>
         </div>
     </div>
-    <!-- Related Movies Section -->
+    
     <section class="related-movies">
         <h2>Related Movies</h2>
         <div class="related-movies-container">
-            <?php
-            // Get the current movie's genres
-            $current_genres = $genres;
-            
-            // Query to fetch related movies (movies that share at least one genre with the current movie)
-            if (!empty($current_genres)) {
-                $genre_conditions = [];
-                foreach ($current_genres as $genre) {
-                    $genre_conditions[] = "g.genre_name = '" . mysqli_real_escape_string($connection, $genre) . "'";
-                }
-                
-                $related_query = "SELECT DISTINCT m.* 
-                                FROM moviedetails m
-                                JOIN genre_info g ON m.genreid = g.genreid
-                                WHERE (" . implode(" OR ", $genre_conditions) . ")
-                                AND m.id != $id
-                                ORDER BY RAND()
-                                LIMIT 6"; // Limit to 6 related movies
-                
-                $related_result = mysqli_query($connection, $related_query);
-                
-                if (mysqli_num_rows($related_result) > 0) {
-                    while ($related_row = mysqli_fetch_assoc($related_result)) {
-                        ?>
-                        <div class="related-movie">
-                            <a href="movie_details.php?id=<?php echo $related_row['id']; ?>">
-                                <img src="upload/<?php echo $related_row['poster_img']; ?>" alt="<?php echo $related_row['title']; ?>">
-                            </a>
-                            <h3><?php echo $related_row['title']; ?></h3>
-                        </div>
-                        <?php
-                    }
-                } else {
-                    // Fallback if no related movies found - show random movies
-                    $fallback_query = "SELECT * FROM moviedetails WHERE id != $id ORDER BY RAND() LIMIT 6";
-                    $fallback_result = mysqli_query($connection, $fallback_query);
-                    
-                    while ($fallback_row = mysqli_fetch_assoc($fallback_result)) {
-                        ?>
-                        <div class="related-movie">
-                            <a href="movie_details.php?id=<?php echo $fallback_row['id']; ?>">
-                                <img src="upload/<?php echo $fallback_row['poster_img']; ?>" alt="<?php echo $fallback_row['title']; ?>">
-                            </a>
-                            <h3><?php echo $fallback_row['title']; ?></h3>
-                        </div>
-                        <?php
-                    }
-                }
-            } else {
-                echo "<p>No related movies found.</p>";
-            }
-            ?>
+            <?php if (!empty($similar_movies)): ?>
+                <?php foreach (array_slice($similar_movies, 0, 6) as $similar): ?>
+                    <div class="related-movie">
+                        <a href="movie_details.php?tmdb_id=<?php echo $similar['id']; ?>">
+                            <img src="https://image.tmdb.org/t/p/w500<?php echo $similar['poster_path']; ?>" alt="<?php echo htmlspecialchars($similar['title']); ?>">
+                        </a>
+                        <h3><?php echo htmlspecialchars($similar['title']); ?></h3>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No related movies found.</p>
+            <?php endif; ?>
         </div>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
