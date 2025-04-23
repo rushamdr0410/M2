@@ -79,8 +79,7 @@ if (!$result) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
   <style>
-
-    *{
+    * {
       margin: 0;
       padding: 0;
       color: #f2f5f7;
@@ -90,19 +89,13 @@ if (!$result) {
       font-weight: 300;
     }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: #131418;
-    }
-    body{
+    body {
       overflow-y: scroll;
       overflow-x: hidden;
       background-color: #131418;
       padding-top: 0.1rem;
     }
+
     nav {
       height: 70px;
       width: 100%;
@@ -386,7 +379,7 @@ if (!$result) {
 
     .watchlist-container {
       max-width: 1200px;
-      margin: 100px auto 50px;
+      margin: 10px auto 50px;
       padding: 20px;
     }
         
@@ -400,59 +393,83 @@ if (!$result) {
         
     .watchlist-movies {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      align-items: stretch;
     }
         
     .watchlist-movie {
       background: #232323;
       border-radius: 10px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
         
     .watchlist-movie:hover {
       transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
         
     .watchlist-movie img {
       width: 100%;
-      height: 300px;
+      height: 240px;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+        
+    .watchlist-movie:hover img {
+      transform: scale(1.03);
     }
         
     .watchlist-movie-info {
-      padding: 15px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
         
     .watchlist-movie-title {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
       color: #f2f5f7;
+      min-height: 2.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
     }
+
+    .watchlist-movie-actions {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    
     .watchlist-btn {
       background-color: #61DAFB;
       color: #131418;
       border: none;
-      padding: 8px 15px;
+      padding: 8px 12px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 0.85rem;
+      white-space: nowrap;
     }
     
     .watchlist-btn:hover {
       background-color: #4fa8c7;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
-    .watchlist-btn.added {
-      background-color: #4CAF50;
-    }
-    
-    .watchlist-btn.added:hover {
-      background-color: #3e8e41;
-    }
     /* Pagination Styles */
     .pagination-container {
       display: flex;
