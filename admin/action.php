@@ -508,7 +508,6 @@ $local_result = mysqli_query($connection, $local_query);
   <div class="watchlist-container">
     <h1 class="watchlist-header">Action Movies & TV Shows</h1>
     
-    
     <!-- TMDb Action Movies -->
     <?php if (!empty($action_movies)): ?>
     <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular Action Movies</h2>
@@ -533,7 +532,7 @@ $local_result = mysqli_query($connection, $local_query);
       <?php endforeach; ?>
     </div>
     <?php else: ?>
-      <p class="empty-watchlist">Could not load action movies from TMDb API.</p>
+      <p class="empty-watchlist">Result Not Found!!</p>
     <?php endif; ?>
     
     <!-- TMDb Action TV Shows -->
@@ -560,7 +559,7 @@ $local_result = mysqli_query($connection, $local_query);
       <?php endforeach; ?>
     </div>
     <?php else: ?>
-      <p class="empty-watchlist">Could not load action TV shows from TMDb API.</p>
+      <p class="empty-watchlist"></p>
     <?php endif; ?>
   </div>
 
