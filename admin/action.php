@@ -22,13 +22,42 @@ if (isset($_POST['add_to_watchlist'])) {
     }
 }
 
-// Query to fetch only Action movies (genreid = 1)
-$query = "SELECT * FROM moviedetails WHERE genreid = '5'";
-$result = mysqli_query($connection, $query);
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+$action_genre_id = 28; // TMDb genre ID for Action
 
-if (!$result) {
-    die("Database error: " . mysqli_error($connection));
+// Function to fetch data from TMDb API
+function fetch_tmdb_data($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    
+    curl_close($ch);
+    return json_decode($response, true);
 }
+
+// Fetch action movies from TMDb
+$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc";
+$movies_data = fetch_tmdb_data($movies_url);
+$action_movies = $movies_data['results'] ?? [];
+
+// Fetch action TV shows from TMDb
+$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc";
+$tv_data = fetch_tmdb_data($tv_url);
+$action_tvshows = $tv_data['results'] ?? [];
+
+// Query to fetch local action movies (genreid = 5 as per your original code)
+$local_query = "SELECT * FROM moviedetails WHERE genreid = '5'";
+$local_result = mysqli_query($connection, $local_query);
 ?>
 
 <!DOCTYPE html>
@@ -477,33 +506,64 @@ if (!$result) {
   </nav>
 
   <div class="watchlist-container">
-  <h1 class="watchlist-header">Action Movies & TV-Shows</h1>
-        
-  <?php if (mysqli_num_rows($result) > 0): ?>
-  <div class="watchlist-movies">
-    <?php while ($movie = mysqli_fetch_assoc($result)): ?>
-      <div class="watchlist-movie">
-        <div class="img">
-          <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
-            <?php echo '<img src="upload/'.$movie['poster_img'].'" alt="Movie Poster">'; ?>
-          </a>
-        </div>
+    <h1 class="watchlist-header">Action Movies & TV Shows</h1>
+    
+    
+    <!-- TMDb Action Movies -->
+    <?php if (!empty($action_movies)): ?>
+    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular Action Movies</h2>
+    <div class="watchlist-movies">
+      <?php foreach ($action_movies as $movie): ?>
+        <div class="watchlist-movie">
+          <div class="img">
+            <a href="movie_details.php?tmdb_id=<?php echo $movie['id']; ?>">
+              <img src="https://image.tmdb.org/t/p/w500<?php echo $movie['poster_path']; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+            </a>
+          </div>
           <div class="watchlist-movie-info">
-            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
+            <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
             <div class="watchlist-movie-actions">
-            <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+              <form method="POST" action="">
+                <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
-            </form>
+              </form>
             </div>
           </div>
-      </div>
-    <?php endwhile; ?>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+      <p class="empty-watchlist">Could not load action movies from TMDb API.</p>
+    <?php endif; ?>
+    
+    <!-- TMDb Action TV Shows -->
+    <?php if (!empty($action_tvshows)): ?>
+    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular Action TV Shows</h2>
+    <div class="watchlist-movies">
+      <?php foreach ($action_tvshows as $tvshow): ?>
+        <div class="watchlist-movie">
+          <div class="img">
+            <a href="tvshow_details.php?tmdb_id=<?php echo $tvshow['id']; ?>">
+              <img src="https://image.tmdb.org/t/p/w500<?php echo $tvshow['poster_path']; ?>" alt="<?php echo htmlspecialchars($tvshow['name']); ?>">
+            </a>
+          </div>
+          <div class="watchlist-movie-info">
+            <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($tvshow['name']); ?></h3>
+            <div class="watchlist-movie-actions">
+              <form method="POST" action="">
+                <input type="hidden" name="movie_id" value="tmdb_<?php echo $tvshow['id']; ?>">
+                <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+      <p class="empty-watchlist">Could not load action TV shows from TMDb API.</p>
+    <?php endif; ?>
   </div>
-  <?php else: ?>
-  <p class="empty-watchlist">No Result Found!!</p>
-  <?php endif; ?>
-</div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
