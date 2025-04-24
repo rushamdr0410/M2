@@ -7,15 +7,15 @@ if (!isset($_SESSION['user_username'])) {
     exit();
 }
 
-if (isset($_GET['movie_id'])) {
-    $movie_id = $_GET['movie_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tmdb_id'])) {
     $user_id = $_SESSION['user_id'];
+    $tmdb_id = $_POST['tmdb_id'];
     
-    // Delete the movie from the watchlist
-    $query = "DELETE FROM watchlist WHERE user_id = $user_id AND movie_id = $movie_id";
-    $result = mysqli_query($connection, $query);
+    $delete_query = "DELETE FROM watchlist WHERE user_id = ? AND tmdb_id = ?";
+    $delete_stmt = mysqli_prepare($connection, $delete_query);
+    mysqli_stmt_bind_param($delete_stmt, "is", $user_id, $tmdb_id);
     
-    if ($result) {
+    if (mysqli_stmt_execute($delete_stmt)) {
         header("Location: watchlist.php?status=removed");
     } else {
         header("Location: watchlist.php?status=error");

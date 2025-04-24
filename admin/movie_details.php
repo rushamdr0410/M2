@@ -492,6 +492,7 @@ $similar_movies = $similar_data['results'] ?? [];
         .movie-info .add-to-watchlist:hover {
             background-color: #4fa8c7;
         }
+
         .related-movies {
             padding: 2rem;
             max-width: 1200px;
@@ -632,10 +633,11 @@ $similar_movies = $similar_data['results'] ?? [];
                 <?php endforeach; ?>
             </div>
             <div class="button-container">
-                <a href="#" class="watch-trailer">Watch Trailer</a>
+                <a href="trailer.php?tmdb_id=<?php echo $tmdb_id; ?>&media_type=movie" class="watch-trailer">Watch Trailer</a>
                 <a href="#" class="watch-now">Watch Now</a>
                 <form action="add_to_watchlist.php" method="POST">
-                    <input type="hidden" name="movie_id" value="tmdb_<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="movie_id" value="<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="media_type" value="movie">
                     <button type="submit" class="add-to-watchlist">WatchList</button>
                 </form>
             </div>

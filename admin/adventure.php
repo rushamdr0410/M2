@@ -8,39 +8,48 @@ if (!isset($_SESSION['user_username'])) {
 
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
-    $movie_id = $_POST['movie_id'];
+    $tmdb_id = $_POST['movie_id'];
+    $media_type = isset($_POST['media_type']) ? $_POST['media_type'] : 'movie'; // Default to 'movie' if not set
     $user_id = $_SESSION['user_id'];
     
+    // For debugging
+    error_log("Adding to watchlist - ID: $tmdb_id, Type: $media_type");
+    
     // Check if already in watchlist
-    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
-    $check_result = mysqli_query($connection, $check_query);
+    $check_query = "SELECT * FROM watchlist WHERE user_id = ? AND tmdb_id = ?";
+    $check_stmt = mysqli_prepare($connection, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "is", $user_id, $tmdb_id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
     
     if (mysqli_num_rows($check_result) == 0) {
         // Add to watchlist
-        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
-        mysqli_query($connection, $insert_query);
+        $insert_query = "INSERT INTO watchlist (user_id, tmdb_id, media_type) VALUES (?, ?, ?)";
+        $insert_stmt = mysqli_prepare($connection, $insert_query);
+        mysqli_stmt_bind_param($insert_stmt, "iss", $user_id, $tmdb_id, $media_type);
+        
+        if (mysqli_stmt_execute($insert_stmt)) {
+            echo "<script>alert('Added to watchlist successfully!');</script>";
+        } else {
+            echo "<script>alert('Error adding to watchlist: " . mysqli_error($connection) . "');</script>";
+        }
+    } else {
+        echo "<script>alert('Already in your watchlist!');</script>";
     }
 }
 
 // TMDb API Configuration
 $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
-$adventure_genre_id = 12; // TMDb genre ID for Action
+$action_genre_id = 12; // TMDb genre ID for Action
 
 // Function to fetch data from TMDb API
 function fetch_tmdb_data($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($ch);
-    
-    if (curl_errno($ch)) {
-        error_log("cURL Error: " . curl_error($ch));
-        curl_close($ch);
-        return null;
-    }
-    
     curl_close($ch);
     return json_decode($response, true);
 }
@@ -48,23 +57,18 @@ function fetch_tmdb_data($url) {
 $current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 
 // Fetch action movies from TMDb with pagination
-$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$adventure_genre_id&sort_by=popularity.desc&page=$current_page";
+$movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc&page=$current_page";
 $movies_data = fetch_tmdb_data($movies_url);
-$adventure_movies = $movies_data['results'] ?? [];
-$total_pages = min($movies_data['total_pages'] ?? 10, 10); // Limit to max 10 pages
+$action_movies = $movies_data['results'] ?? [];
 
-// Fetch adventure TV shows from TMDb with pagination
-$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$adventure_genre_id&sort_by=popularity.desc&page=$current_page";
+// Fetch action TV shows from TMDb with pagination
+$tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc&page=$current_page";
 $tv_data = fetch_tmdb_data($tv_url);
-$adventure_tvshows = $tv_data['results'] ?? [];
+$action_tvshows = $tv_data['results'] ?? [];
 
-// Query to fetch only Action movies (genreid = 1)
-$query = "SELECT * FROM moviedetails WHERE genreid = '6'";
-$result = mysqli_query($connection, $query);
-
-if (!$result) {
-    die("Database error: " . mysqli_error($connection));
-}
+// Query to fetch local action movies (genreid = 5 as per your original code)
+$local_query = "SELECT * FROM moviedetails WHERE genreid = '5'";
+$local_result = mysqli_query($connection, $local_query);
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +83,7 @@ if (!$result) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
   <style>
-    * {
+* {
       margin: 0;
       padding: 0;
       color: #f2f5f7;
@@ -581,12 +585,11 @@ if (!$result) {
   <div class="watchlist-container">
     <h1 class="watchlist-header">Adventure Movies & TV Shows</h1>
     
-    
     <!-- TMDb Action Movies -->
-    <?php if (!empty($adventure_movies)): ?>
-    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular adventure Movies</h2>
+    <?php if (!empty($action_movies)): ?>
+    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular Movies</h2>
     <div class="watchlist-movies">
-      <?php foreach ($adventure_movies as $movie): ?>
+      <?php foreach ($action_movies as $movie): ?>
         <div class="watchlist-movie">
           <div class="img">
             <a href="movie_details.php?tmdb_id=<?php echo $movie['id']; ?>">
@@ -597,7 +600,8 @@ if (!$result) {
             <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
             <div class="watchlist-movie-actions">
               <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
+                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                <input type="hidden" name="media_type" value="movie">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
               </form>
             </div>
@@ -610,10 +614,10 @@ if (!$result) {
     <?php endif; ?>
     
     <!-- TMDb Action TV Shows -->
-    <?php if (!empty($adventure_tvshows)): ?>
-    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular Adventure TV Shows</h2>
+    <?php if (!empty($action_tvshows)): ?>
+    <h2 style="color: #61DAFB; margin: 40px 0 20px; text-align: center;">Popular TV Shows</h2>
     <div class="watchlist-movies">
-      <?php foreach ($adventure_tvshows as $tvshow): ?>
+      <?php foreach ($action_tvshows as $tvshow): ?>
         <div class="watchlist-movie">
           <div class="img">
             <a href="tvshow_details.php?tmdb_id=<?php echo $tvshow['id']; ?>">
@@ -624,7 +628,8 @@ if (!$result) {
             <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($tvshow['name']); ?></h3>
             <div class="watchlist-movie-actions">
               <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="tmdb_<?php echo $tvshow['id']; ?>">
+                <input type="hidden" name="movie_id" value="<?php echo $tvshow['id']; ?>">
+                <input type="hidden" name="media_type" value="tv">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
               </form>
             </div>
@@ -636,7 +641,6 @@ if (!$result) {
       <p class="empty-watchlist"></p>
     <?php endif; ?>
   </div>
-
   <div class="pagination-container">
     <div class="pagination">
         <?php if ($current_page > 1): ?>
@@ -648,7 +652,7 @@ if (!$result) {
         <?php 
         // Show page numbers (max 5 around current page)
         $start_page = max(1, $current_page - 2);
-        $end_page = min($total_pages, $current_page + 2);
+        $end_page = min($movies_data['total_pages'] ?? 10, $current_page + 2);
         
         for ($i = $start_page; $i <= $end_page; $i++): ?>
             <a href="?page=<?php echo $i; ?>" class="page-link <?php echo $i == $current_page ? 'active' : ''; ?>">
@@ -656,13 +660,14 @@ if (!$result) {
             </a>
         <?php endfor; ?>
         
-        <?php if ($current_page < $total_pages): ?>
+        <?php if ($current_page < $end_page): ?>
             <a href="?page=<?php echo $current_page + 1; ?>" class="page-link">Next »</a>
         <?php else: ?>
             <span class="page-link disabled">Next »</span>
         <?php endif; ?>
     </div>
-</div>
+  </div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -670,9 +675,3 @@ if (!$result) {
   <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-

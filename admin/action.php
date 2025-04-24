@@ -8,17 +8,33 @@ if (!isset($_SESSION['user_username'])) {
 
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
-    $movie_id = $_POST['movie_id'];
+    $tmdb_id = $_POST['movie_id'];
+    $media_type = isset($_POST['media_type']) ? $_POST['media_type'] : 'movie'; // Default to 'movie' if not set
     $user_id = $_SESSION['user_id'];
     
+    // For debugging
+    error_log("Adding to watchlist - ID: $tmdb_id, Type: $media_type");
+    
     // Check if already in watchlist
-    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
-    $check_result = mysqli_query($connection, $check_query);
+    $check_query = "SELECT * FROM watchlist WHERE user_id = ? AND tmdb_id = ?";
+    $check_stmt = mysqli_prepare($connection, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "is", $user_id, $tmdb_id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
     
     if (mysqli_num_rows($check_result) == 0) {
         // Add to watchlist
-        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
-        mysqli_query($connection, $insert_query);
+        $insert_query = "INSERT INTO watchlist (user_id, tmdb_id, media_type) VALUES (?, ?, ?)";
+        $insert_stmt = mysqli_prepare($connection, $insert_query);
+        mysqli_stmt_bind_param($insert_stmt, "iss", $user_id, $tmdb_id, $media_type);
+        
+        if (mysqli_stmt_execute($insert_stmt)) {
+            echo "<script>alert('Added to watchlist successfully!');</script>";
+        } else {
+            echo "<script>alert('Error adding to watchlist: " . mysqli_error($connection) . "');</script>";
+        }
+    } else {
+        echo "<script>alert('Already in your watchlist!');</script>";
     }
 }
 
@@ -31,16 +47,9 @@ $action_genre_id = 28; // TMDb genre ID for Action
 function fetch_tmdb_data($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($ch);
-    
-    if (curl_errno($ch)) {
-        error_log("cURL Error: " . curl_error($ch));
-        curl_close($ch);
-        return null;
-    }
-    
     curl_close($ch);
     return json_decode($response, true);
 }
@@ -51,7 +60,6 @@ $current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $movies_url = "$tmdb_base_url/discover/movie?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc&page=$current_page";
 $movies_data = fetch_tmdb_data($movies_url);
 $action_movies = $movies_data['results'] ?? [];
-$total_pages = min($movies_data['total_pages'] ?? 10, 10); // Limit to max 10 pages
 
 // Fetch action TV shows from TMDb with pagination
 $tv_url = "$tmdb_base_url/discover/tv?api_key=$tmdb_api_key&with_genres=$action_genre_id&sort_by=popularity.desc&page=$current_page";
@@ -592,7 +600,8 @@ $local_result = mysqli_query($connection, $local_query);
             <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
             <div class="watchlist-movie-actions">
               <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
+                <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                <input type="hidden" name="media_type" value="movie">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
               </form>
             </div>
@@ -619,7 +628,8 @@ $local_result = mysqli_query($connection, $local_query);
             <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($tvshow['name']); ?></h3>
             <div class="watchlist-movie-actions">
               <form method="POST" action="">
-                <input type="hidden" name="movie_id" value="tmdb_<?php echo $tvshow['id']; ?>">
+                <input type="hidden" name="movie_id" value="<?php echo $tvshow['id']; ?>">
+                <input type="hidden" name="media_type" value="tv">
                 <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
               </form>
             </div>
@@ -642,7 +652,7 @@ $local_result = mysqli_query($connection, $local_query);
         <?php 
         // Show page numbers (max 5 around current page)
         $start_page = max(1, $current_page - 2);
-        $end_page = min($total_pages, $current_page + 2);
+        $end_page = min($movies_data['total_pages'] ?? 10, $current_page + 2);
         
         for ($i = $start_page; $i <= $end_page; $i++): ?>
             <a href="?page=<?php echo $i; ?>" class="page-link <?php echo $i == $current_page ? 'active' : ''; ?>">
@@ -650,7 +660,7 @@ $local_result = mysqli_query($connection, $local_query);
             </a>
         <?php endfor; ?>
         
-        <?php if ($current_page < $total_pages): ?>
+        <?php if ($current_page < $end_page): ?>
             <a href="?page=<?php echo $current_page + 1; ?>" class="page-link">Next »</a>
         <?php else: ?>
             <span class="page-link disabled">Next »</span>
@@ -665,9 +675,3 @@ $local_result = mysqli_query($connection, $local_query);
   <script src="Homepage.js"></script>
 </body>
 </html>
-
-
-
-
-
-

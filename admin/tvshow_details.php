@@ -13,7 +13,12 @@ $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
 
 // Get the TMDB ID from URL
-$tmdb_id = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
+$tmdb_id = isset($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null;
+
+if (!$tmdb_id) {
+    header("Location: index.php");
+    exit();
+}
 
 // Function to make API requests with cURL
 function fetch_tmdb_data($url) {
@@ -675,10 +680,11 @@ $similar_tvshows = $similar_data['results'] ?? [];
                 <?php endforeach; ?>
             </div>
             <div class="button-container">
-                <a href="#" class="watch-trailer">Watch Trailer</a>
                 <a href="#" class="watch-now">Watch Now</a>
+                <a href="trailer.php?tmdb_id=<?php echo $tmdb_id; ?>&media_type=tv" class="watch-trailer">Watch Trailer</a>
                 <form action="add_to_watchlist.php" method="POST">
-                    <input type="hidden" name="tvshow_id" value="tmdb_<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="movie_id" value="<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="media_type" value="tv">
                     <button type="submit" class="add-to-watchlist">WatchList</button>
                 </form>
             </div>

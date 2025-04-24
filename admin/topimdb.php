@@ -8,17 +8,33 @@ if (!isset($_SESSION['user_username'])) {
 
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
-    $movie_id = $_POST['movie_id'];
+    $tmdb_id = $_POST['movie_id'];
+    $media_type = $_POST['media_type']; // This will be either 'movie' or 'tv'
     $user_id = $_SESSION['user_id'];
     
+    // For debugging
+    error_log("Adding to watchlist - ID: $tmdb_id, Type: $media_type");
+    
     // Check if already in watchlist
-    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
-    $check_result = mysqli_query($connection, $check_query);
+    $check_query = "SELECT * FROM watchlist WHERE user_id = ? AND tmdb_id = ?";
+    $check_stmt = mysqli_prepare($connection, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "is", $user_id, $tmdb_id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
     
     if (mysqli_num_rows($check_result) == 0) {
         // Add to watchlist
-        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
-        mysqli_query($connection, $insert_query);
+        $insert_query = "INSERT INTO watchlist (user_id, tmdb_id, media_type) VALUES (?, ?, ?)";
+        $insert_stmt = mysqli_prepare($connection, $insert_query);
+        mysqli_stmt_bind_param($insert_stmt, "iss", $user_id, $tmdb_id, $media_type);
+        
+        if (mysqli_stmt_execute($insert_stmt)) {
+            echo "<script>alert('Added to watchlist successfully!');</script>";
+        } else {
+            echo "<script>alert('Error adding to watchlist!');</script>";
+        }
+    } else {
+        echo "<script>alert('Already in your watchlist!');</script>";
     }
 }
 
@@ -30,16 +46,9 @@ $tmdb_base_url = 'https://api.themoviedb.org/3';
 function fetch_tmdb_data($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($ch);
-    
-    if (curl_errno($ch)) {
-        error_log("cURL Error: " . curl_error($ch));
-        curl_close($ch);
-        return null;
-    }
-    
     curl_close($ch);
     return json_decode($response, true);
 }
@@ -380,55 +389,60 @@ $top_tvshows = $tv_data['results'] ?? [];
         
     .watchlist-movies {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 15px;
-      align-items: stretch;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
         
     .watchlist-movie {
-      background: #232323;
-      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
-      height: 100%;
     }
         
     .watchlist-movie:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
         
-    .watchlist-movie img {
+    .watchlist-movie .img {
       width: 100%;
-      height: 240px;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+    }
+        
+    .watchlist-movie .img img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
     }
         
-    .watchlist-movie:hover img {
-      transform: scale(1.03);
+    .watchlist-movie:hover .img img {
+      transform: scale(1.05);
     }
         
     .watchlist-movie-info {
-      padding: 12px;
+      text-align: center;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      flex-grow: 1;
+      height: 120px;
+      justify-content: space-between;
     }
         
     .watchlist-movie-title {
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      color: #f2f5f7;
-      min-height: 2.4rem;
+      font-size: 16px;
+      color: #ffffff;
+      margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: 1.3;
+      height: 40px;
     }
 
     .watchlist-movie-actions {
@@ -436,25 +450,26 @@ $top_tvshows = $tv_data['results'] ?? [];
       padding-top: 8px;
     }
     
-    .watchlist-btn {
-      background-color: #61DAFB;
-      color: #131418;
+    .watchlist-btn, .remove-btn {
+      background-color: #e50914;
+      color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 16px;
       border-radius: 4px;
-      font-weight: bold;
       cursor: pointer;
-      width: 100%;
-      transition: all 0.3s;
-      text-align: center;
-      font-size: 0.85rem;
-      white-space: nowrap;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+      width: 80%;
+      margin: 10px auto;
+      display: block;
     }
     
-    .watchlist-btn:hover {
-      background-color: #4fa8c7;
-      transform: translateY(-2px);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    .watchlist-btn:hover, .remove-btn:hover {
+      background-color: #ff0f1f;
+      transform: scale(1.05);
     }
     
     /* Pagination Styles */
@@ -500,10 +515,9 @@ $top_tvshows = $tv_data['results'] ?? [];
 
     .empty-watchlist {
       text-align: center;
-      color: #61DAFB;
-      font-size: 1.2rem;
-      grid-column: 1 / -1;
-      padding: 40px 0;
+      color: #ffffff;
+      font-size: 1.2em;
+      margin: 40px 0;
     }
     h2{
       margin-top: 6rem;
@@ -515,6 +529,12 @@ $top_tvshows = $tv_data['results'] ?? [];
       align-items: center;
       margin-left:5px;
       margin-bottom: 1px;
+    }
+
+    /* Add this for the form to ensure consistent spacing */
+    .watchlist-movie-info form {
+      margin: 0;
+      width: 100%;
     }
   </style>
 </head>
@@ -591,12 +611,11 @@ $top_tvshows = $tv_data['results'] ?? [];
         </div>
         <div class="watchlist-movie-info">
           <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($movie['title']); ?></h3>
-          <div class="watchlist-movie-actions">
-            <form method="POST" action="">
-              <input type="hidden" name="movie_id" value="tmdb_<?php echo $movie['id']; ?>">
-              <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
-            </form>
-          </div>
+          <form method="POST" action="">
+            <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+            <input type="hidden" name="media_type" value="movie">
+            <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+          </form>
         </div>
       </div>
     <?php endforeach; ?>
@@ -618,12 +637,11 @@ $top_tvshows = $tv_data['results'] ?? [];
         </div>
         <div class="watchlist-movie-info">
           <h3 class="watchlist-movie-title"><?php echo htmlspecialchars($tvshow['name']); ?></h3>
-          <div class="watchlist-movie-actions">
-            <form method="POST" action="">
-              <input type="hidden" name="movie_id" value="tmdb_<?php echo $tvshow['id']; ?>">
-              <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
-            </form>
-          </div>
+          <form method="POST" action="">
+            <input type="hidden" name="movie_id" value="<?php echo $tvshow['id']; ?>">
+            <input type="hidden" name="media_type" value="tv">
+            <button type="submit" name="add_to_watchlist" class="watchlist-btn">Add to Watchlist</button>
+          </form>
         </div>
       </div>
     <?php endforeach; ?>

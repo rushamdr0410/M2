@@ -8,22 +8,32 @@ if (!isset($_SESSION['user_username'])) {
 
 // Handle adding to watchlist
 if (isset($_POST['add_to_watchlist'])) {
-    $movie_id = $_POST['movie_id'];
+    $tmdb_id = $_POST['movie_id']; // We keep movie_id in the form for consistency
     $user_id = $_SESSION['user_id'];
     
+    // Remove 'tmdb_' prefix if it exists
+    if (strpos($tmdb_id, 'tmdb_') === 0) {
+        $tmdb_id = substr($tmdb_id, 5);
+    }
+    
     // Check if already in watchlist
-    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
-    $check_result = mysqli_query($connection, $check_query);
+    $check_query = "SELECT * FROM watchlist WHERE user_id = ? AND tmdb_id = ?";
+    $check_stmt = mysqli_prepare($connection, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "is", $user_id, $tmdb_id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
     
     if (mysqli_num_rows($check_result) == 0) {
         // Add to watchlist
-        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
-        mysqli_query($connection, $insert_query);
+        $insert_query = "INSERT INTO watchlist (user_id, tmdb_id, media_type) VALUES (?, ?, 'movie')";
+        $insert_stmt = mysqli_prepare($connection, $insert_query);
+        mysqli_stmt_bind_param($insert_stmt, "is", $user_id, $tmdb_id);
+        mysqli_stmt_execute($insert_stmt);
     }
 }
 
 // TMDb API Integration
-$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; // Replace with your actual API key
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
 $tmdb_base_url = 'https://api.themoviedb.org/3';
 
 // Function to fetch movies from TMDb API
@@ -38,7 +48,7 @@ function fetch_tmdb_movies($url) {
 // Get current page from URL or default to 1
 $current_page = isset($_GET['page']) ? max(1, min(10, (int)$_GET['page'])) : 1;
 
-// Fetch TV shows from TMDb API for current page
+// Fetch movies from TMDb API for current page
 $tmdb_movies_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=$current_page";
 $tmdb_data = fetch_tmdb_movies($tmdb_movies_url);
 $api_movies = $tmdb_data['results'] ?? [];

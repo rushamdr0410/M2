@@ -9,11 +9,44 @@ if (!isset($_SESSION['user_username'])) {
 // Get the current user's ID
 $user_id = $_SESSION['user_id'];
 
-// Modified query to fetch DISTINCT watchlist items for the current user
-$query = "SELECT DISTINCT m.* FROM moviedetails m 
-          JOIN watchlist w ON m.id = w.movie_id 
-          WHERE w.user_id = $user_id";
-$result = mysqli_query($connection, $query);
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+
+// Function to fetch data from TMDb
+function fetch_tmdb_data($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
+}
+
+// Get all TMDb IDs from user's watchlist
+$query = "SELECT * FROM watchlist WHERE user_id = ? ORDER BY date_added DESC";
+$stmt = mysqli_prepare($connection, $query);
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+$watchlist_items = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    // Determine the API endpoint based on media type
+    $endpoint = $row['media_type'] === 'tv' ? 'tv' : 'movie';
+    $url = "{$tmdb_base_url}/{$endpoint}/{$row['tmdb_id']}?api_key={$tmdb_api_key}";
+    $data = fetch_tmdb_data($url);
+    
+    if ($data && !isset($data['status_code'])) {
+        $watchlist_items[] = [
+            'id' => $row['tmdb_id'],
+            'title' => $row['media_type'] === 'tv' ? $data['name'] : $data['title'],
+            'poster_path' => $data['poster_path'] ? "https://image.tmdb.org/t/p/w500{$data['poster_path']}" : "path/to/default/image.jpg",
+            'media_type' => $row['media_type']
+        ];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -356,6 +389,9 @@ $result = mysqli_query($connection, $query);
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
         
     .watchlist-movie:hover {
@@ -369,13 +405,19 @@ $result = mysqli_query($connection, $query);
     }
         
     .watchlist-movie-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       padding: 15px;
+      min-height: 120px;
+      flex-grow: 1;
     }
         
     .watchlist-movie-title {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: #f2f5f7;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #ffffff;
+      flex-grow: 1;
     }
         
     .watchlist-movie-actions {
@@ -416,6 +458,96 @@ $result = mysqli_query($connection, $query);
       font-size: 1.5rem;
       color: #f2f5f7;
       margin-top: 50px;
+    }
+
+    /* Keep your existing CSS and add/update these button styles */
+    .remove-btn {
+      align-self: center; /* Center the button horizontally */
+      width: 90%; /* Make buttons consistent width */
+      margin-top: auto; /* Pushes button to bottom */
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .remove-btn:hover {
+      background-color: #ff0f1f;
+      transform: scale(1.05);
+    }
+
+    .remove-btn-container {
+      margin-top: auto; /* Pushes button to bottom */
+      padding-top: 15px; /* Space above button */
+    }
+
+    .watchlist-movie-info {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .watchlist-movie-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .watchlist-movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .watchlist-movie {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .watchlist-movie:hover {
+      transform: translateY(-5px);
+    }
+
+    .watchlist-movie .img {
+      width: 100%;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+    }
+
+    .watchlist-movie .img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .watchlist-movie:hover .img img {
+      transform: scale(1.05);
+    }
+
+    .watchlist-header {
+      text-align: center;
+      color: #61DAFB;
+      margin: 20px 0;
+      font-size: 2em;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .empty-watchlist {
+      text-align: center;
+      color: #ffffff;
+      font-size: 1.2em;
+      margin: 40px 0;
     }
   </style>
 </head>
@@ -479,23 +611,31 @@ $result = mysqli_query($connection, $query);
 <div class="watchlist-container">
   <h1 class="watchlist-header">My Watchlist</h1>
         
-  <?php if (mysqli_num_rows($result) > 0): ?>
+  <?php if (!empty($watchlist_items)): ?>
   <div class="watchlist-movies">
-    <?php while ($movie = mysqli_fetch_assoc($result)): ?>
+    <?php foreach ($watchlist_items as $item): ?>
       <div class="watchlist-movie">
-        <img src="upload/<?php echo $movie['poster_img']; ?>" alt="<?php echo $movie['title']; ?>">
-          <div class="watchlist-movie-info">
-            <h3 class="watchlist-movie-title"><?php echo $movie['title']; ?></h3>
-            <div class="watchlist-movie-actions">
-              <a href="movie_details.php?id=<?php echo $movie['id']; ?>">Details</a>
-              <a href="remove_from_watchlist.php?movie_id=<?php echo $movie['id']; ?>" class="remove-from-watchlist">Remove</a>
-            </div>
-          </div>
+        <div class="img">
+          <a href="<?php echo $item['media_type'] === 'tv' ? 'tvshow_details.php' : 'movie_details.php'; ?>?tmdb_id=<?php echo $item['id']; ?>">
+            <img src="<?php echo htmlspecialchars($item['poster_path']); ?>" 
+                 alt="<?php echo htmlspecialchars($item['title']); ?>">
+          </a>
+        </div>
+        <div class="watchlist-movie-info">
+          <h3 class="watchlist-movie-title">
+            <?php echo htmlspecialchars($item['title']); ?>
+          </h3>
+          <form method="POST" action="remove_from_watchlist.php">
+            <input type="hidden" name="tmdb_id" value="<?php echo $item['id']; ?>">
+            <input type="hidden" name="media_type" value="<?php echo $item['media_type']; ?>">
+            <button type="submit" class="remove-btn">Remove</button>
+          </form>
+        </div>
       </div>
-    <?php endwhile; ?>
+    <?php endforeach; ?>
   </div>
   <?php else: ?>
-  <p class="empty-watchlist">Your watchlist is empty. Add some movies!</p>
+  <p class="empty-watchlist">Your watchlist is empty</p>
   <?php endif; ?>
 </div>
 
