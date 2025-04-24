@@ -461,36 +461,57 @@ $similar_movies = $similar_data['results'] ?? [];
 
         .button-container {
             display: flex;
-            gap: 10px; /* Add spacing between buttons */
-            margin-top: 1rem; /* Add some space above the buttons */
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
 
-        .movie-info .watch-trailer,
-        .movie-info .watch-now,
-        .movie-info form .add-to-watchlist {
-            display: inline-block;
-            margin-right: 10px;
-            background-color: #61DAFB;
-            color: #131418;
-            padding: 0.8rem 1.5rem;
+        .watch-btn, .trailer-btn, .watchlist-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
             font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
         }
 
-        .movie-info .watch-trailer:hover,
-        .movie-info .watch-now:hover,
-        .movie-info  form .add-to-watchlist:hover {
-            background-color: #4fa8c7;
+        .watch-btn {
+            background-color: #61DAFB;
+            color: #000;
         }
 
-        .movie-info .watch-trailer:hover,
-        .movie-info .watch-now:hover,
-        .movie-info .add-to-watchlist:hover {
-            background-color: #4fa8c7;
+        .trailer-btn {
+            background-color: #E50914;
+            color: #fff;
+        }
+
+        .watchlist-btn {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .watch-btn:hover, .trailer-btn:hover, .watchlist-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .watch-btn i, .trailer-btn i, .watchlist-btn i {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .watch-btn, .trailer-btn, .watchlist-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .related-movies {
@@ -633,12 +654,18 @@ $similar_movies = $similar_data['results'] ?? [];
                 <?php endforeach; ?>
             </div>
             <div class="button-container">
-                <a href="trailer.php?tmdb_id=<?php echo $tmdb_id; ?>&media_type=movie" class="watch-trailer">Watch Trailer</a>
-                <a href="#" class="watch-now">Watch Now</a>
-                <form action="add_to_watchlist.php" method="POST">
-                    <input type="hidden" name="movie_id" value="<?php echo $tmdb_id; ?>">
+                <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $tmdb_id; ?>&media_type=movie" class="watch-btn">
+                    <i class="fas fa-play"></i> Watch Now
+                </a>
+                <a href="trailer.php?tmdb_id=<?php echo $tmdb_id; ?>&media_type=movie" class="trailer-btn">
+                    <i class="fas fa-film"></i> Watch Trailer
+                </a>
+                <form action="add_to_watchlist.php" method="POST" class="watchlist-form">
+                    <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
                     <input type="hidden" name="media_type" value="movie">
-                    <button type="submit" class="add-to-watchlist">WatchList</button>
+                    <button type="submit" class="watchlist-btn">
+                        <i class="fas fa-plus"></i> Add to Watchlist
+                    </button>
                 </form>
             </div>
             <?php
