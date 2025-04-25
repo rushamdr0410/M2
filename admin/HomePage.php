@@ -15,7 +15,7 @@ if (!isset($_SESSION['has_watched'])) {
 $_SESSION['has_watched'] = false; 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $watched_query = "SELECT COUNT(*) as count FROM user_watched_movies WHERE user_id = $user_id";
+    $watched_query = "SELECT COUNT(*) as count FROM watch_history WHERE user_id = $user_id";
     $watched_result = mysqli_query($connection, $watched_query);
     $watched_data = mysqli_fetch_assoc($watched_result);
     
@@ -680,10 +680,10 @@ $result = mysqli_query($connection, $query);
         <?php if (!empty($swiper_movies)): ?>
           <?php foreach (array_slice($swiper_movies, 0, 5) as $movie): ?>
             <div class="swiper-slide" style="background: url('https://image.tmdb.org/t/p/original<?php echo htmlspecialchars($movie['backdrop_path']); ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
-              <div>
+              <div class="swiper-slide-content">
                 <h2><?php echo htmlspecialchars($movie['title']); ?></h2>
-                <p><?php echo htmlspecialchars($movie['overview'] ?? 'No description available'); ?></p>
-                <a href="movie_details.php?id=<?php echo $movie['id']; ?>" target="_blank">Watch Now</a>
+                <p><?php echo htmlspecialchars(substr($movie['overview'], 0, 150) . '...'); ?></p>
+                <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $movie['id']; ?>&media_type=movie" target="_blank">Watch Now</a>
               </div>
             </div>
           <?php endforeach; ?>
@@ -692,10 +692,10 @@ $result = mysqli_query($connection, $query);
           <?php if(mysqli_num_rows($result) > 0): ?>
             <?php while($row = mysqli_fetch_assoc($result)): ?>
               <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
-                <div>
-                  <h2><?php echo $row['title']; ?></h2>
-                  <p><?php echo $row['description']; ?></p>
-                  <a href="videoplayer_kungfu.php?video_id=<?php echo $row['id'];?>" target="_blank">Watch Now</a>
+                <div class="swiper-slide-content">
+                  <h2><?php echo htmlspecialchars($row['title']); ?></h2>
+                  <p><?php echo htmlspecialchars(substr($row['description'], 0, 150) . '...'); ?></p>
+                  <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $row['id']; ?>&media_type=movie" target="_blank">Watch Now</a>
                 </div>
               </div>
             <?php endwhile; ?>
@@ -711,48 +711,77 @@ $result = mysqli_query($connection, $query);
   <?php if ($_SESSION['has_watched']): ?>
 <section class="movies" id="movies">
   <div class="title">
-    <h2 class="heading">recommended</h2>
+    <h2 class="heading">Recommendations</h2>
   </div>
   <div class="movies-container-wrapper">
     <?php
       $user_id = $_SESSION['user_id'];
-      $genre_query = "SELECT g.genre_name 
-                     FROM genre_info g
-                     JOIN moviedetails m ON g.genreid = m.genreid
-                     JOIN user_watched_movies w ON m.id = w.movie_id
-                     WHERE w.user_id = $user_id
-                     GROUP BY g.genre_name";
-      $genre_result = mysqli_query($connection, $genre_query);
       
-      $recommend_query = "SELECT DISTINCT m.* 
-                         FROM moviedetails m
-                         JOIN genre_info g ON m.genreid = g.genreid
-                         WHERE g.genre_name IN (";
+      // Get user's watch history
+      $history_query = "SELECT movie_id, media_type FROM watch_history WHERE user_id = ? ORDER BY watch_date DESC LIMIT 10";
+      $stmt = $connection->prepare($history_query);
+      $stmt->bind_param("i", $user_id);
+      $stmt->execute();
+      $history_result = $stmt->get_result();
       
-      $genres = [];
-      while ($genre_row = mysqli_fetch_assoc($genre_result)) {
-          $genres[] = "'" . mysqli_real_escape_string($connection, $genre_row['genre_name']) . "'";
+      $watched_ids = [];
+      $watched_movies = [];
+      
+      while ($row = $history_result->fetch_assoc()) {
+          $watched_ids[] = $row['movie_id'];
+          $watched_movies[] = [
+              'id' => $row['movie_id'],
+              'media_type' => $row['media_type']
+          ];
       }
       
-      if (!empty($genres)) {
-          $recommend_query .= implode(",", $genres) . ")";
-          $recommend_query .= " AND m.id NOT IN (
-                              SELECT movie_id FROM user_watched_movies 
-                              WHERE user_id = $user_id)";
-          $recommend_query .= " LIMIT 12"; 
+      if (!empty($watched_movies)) {
+          // Get recommendations based on watched content
+          $recommendations = [];
           
-          $result = mysqli_query($connection, $recommend_query);
-          if(mysqli_num_rows($result) > 0) {
-              while($row = mysqli_fetch_assoc($result)) {
+          foreach ($watched_movies as $watched) {
+              // Get similar movies from TMDb API
+              $similar_url = "$tmdb_base_url/{$watched['media_type']}/{$watched['id']}/similar?api_key=$tmdb_api_key&language=en-US&page=1";
+              $similar_data = json_decode(file_get_contents($similar_url), true);
+              
+              if (isset($similar_data['results'])) {
+                  foreach ($similar_data['results'] as $movie) {
+                      if (!in_array($movie['id'], $watched_ids)) {
+                          $recommendations[] = [
+                              'id' => $movie['id'],
+                              'title' => $movie['title'] ?? $movie['name'],
+                              'poster_path' => $movie['poster_path'],
+                              'vote_average' => $movie['vote_average'],
+                              'media_type' => $watched['media_type']
+                          ];
+                      }
+                  }
+              }
+          }
+          
+          // Sort recommendations by vote average
+          usort($recommendations, function($a, $b) {
+              return $b['vote_average'] <=> $a['vote_average'];
+          });
+          
+          // Display top 12 recommendations
+          $recommendations = array_slice($recommendations, 0, 12);
+          
+          if (!empty($recommendations)) {
+              foreach ($recommendations as $movie) {
+                  $image = $movie['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie['poster_path'] : 'placeholder.jpg';
                   ?>
                   <div class="movies-container">
-                    <a href="movie_details.php?id=<?php echo $id; ?>" class="movie-link">
+                    <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $movie['id']; ?>&media_type=<?php echo $movie['media_type']; ?>" class="movie-link">
                       <div class="card">
                         <div class="img">
-                          <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
+                          <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
                         </div>
                         <div class="movies-title">
-                          <h3><?php echo htmlspecialchars($title); ?></h3>
+                          <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
+                        </div>
+                        <div class="rating-badge">
+                          <i class="fas fa-star"></i> <?php echo number_format($movie['vote_average'], 1); ?>
                         </div>
                       </div>
                     </a>
@@ -763,7 +792,7 @@ $result = mysqli_query($connection, $query);
               echo "<p>No recommendations found based on your viewing history.</p>";
           }
       } else {
-          echo "<p>Watch some movies to get recommendations!</p>";
+          echo "<p>Watch some movies or TV shows to get recommendations!</p>";
       }
     ?>
   </div>

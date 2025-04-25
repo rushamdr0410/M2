@@ -451,24 +451,22 @@ $top_tvshows = $tv_data['results'] ?? [];
     }
     
     .watchlist-btn, .remove-btn {
-      background-color: #e50914;
-      color: white;
+      background-color: #61DAFB;
+      color: #131418;
       border: none;
-      padding: 8px 16px;
+      padding: 8px 12px;
       border-radius: 4px;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 500;
-      width: 80%;
-      margin: 10px auto;
-      display: block;
+      width: 100%;
+      transition: all 0.3s;
+      text-align: center;
+      font-size: 0.85rem;
+      white-space: nowrap;
     }
     
     .watchlist-btn:hover, .remove-btn:hover {
-      background-color: #ff0f1f;
+      background-color: #61DAFB;
       transform: scale(1.05);
     }
     

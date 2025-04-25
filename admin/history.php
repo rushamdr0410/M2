@@ -8,18 +8,47 @@ if (!isset($_SESSION['user_username'])) {
     exit();
 }
 
+// TMDb API Configuration
+$tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+$tmdb_base_url = 'https://api.themoviedb.org/3';
+
 // Get user's watched movies from database
 $user_id = $_SESSION['user_id'];
-$query = "SELECT m.*, w.watched_at 
-          FROM moviedetails m
-          JOIN user_watched_movies w ON m.id = w.movie_id
-          WHERE w.user_id = ?
-          ORDER BY w.watched_at DESC";
+
+// Function to fetch data from TMDb API
+function fetch_tmdb_data($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
+}
+
+// Query for watched content
+$query = "SELECT * FROM watch_history WHERE user_id = ? ORDER BY watch_date DESC";
 $stmt = $connection->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-$watched_movies = $result->fetch_all(MYSQLI_ASSOC);
+$watched_content = [];
+
+while ($row = $result->fetch_assoc()) {
+    // Fetch content details from TMDb API
+    $content_url = "{$tmdb_base_url}/{$row['media_type']}/{$row['movie_id']}?api_key={$tmdb_api_key}";
+    $content_data = fetch_tmdb_data($content_url);
+    
+    if ($content_data && !isset($content_data['status_code'])) {
+        $watched_content[] = [
+            'id' => $row['movie_id'],
+            'title' => $row['media_type'] === 'movie' ? $content_data['title'] : $content_data['name'],
+            'poster_path' => $content_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $content_data['poster_path'] : 'placeholder.jpg',
+            'media_type' => $row['media_type'],
+            'watch_date' => $row['watch_date']
+        ];
+    }
+}
 $stmt->close();
 ?>
 
@@ -397,6 +426,20 @@ $stmt->close();
             gap: 5px;
         }
 
+        .media-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #61DAFB;
+            color: #131418;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
         .no-history {
             text-align: center;
             grid-column: 1 / -1;
@@ -511,17 +554,18 @@ $stmt->close();
         </div>
 
         <div class="history-container">
-            <?php if (count($watched_movies) > 0): ?>
-                <?php foreach ($watched_movies as $movie): ?>
+            <?php if (count($watched_content) > 0): ?>
+                <?php foreach ($watched_content as $content): ?>
                     <div class="history-item">
-                        <a href="movie_details.php?id=<?php echo $movie['id']; ?>">
-                            <img src="upload/<?php echo $movie['poster_img']; ?>" alt="<?php echo $movie['title']; ?>" class="history-poster">
+                        <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $content['id']; ?>&media_type=<?php echo $content['media_type']; ?>">
+                          <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo htmlspecialchars($content['title']); ?>" class="history-poster">
+                          <span class="media-type-badge"><?php echo ucfirst($content['media_type']); ?></span>
                         </a>
                         <div class="history-info">
-                            <h3 class="history-title"><?php echo $movie['title']; ?></h3>
+                            <h3 class="history-title"><?php echo htmlspecialchars($content['title']); ?></h3>
                             <div class="history-date">
                                 <i class="far fa-clock"></i>
-                                <?php echo date('M j, Y', strtotime($movie['watched_at'])); ?>
+                                <?php echo date('M j, Y', strtotime($content['watch_date'])); ?>
                             </div>
                         </div>
                     </div>

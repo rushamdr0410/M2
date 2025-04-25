@@ -8,45 +8,129 @@
       exit();
   }
 
-  // Add this right after including user_auth.php in videoplayer_kungfu.php
-  if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    $movie_id = $_GET['video_id'];
-    
-    // Check if already watched to avoid duplicates
-    $check_query = "SELECT * FROM user_watched_movies WHERE user_id = $user_id AND movie_id = $movie_id";
-    $check_result = mysqli_query($connection, $check_query);
-    
-    if (mysqli_num_rows($check_result) == 0) {
-        // Record this viewing
-        $insert_query = "INSERT INTO user_watched_movies (user_id, movie_id) VALUES ($user_id, $movie_id)";
-        mysqli_query($connection, $insert_query);
-    }
-  }
-
-  // Query for fetching movie details
-  $id = isset($_GET['video_id']) ? $_GET['video_id'] : null;
-  $query = "SELECT m.*, GROUP_CONCAT(g.genre_name SEPARATOR ', ') AS genres,
-            GROUP_CONCAT(DISTINCT c.cast_name SEPARATOR ', ') AS cast_names
-            FROM moviedetails m
-            LEFT JOIN cast_info c ON m.cast_id = c.cast_id
-            LEFT JOIN genre_info g ON m.genreid = g.genreid
-            WHERE m.id = $id
-            GROUP BY m.id";
-  $result = mysqli_query($connection, $query);
-
-  if (mysqli_num_rows($result) > 0) {
-      $row = mysqli_fetch_assoc($result); // Fetch the movie details
-      // Split the genres into an array
-      $genres = !empty($row['genres']) ? explode(', ', $row['genres']) : [];
-      $cast_names = !empty($row['cast_names']) ? explode(', ', $row['cast_names']) : [];
+  // Store movie in watch history
+  if (isset($_GET['tmdb_id']) && isset($_SESSION['user_id'])) {
+      $user_id = $_SESSION['user_id'];
+      $tmdb_id = (int)$_GET['tmdb_id'];
+      $media_type = isset($_GET['media_type']) ? $_GET['media_type'] : 'movie';
       
-      // Get video URL - make sure this column exists in your database
-      $video_url = $row['video_url'] ?? 'default_video.mp4'; // Fallback if video_url doesn't exist
-  } else {
-      echo "No movie found with the provided ID.";
-      exit();
+      // Check if this movie is already in watch history
+      $check_query = $connection->prepare("SELECT id FROM watch_history WHERE user_id = ? AND movie_id = ?");
+      $check_query->bind_param("ii", $user_id, $tmdb_id);
+      $check_query->execute();
+      $result = $check_query->get_result();
+      
+      if ($result->num_rows === 0) {
+          // Movie not in history, add it
+          $insert_query = $connection->prepare("INSERT INTO watch_history (user_id, movie_id, media_type, watch_date) VALUES (?, ?, ?, NOW())");
+          $insert_query->bind_param("iis", $user_id, $tmdb_id, $media_type);
+          $insert_query->execute();
+          $insert_query->close();
+      } else {
+          // Movie already in history, update the watch date
+          $update_query = $connection->prepare("UPDATE watch_history SET watch_date = NOW() WHERE user_id = ? AND movie_id = ?");
+          $update_query->bind_param("ii", $user_id, $tmdb_id);
+          $update_query->execute();
+          $update_query->close();
+      }
+      $check_query->close();
   }
+
+  // TMDb API Configuration
+  $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc';
+  $tmdb_base_url = 'https://api.themoviedb.org/3';
+
+  // Get the TMDB ID from URL
+  $tmdb_id = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
+  $media_type = isset($_GET['media_type']) ? $_GET['media_type'] : 'movie';
+
+  if ($tmdb_id === 0) {
+      die("Invalid movie ID");
+  }
+
+  // Function to fetch data from TMDb API
+  function fetch_tmdb_data($url) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      $response = curl_exec($ch);
+      curl_close($ch);
+      return json_decode($response, true);
+  }
+
+  // Fetch movie details from TMDb API
+  $movie_url = "$tmdb_base_url/{$media_type}/$tmdb_id?api_key=$tmdb_api_key&append_to_response=credits,videos";
+  $movie_data = fetch_tmdb_data($movie_url);
+
+  if (!$movie_data || isset($movie_data['status_code'])) {
+      die("Movie not found or API error");
+  }
+
+  // Extract movie details
+  $title = $media_type === 'movie' ? ($movie_data['title'] ?? 'No title') : ($movie_data['name'] ?? 'No title');
+  $release_year = $media_type === 'movie' ? 
+      substr($movie_data['release_date'] ?? '', 0, 4) : 
+      substr($movie_data['first_air_date'] ?? '', 0, 4);
+  $runtime = $media_type === 'movie' ? 
+      ($movie_data['runtime'] ?? 0) : 
+      (!empty($movie_data['episode_run_time']) ? min($movie_data['episode_run_time']) : 0);
+  $overview = $movie_data['overview'] ?? 'No description available';
+  $poster_path = $movie_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie_data['poster_path'] : 'placeholder.jpg';
+  $vote_average = $movie_data['vote_average'] ?? 0;
+  $genres = array_map(function($g) { return $g['name']; }, $movie_data['genres'] ?? []);
+
+  // Get director/creator
+  $director = '';
+  $crew = $movie_data['credits']['crew'] ?? [];
+  foreach ($crew as $person) {
+      if ($media_type === 'movie' && $person['job'] === 'Director') {
+          $director = $person['name'];
+          break;
+      } elseif ($media_type === 'tv' && $person['job'] === 'Creator') {
+          $director = $person['name'];
+          break;
+      }
+  }
+
+  // Get cast (first 5 cast members)
+  $cast = array_slice($movie_data['credits']['cast'] ?? [], 0, 5);
+  $cast_names = array_map(function($c) { return $c['name']; }, $cast);
+
+  // Get trailer
+  $trailer = null;
+  if (isset($movie_data['videos']['results']) && !empty($movie_data['videos']['results'])) {
+      // First try to find official trailer
+      foreach ($movie_data['videos']['results'] as $video) {
+          if ($video['site'] === 'YouTube' && 
+              $video['type'] === 'Trailer' && 
+              strtolower($video['name']) === 'official trailer') {
+              $trailer = $video;
+              break;
+          }
+      }
+      
+      // If no official trailer, look for any trailer
+      if (!$trailer) {
+          foreach ($movie_data['videos']['results'] as $video) {
+              if ($video['site'] === 'YouTube' && $video['type'] === 'Trailer') {
+                  $trailer = $video;
+                  break;
+              }
+          }
+      }
+      
+      // If still no trailer, take any YouTube video
+      if (!$trailer && !empty($movie_data['videos']['results'])) {
+          foreach ($movie_data['videos']['results'] as $video) {
+              if ($video['site'] === 'YouTube') {
+                  $trailer = $video;
+                  break;
+              }
+          }
+      }
+  }
+
   // Handle review submission with prepared statement
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
     $rating = intval($_POST['reviewRating']);
@@ -64,10 +148,10 @@
     
     $stmt = $connection->prepare("INSERT INTO reviews (movie_id, user_id, review_text, rating) 
                                 VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("iisi", $id, $user_id, $review_text, $rating);
+    $stmt->bind_param("iisi", $tmdb_id, $user_id, $review_text, $rating);
     
     if ($stmt->execute()) {
-        header("Location: ".$_SERVER['PHP_SELF']."?video_id=".$id);
+        header("Location: ".$_SERVER['PHP_SELF']."?tmdb_id=".$tmdb_id."&media_type=".$media_type);
         exit();
     } else {
         $review_error = "Error submitting review: ".$stmt->error;
@@ -75,7 +159,7 @@
     $stmt->close();
   }
 
-  // Fetch existing reviews with username from register table
+  // Fetch existing reviews
   $reviews_query = $connection->prepare("
     SELECT r.*, reg.username 
     FROM reviews r
@@ -83,7 +167,7 @@
     WHERE r.movie_id = ? 
     ORDER BY r.review_date DESC
   ");
-  $reviews_query->bind_param("i", $id);
+  $reviews_query->bind_param("i", $tmdb_id);
   $reviews_query->execute();
   $reviews_result = $reviews_query->get_result();
   $reviews = [];
@@ -94,7 +178,7 @@
 
   // Calculate average rating
   $avg_rating_query = $connection->prepare("SELECT AVG(rating) as avg_rating FROM reviews WHERE movie_id = ?");
-  $avg_rating_query->bind_param("i", $id);
+  $avg_rating_query->bind_param("i", $tmdb_id);
   $avg_rating_query->execute();
   $avg_rating_result = $avg_rating_query->get_result();
   $avg_rating = $avg_rating_result->fetch_assoc()['avg_rating'] ?? 0;
@@ -657,7 +741,44 @@
             }
         }
 
-</style>
+    .video-player-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      background: #000;
+      border-radius: 10px;
+    }
+    
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .no-video-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #fff;
+    }
+    
+    .no-video-message i {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
   <nav>
@@ -718,42 +839,51 @@
 
   <div class="container">
     <!-- Video Player Section -->
-    <div class="video-container">
-      <video controls poster="upload/<?php echo $row['poster_img']; ?>">
-        <source src="<?php echo $video_url;?>" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+    <div class="video-player-container">
+      <div class="video-wrapper">
+        <?php if ($trailer): ?>
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/<?php echo $trailer['key']; ?>" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        <?php else: ?>
+          <div class="no-video-message">
+            <i class="fas fa-video-slash"></i>
+            <p>No video available</p>
+          </div>
+        <?php endif; ?>
+      </div>
     </div>
         
     <!-- Movie Details Section -->
     <div class="movie-details">
       <div class="movie-poster">
-        <img src="upload/<?php echo $row['poster_img']; ?>" alt="Movie Poster">
+        <img src="<?php echo $poster_path; ?>" alt="<?php echo htmlspecialchars($title); ?>">
       </div>
       <div class="movie-info">
-      <h1 class="movie-title"><?php echo $row['title']; ?></h1>
+      <h1 class="movie-title"><?php echo htmlspecialchars($title); ?></h1>
       <div class="movie-meta">
-        <span><?php echo $row['release_year']; ?></span>
+        <span><?php echo $release_year; ?></span>
         <span>•</span>
         <span>PG-13</span>
         <span>•</span>
-        <span><?php echo $row['duration']; ?></span>
+        <span><?php echo $runtime; ?> min</span>
       </div>
       <div class="rating">
-        <span class="rating-value">8.8</span>
+        <span class="rating-value"><?php echo number_format($vote_average, 1); ?></span>
         <div class="stars">★★★★★</div>
       </div>
       <p class="movie-description">
-        <?php echo $row['description']; ?>
+        <?php echo htmlspecialchars($overview); ?>
       </p>
       <div class="details-grid">
         <div class="detail-item">
           <h4>Director</h4>
-          <p><?php echo $row['director']; ?></p>
-        </div>
-        <div class="detail-item">
-          <h4>Writers</h4>
-          <p>Christopher Nolan</p>
+          <p><?php echo htmlspecialchars($director); ?></p>
         </div>
         <div class="detail-item">
           <h4>Stars</h4>
