@@ -271,6 +271,7 @@
             display: none;
         }
 	</style>
+    <script src="js/location-tracker.js"></script>
 </head>
 <body>
     <header>
@@ -462,5 +463,30 @@
             return isValid;
         }
 	</script>
+    <?php if (isset($_SESSION['needs_location_update'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                const updateLocation = async () => {
+                    try {
+                        const position = await locationTracker.requestLocationPermission();
+                        if (position) {
+                            await locationTracker.updateUserLocation(<?php echo $_SESSION['user_id']; ?>);
+                            // Remove the flag after successful update
+                            <?php unset($_SESSION['needs_location_update']); ?>
+                        }
+                    } catch (error) {
+                        console.error('Error updating location:', error);
+                    }
+                };
+                
+                // Show a modal or notification to request location
+                if (confirm('Would you like to share your location for personalized recommendations?')) {
+                    updateLocation();
+                }
+            }
+        });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

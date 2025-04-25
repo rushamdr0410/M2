@@ -120,6 +120,19 @@ include('includes/navbar.php');
     </div>
 </div>
 
+<style>
+.text-success {
+    color: #1cc88a !important;
+}
+.text-danger {
+    color: #e74a3b !important;
+}
+.small {
+    font-size: 80%;
+    font-weight: normal;
+}
+</style>
+
 <script>
     // Real-Time Validation for Admin Registration Form
 

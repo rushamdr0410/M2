@@ -1,22 +1,11 @@
 <?php
-require_once 'config.php';
-require_once 'migrations/MigrationManager.php';
-require_once 'Migration.php';
-require_once '2024_04_25_000001_create_register_table.php';
-require_once '2024_04_25_000002_create_watch_history_table.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/Migration.php';
 
 try {
-    $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME,
-        DB_USER,
-        DB_PASS,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
-
-    $migrationManager = new MigrationManager($pdo, __DIR__ . '/migrations');
+    $migration = new Migration();
     
     // Create migrations table if it doesn't exist
-    $migration = new Migration();
     $migration->pdo->exec("
         CREATE TABLE IF NOT EXISTS migrations (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,22 +18,38 @@ try {
     $stmt = $migration->pdo->query("SELECT migration FROM migrations");
     $completed = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    // Run pending migrations
-    $migrations = [
-        'CreateRegisterTable',
-        'CreateWatchHistoryTable'
-    ];
+    // Get all migration files
+    $migrationFiles = glob(__DIR__ . '/migrations/2024_*.php');
+    sort($migrationFiles); // Sort by timestamp
 
     $batch = time();
-    if (isset($argv[1]) && $argv[1] === 'rollback') {
-        $steps = isset($argv[2]) ? (int)$argv[2] : 1;
-        $migrationManager->rollbackMigrations($steps);
-    } else {
-        $migrationManager->runMigrations();
+    foreach ($migrationFiles as $file) {
+        $fileName = basename($file, '.php');
+        // Convert filename to class name (e.g., 2024_04_25_000001_create_register_table -> CreateRegisterTable)
+        $parts = explode('_', $fileName);
+        array_splice($parts, 0, 4); // Remove the timestamp parts
+        $className = str_replace(' ', '', ucwords(implode(' ', $parts)));
+        
+        if (!in_array($fileName, $completed)) {
+            require_once $file;
+            $migrationClass = new $className();
+            $migrationClass->pdo = $migration->pdo;
+            
+            echo "Running migration: $className\n";
+            $migrationClass->up();
+            
+            // Record the migration
+            $stmt = $migration->pdo->prepare("INSERT INTO migrations (migration, batch) VALUES (?, ?)");
+            $stmt->execute([$fileName, $batch]);
+            echo "Migration completed: $className\n";
+        }
     }
     
-    echo "Migrations completed successfully!\n";
+    echo "All migrations completed successfully!\n";
 } catch (PDOException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+    exit(1);
+} catch (Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
     exit(1);
 } 

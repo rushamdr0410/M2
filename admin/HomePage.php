@@ -614,6 +614,48 @@ $result = mysqli_query($connection, $query);
     .img {
       flex:1;
     }
+
+    .location-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #61DAFB;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    .location-info i {
+      font-size: 1rem;
+    }
+
+    .watch-count-badge {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background-color: rgba(0,0,0,0.7);
+      color: #61DAFB;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .movies-container:hover .watch-count-badge {
+      opacity: 1;
+    }
+
+    .media-type {
+      font-size: 0.8rem;
+      color: #61DAFB;
+      background: rgba(97, 218, 251, 0.1);
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-top: 5px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -885,6 +927,6 @@ $result = mysqli_query($connection, $query);
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="js/Homepage.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 </body>
 </html>
