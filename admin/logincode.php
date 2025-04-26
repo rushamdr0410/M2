@@ -1,90 +1,466 @@
-<?php
-// Start session and output buffering at the VERY TOP
-session_start();
-ob_start();
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieMagic | Where Every Frame Tells A Story</title>
+	<link rel="website icon" type="JPG" href="C:\xampp\htdocs\MovieMagic\Images and Videos\Icon.jpeg">
+	<style>
+		@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+		*{
+			margin:0;
+			padding:0;
+			box-sizing: border-box;
+			font-family: 'Poppins',sans-serif;
+		}
+		body{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			background: url("ImagesandVideos/Backgroud_Images/BG7.jpg") no-repeat;
+			background-size: cover;
+			background-position: center;
 
-// Debugging output - will help identify where the script stops
-error_log("Script started - checking for POST data");
-
-include('includes/get_user_location.php');
-
-// Enable all error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$connection = mysqli_connect("localhost", "root", "", "moviemagic");
-
-if (!$connection) {
-    error_log("Database connection failed");
-    die(json_encode(["status" => "error", "message" => "Database connection failed"]));
-}
-
-error_log("Checking for userloginbtn in POST: " . print_r($_POST, true));
-
-if (isset($_POST['userloginbtn'])) {
-    error_log("Login form submitted");
-    
-    $emaillogin = mysqli_real_escape_string($connection, $_POST['u_email']);
-    $passwordlogin = $_POST['u_password'];
-
-    error_log("Attempting login with email: " . $emaillogin);
-
-    $query = "SELECT * FROM register WHERE email='$emaillogin' LIMIT 1";
-    $result = mysqli_query($connection, $query);
-    
-    if ($result && mysqli_num_rows($result) > 0) {
-        error_log("User found in database");
-        $user = mysqli_fetch_assoc($result);
-        
-        error_log("Retrieved user: " . print_r($user, true));
-        
-        if (password_verify($passwordlogin, $user['password'])) {
-            error_log("Password verification successful");
-            
-            $_SESSION['auth'] = true;
-            $_SESSION['auth_user'] = [
-                'user_id' => $user['id'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'usertype' => $user['usertype']
-            ];
-            
-            error_log("Session data set: " . print_r($_SESSION, true));
-
-            // Get and update user location
-            $location_data = getUserLocation();
-            if ($location_data) {
-                updateUserLocation($connection, $user['id'], $location_data);
-            }
-            
-            // Clear output buffer before redirect
-            ob_end_clean();
-            
-            error_log("Attempting redirect to HomePage.php");
-            
-            // Force redirect with JavaScript as fallback
-            echo '<script>window.location.href = "HomePage.php";</script>';
-            header('Location: HomePage.php');
-            exit();
-        } else {
-            error_log("Password verification failed");
-            ob_end_clean();
-            $_SESSION['status'] = "Invalid email or password";
-            header('Location: userlogin.php');
-            exit();
+		}
+		header{
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			padding: 20px 100px;
+			margin-top: 20px;
+			height: 70px;
+			display: flex;
+			background: transparent;
+			background-color: rgba(59, 57, 57, 0.5);
+			justify-content: space-between;
+			align-items: center;
+			z-index: 99;
+		}
+		.logo{
+			font-size: 2em;
+			color: #01939c;
+			user-select: none;
+		}
+		.navigation a{
+			position: relative;
+			font-size: 1.1rem;
+			color: #3cb2e9;
+			text-decoration: none;
+			font-weight: 500;
+			margin-left: 40px;
+		}
+		.navigation .btnLogin-popup{
+			width: 90px;
+			height: 50px;
+			background: transparent;
+			border: .5px solid #3cb2e9;
+			outline: none;
+			border-radius: 40px;
+			cursor: pointer;
+			font-size: 1.1em;
+			color: #3cb2e9;
+			font-weight: 500;
+			margin-left: 40px;
+			transition: .5s;
+		}
+		.navigation a::after{
+			content: '';
+			position: absolute;
+			left: 0;
+			bottom: -6px;
+			width: 100%;
+			height: 3px;
+			background: #3cb2e9;
+			border-radius: 5px;
+			transform: scaleX(0);
+			transform: transform .5s;
+		}
+		.navigation a:hover:after{
+			transform: scaleX(1);
+		}
+		.navigation .btnLogin-popup:hover{
+			background: #3cb2e9;
+			color: #162938;
+		}
+		.wrapper{
+			position: relative;
+			margin-top: 60px;
+			width: 400px;
+			height: 440px;
+			background: transparent;
+			background-color: rgba(0, 0, 0, .5);
+			backdrop-filter: blur(20px);
+			border: none;
+			border-radius: 20px;
+			box-shadow: 0 0 30px rgba(0, 0, 0, .5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			overflow: hidden;
+			transform: scale(0);
+			transition: transform .5s ease, height .2s ease;
+		}
+		.wrapper.active-popup{
+			transform: scale(1);
+		}
+		.wrapper.active{
+			height: 500px;
+		}
+		.wrapper .form-box{
+			width: 100%;
+			padding: 40px;
+		}
+		.wrapper .form-box.login{
+			transition: transform .18s ease;
+			transform: translateX(0);
+		}
+		.wrapper.active .form-box.login{
+			transition: none;
+			transform: translateX(-400px);
+		}
+		.wrapper .form-box.register{
+			position: absolute;
+			transition: none;
+			transform: translateX(400px);
+		}
+		.wrapper.active .form-box.register{
+			transition: transform .18s ease;
+			transform: translateX(0);
+		}
+		.wrapper .icon-close{
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 45px;
+			height: 45px;
+			background: #3cb2e9;
+			font-size: 2em;
+			color: #d8d2d2;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-bottom-left-radius: 20px;
+			cursor: pointer;
+			z-index: 1;
+		}
+        .form-box {
+			position: relative;
+			width: 1rem;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 0 2rem;
+			overflow: visible;
+		}
+		.form-box h2{
+			font-size: 2em;
+			color: #fff;
+			text-align: center;
+            margin-bottom: 5px;
+		}
+		.input-box{
+			position: relative;
+			width: 100%;
+			height: 65px;
+			border-bottom: 2px solid #d8d2d2;
+			margin-bottom: 1rem;
+			margin-top: -5px;
+		}
+		.input-box label{
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1em;
+			color: #d8d2d2;
+			font-weight: 500;
+			pointer-events: none;
+			transition: .5s;
+            overflow: hidden;
+			height: 45px;
+		}
+		.input-box input:focus~label, .input-box input:valid~label{
+			top: -5px;
+            height: 0;
+ 		 	overflow: visible;
+		}
+		.input-box input{
+			width: 20rem;
+			height: 65px;
+			background: transparent;
+			border: none;
+			outline: none;
+			font-size: 1.1em;
+			color: #3cb2e9;
+			font-weight: 500;
+			padding: 10px 15px 0;
+		}
+		.input-box .icon{
+			position: absolute;
+			right: 8px;
+			font-size: 1.2em;
+			color: #d8d2d2;
+			line-height: 57px;
+		}
+		.remember-forgot{
+			font-size: .9em;
+			color: #3cb2e9;
+			font-weight: 500;
+			margin: -15px 0 15px;
+			display: flex;
+			justify-content: space-between;
+		}
+		.remember-forgot label input{
+			accent-color: #3cb2e9;
+			margin-right: 3px;
+		}
+		.remember-forgot a{
+			color: #3cb2e9;
+			text-decoration: none;
+			margin-left: 4rem;
+		}
+		.remember-forgot a:hover{
+			text-decoration: underline;
+		}
+		.btn{
+			width: 100%;
+			height: 45px;
+			background: #3cb2e9;
+			border: none;
+			outline: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 1em;
+			color: #0a0a0a;
+			font-weight: 500;
+            font-size: 1.1em;
+			margin-bottom: 1rem;
+		}
+		.signin-register{
+			font-size: .9em;
+			color: #d8d2d2;
+			text-align: center;
+			font-weight: 500;
+			
+            margin-bottom: 1rem;
+            display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+		}
+        .signin-register p {
+			width: 100%;
+		}
+		.signin-register p a{
+			color: #3cb2e9;
+			text-decoration: none;
+			font-weight: 600;
+		}
+		.signin-register p a:hover{
+			text-decoration: underline;
+		}
+		.error-message {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
         }
-    } else {
-        error_log("User not found in database");
-        ob_end_clean();
-        $_SESSION['status'] = "Invalid email or password";
-        header('Location: userlogin.php');
-        exit();
-    }
-}
+	</style>
+</head>
+<body>
+    <header>
+		<h2 class="logo">MovieMagic</h2>
+		<nav class="navigation">
+			<a href="HomePage.php">Home</a>
+			<a href="aboutus.php">About</a>
+			<a href="services.php">Services</a>
+			<a href="contact.php">Contact</a>
+			<button class="btnLogin-popup">Sign In</button>
+		</nav>
+	</header>
+	<div class="wrapper">
+		<span class="icon-close">
+			<ion-icon name="close"></ion-icon>
+		</span>
+		<div class="form-box login">
+			<h2>Welcome Back!</h2>
+			<?php
+            	if(isset($_SESSION['status'])&& $_SESSION['status']!='') { 
+                    echo'<h4 class="bg-danger text-white">'.$_SESSION['status'].'</h4>';
+                    unset($_SESSION['status']);
+                }
+            ?>
+			<form class="user" action="logincode.php" method="POST">
+				<div class="input-box">
+					<span class="icon"><ion-icon name="mail"></ion-icon></span>
+					<input type="email" name="u_email" required>
+					<label >E-mail</label>
+				</div>
+				<div class="input-box">
+					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+					<input type="password" name="u_password" required>
+					<label >Password</label>
+				</div>
+				<div class="remember-forgot">
+					<label><input type="checkbox"> Remember me</label>
+					<a href="#">Forgot Password</a>
+				</div>
+				<button type="submit" name="userloginbtn" class="btn btn-primary btn-user btn-block" class="btn">Sign In</button>
+				<div class="signin-register">
+					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
+				</div>
+			</form>
+		</div>
+		<div class="form-box register">
+			<h2>Ready to Watch?</h2>
+			<form id="registerForm" action="code.php" method="POST" onsubmit="return validateForm()">
+				<div class="input-box">
+					<span class="icon"><ion-icon name="person"></ion-icon></span>
+					<input type="text" id="username" name="u_username" required>
+					<label >Username</label>
+					<span class="error-message" id="username-error"></span>
+				</div>
+				<div class="input-box">
+					<span class="icon"><ion-icon name="mail"></ion-icon></span>
+					<input type="email" id="email" name="u_email" required>
+					<label >E-mail</label>
+					<span class="error-message" id="email-error"></span>
+				</div>
+				<div class="input-box">
+					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+					<input type="password" id="password" name="u_password" required>
+					<label >Password</label>
+					<span class="error-message" id="password-error"></span>
+				</div>
+                <div class="input-box">
+					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" name="u_cpassword" required>
+					<label >Confirm Password</label>
+					<span class="error-message" id="cpassword-error"></span>
+				</div>
+				<div class="remember-forgot">
+					<label><input type="checkbox" id="terms" required> I agree to the terms &conditions</label>
+				</div>
+				<button type="submit" value="submit" name="userregistration" class="btn btn-primary" class="btn">Sign Up</button>
+				<div class="signin-register">
+					<p>Already have account<a href="#" class="signin-link"> Sign In</a></p>
+				</div>
+                <div class="user-type" hidden>
+					<input type="text" name="u_usertype" value="user">
+				</div>
+			</form>
+		</div>
+	</div>
+	<script  type="text/javascript" src="js/Login.js"></script>
+	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+	<script>
+        
+        document.getElementById('username').addEventListener('input', function () {
+            const username = this.value.trim();
+            const usernameError = document.getElementById('username-error');
 
-error_log("Form not submitted properly");
-ob_end_clean();
-$_SESSION['status'] = "Something went wrong";
-header('Location: userlogin.php');
-exit();
-?>
+            if (username.length < 3 || username.length > 20) {
+                usernameError.innerText = 'Username must be 3-20 characters long.';
+                usernameError.style.display = 'block';
+            } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                usernameError.innerText = 'Username can only contain letters, numbers, and underscores.';
+                usernameError.style.display = 'block';
+            } else {
+                usernameError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('email').addEventListener('input', function () {
+            const email = this.value.trim();
+            const emailError = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                emailError.innerText = 'Please enter a valid email address.';
+                emailError.style.display = 'block';
+            } else {
+                emailError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function () {
+            const password = this.value.trim();
+            const passwordError = document.getElementById('password-error');
+
+            if (password.length < 8) {
+                passwordError.innerText = 'Password must be at least 8 characters long.';
+                passwordError.style.display = 'block';
+            } else if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/.test(password)) {
+                passwordError.innerText = 'Password must include at least one uppercase letter, one lowercase letter, and one number.';
+                passwordError.style.display = 'block';
+            } else {
+                passwordError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('cpassword').addEventListener('input', function () {
+            const cpassword = this.value.trim();
+            const password = document.getElementById('password').value.trim();
+            const cpasswordError = document.getElementById('cpassword-error');
+
+            if (password !== cpassword) {
+                cpasswordError.innerText = 'Passwords do not match.';
+                cpasswordError.style.display = 'block';
+            } else {
+                cpasswordError.style.display = 'none';
+            }
+        });
+
+        function validateForm() {
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const cpassword = document.getElementById('cpassword').value.trim();
+            const terms = document.getElementById('terms').checked;
+
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+            let isValid = true;
+
+            if (!usernameRegex.test(username)) {
+                document.getElementById('username-error').innerText = 'Username must be 3-20 characters long and can only contain letters, numbers, and underscores.';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!emailRegex.test(email)) {
+                document.getElementById('email-error').innerText = 'Please enter a valid email address.';
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password-error').innerText = 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password !== cpassword) {
+                document.getElementById('cpassword-error').innerText = 'Passwords do not match.';
+                document.getElementById('cpassword-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!terms) {
+                alert('You must agree to the terms and conditions.');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+	</script>
+</body>
+</html>

@@ -510,27 +510,48 @@ if (ob_get_length()) ob_end_clean();
         });
     </script>
 	<script>
-		function debugSubmit(form) {
-			console.log("Form submitted");
-			fetch(form.action, {
-				method: 'POST',
-				body: new FormData(form)
-			})
-			.then(response => {
-				console.log("Response status:", response.status);
-				return response.text();
-			})
-			.then(text => {
-				console.log("Response text:", text);
-				if(text.includes('window.location.href')) {
-					// If we got the JavaScript redirect
-					eval(text);
-				}
-			})
-			.catch(error => console.error("Error:", error));
-			
-			return false; // Prevent normal form submission
-		}
+		document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    console.log("Form submission started");
+    
+    try {
+        const formData = new FormData(this);
+        const response = await fetch('logincode.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        console.log("Server response:", result);
+        
+        if (result.status === 'success') {
+            console.log("Login successful, redirecting to:", result.redirect);
+            
+            // Triple-layer redirect assurance
+            window.location.href = result.redirect;
+            
+            // Fallback after 500ms
+            setTimeout(() => {
+                window.location.replace(result.redirect);
+            }, 500);
+            
+            // Nuclear option after 1s
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <h1>Redirecting...</h1>
+                    <meta http-equiv="refresh" content="0;url=${result.redirect}">
+                    <script>window.location.href = "${result.redirect}";</script>
+                `;
+            }, 1000);
+        } else {
+            alert(result.message || 'Login failed');
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert("Network error occurred. Please try again.");
+    }
+});
 	</script>
     <?php endif; ?>
 </body>
