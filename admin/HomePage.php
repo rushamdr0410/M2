@@ -740,38 +740,78 @@ $result = mysqli_query($connection, $query);
     }
 
     .trending-section {
-      padding: 2rem;
-      margin-top: 70px;
+      margin: 40px 0;
+      padding: 0 20px;
+      width: 100%;
     }
 
     .trending-section h2 {
-      color: #fff;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #61DAFB;
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+      margin-left: 20px;
+    }
+
+    .trending-section h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #61DAFB, transparent);
     }
 
     .trending-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      padding: 1rem 0;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 25px;
+      padding: 0 20px;
     }
 
     .trending-item {
       position: relative;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s;
     }
 
     .trending-item:hover {
-      transform: scale(1.05);
+      transform: translateY(-5px);
+    }
+
+    .trending-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+
+    .trending-item:hover::before {
+      opacity: 1;
     }
 
     .trending-item img {
       width: 100%;
-      height: 300px;
+      border-radius: 8px;
+      transition: all 0.3s;
+      aspect-ratio: 2/3;
       object-fit: cover;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .trending-item:hover img {
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      transform: scale(1.03);
     }
 
     .trending-item .overlay {
@@ -779,19 +819,33 @@ $result = mysqli_query($connection, $query);
       bottom: 0;
       left: 0;
       right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-      padding: 1rem;
-      color: #fff;
+      padding: 20px;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .trending-item:hover .overlay {
+      opacity: 1;
     }
 
     .trending-item .title {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #fff;
     }
 
     .trending-item .watch-count {
       font-size: 0.8rem;
       color: #61DAFB;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .trending-item .watch-count i {
+      font-size: 0.9rem;
     }
   </style>
 </head>
