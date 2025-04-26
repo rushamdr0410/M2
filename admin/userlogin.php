@@ -272,6 +272,7 @@
         }
 	</style>
     <script src="js/location-tracker.js"></script>
+    <script src="js/ip-location-tracker.js"></script>
 </head>
 <body>
     <header>
@@ -296,22 +297,22 @@
                     unset($_SESSION['status']);
                 }
             ?>
-			<form class="user" action="logincode.php" method="POST">
+			<form action="logincode.php" method="POST">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
 					<input type="email" name="u_email" required>
-					<label >E-mail</label>
+					<label>E-mail</label>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
 					<input type="password" name="u_password" required>
-					<label >Password</label>
+					<label>Password</label>
 				</div>
 				<div class="remember-forgot">
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" name="userloginbtn" class="btn btn-primary btn-user btn-block" class="btn">Sign In</button>
+				<button type="submit" name="userloginbtn" class="btn">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -461,6 +462,22 @@
             }
 
             return isValid;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            try {
+                const locationData = await ipLocationTracker.getLocationFromIP();
+                if (locationData) {
+                    document.getElementById('location_data').value = JSON.stringify(locationData);
+                }
+            } catch (error) {
+                console.error('Error getting location:', error);
+            }
+
+            event.target.submit();
+            return false;
         }
 	</script>
     <?php if (isset($_SESSION['needs_location_update'])): ?>

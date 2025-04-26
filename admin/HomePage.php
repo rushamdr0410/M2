@@ -27,6 +27,87 @@ if (isset($_SESSION['user_id'])) {
 $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; 
 $tmdb_base_url = 'https://api.themoviedb.org/3';
 
+// Get user's location
+$user_id = $_SESSION['user_id'];
+$location_query = "SELECT latitude, longitude FROM register WHERE id = ?";
+$location_stmt = $connection->prepare($location_query);
+$location_stmt->bind_param("i", $user_id);
+$location_stmt->execute();
+$location_result = $location_stmt->get_result();
+$user_location = $location_result->fetch_assoc();
+$location_stmt->close();
+
+// Function to calculate distance using Haversine formula
+function calculateDistance($lat1, $lon1, $lat2, $lon2) {
+    $earthRadius = 6371; // Earth's radius in kilometers
+
+    $lat1 = deg2rad($lat1);
+    $lon1 = deg2rad($lon1);
+    $lat2 = deg2rad($lat2);
+    $lon2 = deg2rad($lon2);
+
+    $dlat = $lat2 - $lat1;
+    $dlon = $lon2 - $lon1;
+
+    $a = sin($dlat/2) * sin($dlat/2) + cos($lat1) * cos($lat2) * sin($dlon/2) * sin($dlon/2);
+    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+    $distance = $earthRadius * $c;
+
+    return $distance;
+}
+
+// Get nearby users and their watched content
+$nearby_users = [];
+if ($user_location && $user_location['latitude'] && $user_location['longitude']) {
+    $users_query = "SELECT id, latitude, longitude FROM register WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND id != ?";
+    $users_stmt = $connection->prepare($users_query);
+    $users_stmt->bind_param("i", $user_id);
+    $users_stmt->execute();
+    $users_result = $users_stmt->get_result();
+
+    while ($user = $users_result->fetch_assoc()) {
+        $distance = calculateDistance(
+            $user_location['latitude'],
+            $user_location['longitude'],
+            $user['latitude'],
+            $user['longitude']
+        );
+
+        if ($distance <= 50) { // Within 50km
+            $nearby_users[] = $user['id'];
+        }
+    }
+    $users_stmt->close();
+}
+
+// Get trending content from nearby users
+$trending_content = [];
+if (!empty($nearby_users)) {
+    $user_ids = implode(',', $nearby_users);
+    $trending_query = "SELECT movie_id, media_type, COUNT(*) as watch_count 
+                      FROM watch_history 
+                      WHERE user_id IN ($user_ids) 
+                      GROUP BY movie_id, media_type 
+                      ORDER BY watch_count DESC 
+                      LIMIT 10";
+    $trending_result = mysqli_query($connection, $trending_query);
+
+    while ($row = $trending_result->fetch_assoc()) {
+        $content_url = "{$tmdb_base_url}/{$row['media_type']}/{$row['movie_id']}?api_key={$tmdb_api_key}";
+        $content_data = json_decode(file_get_contents($content_url), true);
+        
+        if ($content_data && !isset($content_data['status_code'])) {
+            $trending_content[] = [
+                'id' => $row['movie_id'],
+                'title' => $row['media_type'] === 'movie' ? $content_data['title'] : $content_data['name'],
+                'poster_path' => $content_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $content_data['poster_path'] : 'placeholder.jpg',
+                'media_type' => $row['media_type'],
+                'watch_count' => $row['watch_count']
+            ];
+        }
+    }
+}
+
 // Fetch popular movies for swiper from TMDb
 $swiper_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
 $swiper_data = json_decode(file_get_contents($swiper_url), true);
@@ -656,6 +737,61 @@ $result = mysqli_query($connection, $query);
       margin-top: 5px;
       display: inline-block;
     }
+
+    .trending-section {
+      padding: 2rem;
+      margin-top: 70px;
+    }
+
+    .trending-section h2 {
+      color: #fff;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .trending-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .trending-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .trending-item:hover {
+      transform: scale(1.05);
+    }
+
+    .trending-item img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .trending-item .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      padding: 1rem;
+      color: #fff;
+    }
+
+    .trending-item .title {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .trending-item .watch-count {
+      font-size: 0.8rem;
+      color: #61DAFB;
+    }
   </style>
 </head>
 <body>
@@ -922,6 +1058,21 @@ $result = mysqli_query($connection, $query);
     </div>
   </section>
   
+
+  <div class="trending-section">
+    <h2>Trending in Your Area</h2>
+    <div class="trending-grid">
+      <?php foreach ($trending_content as $content): ?>
+        <div class="trending-item">
+          <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
+          <div class="overlay">
+            <div class="title"><?php echo $content['title']; ?></div>
+            <div class="watch-count"><?php echo $content['watch_count']; ?> views nearby</div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
