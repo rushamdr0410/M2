@@ -1,4 +1,9 @@
 <?php
+session_start();
+echo "<pre>Session contents:\n";
+print_r($_SESSION);
+echo "</pre>";
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include('user_auth.php');

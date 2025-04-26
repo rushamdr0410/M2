@@ -1,3 +1,8 @@
+<?php 
+session_start();
+// Remove any existing output buffering
+if (ob_get_length()) ob_end_clean();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -292,8 +297,8 @@
 		<div class="form-box login">
 			<h2>Welcome Back!</h2>
 			<?php
-            	if(isset($_SESSION['status'])&& $_SESSION['status']!='') { 
-                    echo'<h4 class="bg-danger text-white">'.$_SESSION['status'].'</h4>';
+            	if(isset($_SESSION['status']) && $_SESSION['status'] != '') { 
+                    echo '<h4 class="bg-danger text-white" style="padding: 10px;">'.$_SESSION['status'].'</h4>';
                     unset($_SESSION['status']);
                 }
             ?>
@@ -504,6 +509,29 @@
             }
         });
     </script>
+	<script>
+		function debugSubmit(form) {
+			console.log("Form submitted");
+			fetch(form.action, {
+				method: 'POST',
+				body: new FormData(form)
+			})
+			.then(response => {
+				console.log("Response status:", response.status);
+				return response.text();
+			})
+			.then(text => {
+				console.log("Response text:", text);
+				if(text.includes('window.location.href')) {
+					// If we got the JavaScript redirect
+					eval(text);
+				}
+			})
+			.catch(error => console.error("Error:", error));
+			
+			return false; // Prevent normal form submission
+		}
+	</script>
     <?php endif; ?>
 </body>
 </html>
