@@ -978,6 +978,21 @@ $result = mysqli_query($connection, $query);
 </section>
 <?php endif; ?>
 
+<div class="trending-section">
+    <h2>Trending in Your Area</h2>
+    <div class="trending-grid">
+      <?php foreach ($trending_content as $content): ?>
+        <div class="trending-item">
+          <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
+          <div class="overlay">
+            <div class="title"><?php echo $content['title']; ?></div>
+            <div class="watch-count"><?php echo $content['watch_count']; ?> views nearby</div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+
 <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Popular Movies</h2>
@@ -1060,20 +1075,7 @@ $result = mysqli_query($connection, $query);
   </section>
   
 
-  <div class="trending-section">
-    <h2>Trending in Your Area</h2>
-    <div class="trending-grid">
-      <?php foreach ($trending_content as $content): ?>
-        <div class="trending-item">
-          <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
-          <div class="overlay">
-            <div class="title"><?php echo $content['title']; ?></div>
-            <div class="watch-count"><?php echo $content['watch_count']; ?> views nearby</div>
-          </div>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+  
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
