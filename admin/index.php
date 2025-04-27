@@ -89,15 +89,6 @@
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Movies Inserted
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                                    
-                                                    $query="SELECT id from moviedetails where type='MOVIE' ORDER BY id ";
-                                                    $result= mysqli_query($connection, $query);
-
-                                                    $row=mysqli_num_rows($result);
-                                                    echo '<h3>'.$row.'</h3>';
-
-                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -117,15 +108,6 @@
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Total TV-Shows Inserted</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?php
-                                                    
-                                                    $query="SELECT id from moviedetails where type='TV-Show' ORDER BY id ";
-                                                    $result= mysqli_query($connection, $query);
-
-                                                    $row=mysqli_num_rows($result);
-                                                    echo '<h3>'.$row.'</h3>';
-
-                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">

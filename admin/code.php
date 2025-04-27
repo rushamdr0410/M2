@@ -185,42 +185,62 @@ if(isset($_POST['delete_btn']))
 if(isset($_POST['userregistration']))
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        print_r($_POST); 
-        $username=$_POST['u_username'];
-        $email=$_POST['u_email'];
-        $password=$_POST['u_password'];
-        $cpassword=$_POST['u_cpassword'];
-        $usertype=$_POST['u_usertype'];
+        $username = mysqli_real_escape_string($connection, $_POST['u_username']);
+        $email = mysqli_real_escape_string($connection, $_POST['u_email']);
+        $password = mysqli_real_escape_string($connection, $_POST['u_password']);
+        $cpassword = mysqli_real_escape_string($connection, $_POST['u_cpassword']);
+        $usertype = mysqli_real_escape_string($connection, $_POST['u_usertype']);
+        $location = mysqli_real_escape_string($connection, $_POST['location']);
+        $latitude = mysqli_real_escape_string($connection, $_POST['latitude']);
+        $longitude = mysqli_real_escape_string($connection, $_POST['longitude']);
 
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        // Validate required fields
+        if(empty($username) || empty($email) || empty($password) || empty($cpassword)) {
+            $_SESSION['status'] = "All fields are required";
+            header('Location: userlogin.php');
+            exit();
+        }
 
-        $queryemail = "SELECT * FROM register WHERE email='$email' ";
+        // Validate email format
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['status'] = "Invalid email format";
+            header('Location: userlogin.php');
+            exit();
+        }
+
+        // Check if email already exists
+        $queryemail = "SELECT * FROM register WHERE email='$email'";
         $emailqueryrun = mysqli_query($connection, $queryemail);
-        if(mysqli_num_rows($emailqueryrun) > 0)
-        {
+        
+        if(mysqli_num_rows($emailqueryrun) > 0) {
             $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
             header('Location: userlogin.php');  
+            exit();
         }
 
-        if($password === $cpassword)
-        {
-            $query = "INSERT INTO register(username,email,password,usertype) VALUES ('$username','$email','$hashed_password','$usertype')";
-            $result=mysqli_query($connection,$query);
-
-            if($result)
-            {
-                //echo "Saved";
-                $_SESSION[ 'success' ] = "User Registered Successfully!";
-                header("location: userlogin.php");
-            }
-            else{
-                $_SESSION[ 'status' ] = "User Not Registered";
-                header("location: userlogin.php");
-            }
-        }
-        else{
-            $_SESSION[ 'status' ] = "Password and Confirm Password Does Not Match";
+        // Verify password match
+        if($password !== $cpassword) {
+            $_SESSION['status'] = "Password and Confirm Password Does Not Match";
             header("location: userlogin.php");
+            exit();
+        }
+
+        // Hash the password
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+        // Insert user data including location information
+        $query = "INSERT INTO register (username, email, password, usertype, location, latitude, longitude) 
+                  VALUES ('$username', '$email', '$hashed_password', '$usertype', '$location', '$latitude', '$longitude')";
+        $result = mysqli_query($connection, $query);
+
+        if($result) {
+            $_SESSION['success'] = "User Registered Successfully!";
+            header("location: userlogin.php");
+            exit();
+        } else {
+            $_SESSION['status'] = "Registration Failed: " . mysqli_error($connection);
+            header("location: userlogin.php");
+            exit();
         }
     }   
 }

@@ -146,6 +146,22 @@
     $username = $user['username'];
     $user_query->close();
     
+    // First ensure the movie exists in moviedetails table
+    $check_movie = $connection->prepare("SELECT id FROM moviedetails WHERE id = ?");
+    $check_movie->bind_param("i", $tmdb_id);
+    $check_movie->execute();
+    
+    if ($check_movie->get_result()->num_rows === 0) {
+        // Movie doesn't exist in moviedetails, insert basic info
+        $insert_movie = $connection->prepare("INSERT INTO moviedetails (id, title, release_date, poster_path) VALUES (?, ?, ?, ?)");
+        $release_date = $media_type === 'movie' ? ($movie_data['release_date'] ?? null) : ($movie_data['first_air_date'] ?? null);
+        $insert_movie->bind_param("isss", $tmdb_id, $title, $release_date, $poster_path);
+        $insert_movie->execute();
+        $insert_movie->close();
+    }
+    $check_movie->close();
+    
+    // Now insert the review
     $stmt = $connection->prepare("INSERT INTO reviews (movie_id, user_id, review_text, rating) 
                                 VALUES (?, ?, ?, ?)");
     $stmt->bind_param("iisi", $tmdb_id, $user_id, $review_text, $rating);
@@ -964,7 +980,7 @@
           <?php endif; ?>
       </div>
   </div>
-
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const reviewForm = document.getElementById('reviewForm');

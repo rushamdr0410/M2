@@ -90,10 +90,10 @@ if (ob_get_length()) ob_end_clean();
 			background: #3cb2e9;
 			color: #162938;
 		}
-		.wrapper{
-			position: relative;
+		.wrapper {
+    		position: relative;
 			margin-top: 60px;
-			width: 400px;
+			width: 450px;
 			height: 440px;
 			background: transparent;
 			background-color: rgba(0, 0, 0, .5);
@@ -103,20 +103,24 @@ if (ob_get_length()) ob_end_clean();
 			box-shadow: 0 0 30px rgba(0, 0, 0, .5);
 			display: flex;
 			justify-content: center;
-			align-items: center;
+			align-items: flex-start; /* Changed from center to flex-start */
+			padding-top: 30px; /* Added padding to push content down */
 			overflow: hidden;
 			transform: scale(0);
 			transition: transform .5s ease, height .2s ease;
 		}
+
+		.wrapper.active {
+			height: 650px;
+			padding-top: 20px;
+		}	
 		.wrapper.active-popup{
 			transform: scale(1);
 		}
-		.wrapper.active{
-			height: 500px;
-		}
-		.wrapper .form-box{
+		.wrapper .form-box {
 			width: 100%;
-			padding: 40px;
+			padding: 0 40px; /* Reduced vertical padding */
+			margin-top: -10px; /* Adjust this value to fine-tune position */
 		}
 		.wrapper .form-box.login{
 			transition: transform .18s ease;
@@ -134,6 +138,7 @@ if (ob_get_length()) ob_end_clean();
 		.wrapper.active .form-box.register{
 			transition: transform .18s ease;
 			transform: translateX(0);
+			margin-top: 10px; 
 		}
 		.wrapper .icon-close{
 			position: absolute;
@@ -166,7 +171,7 @@ if (ob_get_length()) ob_end_clean();
 			font-size: 2em;
 			color: #fff;
 			text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
 		}
 		.input-box{
 			position: relative;
@@ -174,9 +179,9 @@ if (ob_get_length()) ob_end_clean();
 			height: 65px;
 			border-bottom: 2px solid #d8d2d2;
 			margin-bottom: 1rem;
-			margin-top: -5px;
+			margin-top: 0;
 		}
-		.input-box label{
+			.input-box label{
 			position: absolute;
 			top: 50%;
 			left: 15px;
@@ -216,7 +221,7 @@ if (ob_get_length()) ob_end_clean();
 			font-size: .9em;
 			color: #3cb2e9;
 			font-weight: 500;
-			margin: -15px 0 15px;
+			margin: 5px 0 15px;
 			display: flex;
 			justify-content: space-between;
 		}
@@ -244,7 +249,7 @@ if (ob_get_length()) ob_end_clean();
 			color: #0a0a0a;
 			font-weight: 500;
             font-size: 1.1em;
-			margin-bottom: 1rem;
+			margin-bottom: 0.5rem;
 		}
 		.signin-register{
 			font-size: .9em;
@@ -252,7 +257,7 @@ if (ob_get_length()) ob_end_clean();
 			text-align: center;
 			font-weight: 500;
 			
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: flex;
 			justify-content: center;
 			align-items: center;
@@ -275,9 +280,70 @@ if (ob_get_length()) ob_end_clean();
             margin-top: 5px;
             display: none;
         }
+		/* Location input specific styles */
+		.location-container {
+			position: relative;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			margin-bottom: 1rem;
+		}
+
+		.location-input {
+			flex-grow: 1;
+			height: 65px;
+			background: transparent;
+			border: none;
+			border-bottom: 2px solid #d8d2d2;
+			outline: none;
+			font-size: 1.1em;
+			color: #3cb2e9;
+			font-weight: 500;
+			padding: 10px 15px 0;
+			width: calc(100% - 120px); /* Adjust based on button width */
+		}
+
+		.location-label {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1em;
+			color: #d8d2d2;
+			font-weight: 500;
+			pointer-events: none;
+			transition: .5s;
+			overflow: hidden;
+			height: 45px;
+		}
+
+		.location-input:focus ~ .location-label,
+		.location-input:valid ~ .location-label {
+			top: -5px;
+			height: 0;
+			overflow: visible;
+		}
+
+		.location-btn {
+			position: absolute;
+			right: 0;
+			width: 110px;
+			height: 35px;
+			background: #3cb2e9;
+			border: none;
+			outline: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 0.8em;
+			color: #0a0a0a;
+			font-weight: 500;
+			transition: background 0.3s;
+		}
+
+		.location-btn:hover {
+			background: #2a9fd8;
+		}
 	</style>
-    <script src="js/location-tracker.js"></script>
-    <script src="js/ip-location-tracker.js"></script>
 </head>
 <body>
     <header>
@@ -350,6 +416,13 @@ if (ob_get_length()) ob_end_clean();
 					<label >Confirm Password</label>
 					<span class="error-message" id="cpassword-error"></span>
 				</div>
+				<div class="location-container">
+					<input type="text" class="location-input" id="location" name="location" required>
+					<label class="location-label">Location</label>
+					<button type="button" class="location-btn" onclick="getCurrentLocation()">Get Location</button>
+				</div>
+				<input type="hidden" id="latitude" name="latitude">
+				<input type="hidden" id="longitude" name="longitude">
 				<div class="remember-forgot">
 					<label><input type="checkbox" id="terms" required> I agree to the terms &conditions</label>
 				</div>
@@ -367,7 +440,6 @@ if (ob_get_length()) ob_end_clean();
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 	<script>
-        
         document.getElementById('username').addEventListener('input', function () {
             const username = this.value.trim();
             const usernameError = document.getElementById('username-error');
@@ -485,74 +557,62 @@ if (ob_get_length()) ob_end_clean();
             return false;
         }
 	</script>
-    <?php if (isset($_SESSION['needs_location_update'])): ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (navigator.geolocation) {
-                const updateLocation = async () => {
-                    try {
-                        const position = await locationTracker.requestLocationPermission();
-                        if (position) {
-                            await locationTracker.updateUserLocation(<?php echo $_SESSION['user_id']; ?>);
-                            // Remove the flag after successful update
-                            <?php unset($_SESSION['needs_location_update']); ?>
-                        }
-                    } catch (error) {
-                        console.error('Error updating location:', error);
-                    }
-                };
-                
-                // Show a modal or notification to request location
-                if (confirm('Would you like to share your location for personalized recommendations?')) {
-                    updateLocation();
-                }
-            }
-        });
-    </script>
 	<script>
-		document.querySelector('form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    console.log("Form submission started");
-    
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('logincode.php', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        console.log("Server response:", result);
-        
-        if (result.status === 'success') {
-            console.log("Login successful, redirecting to:", result.redirect);
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            // Show loading state
+            const locationBtn = document.querySelector('.location-btn');
+            const locationInput = document.getElementById('location');
+            locationBtn.textContent = 'Locating...';
+            locationBtn.disabled = true;
             
-            // Triple-layer redirect assurance
-            window.location.href = result.redirect;
-            
-            // Fallback after 500ms
-            setTimeout(() => {
-                window.location.replace(result.redirect);
-            }, 500);
-            
-            // Nuclear option after 1s
-            setTimeout(() => {
-                document.body.innerHTML = `
-                    <h1>Redirecting...</h1>
-                    <meta http-equiv="refresh" content="0;url=${result.redirect}">
-                    <script>window.location.href = "${result.redirect}";</script>
-                `;
-            }, 1000);
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Set the coordinates immediately
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                    
+                    // Show coordinates temporarily while fetching address
+                    locationInput.value = `Fetching address... (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                    
+                    // Use reverse geocoding to get location name
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.display_name) {
+                                locationInput.value = data.display_name;
+                            } else {
+                                locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                            }
+                            locationInput.focus(); // Trigger the label animation
+                        })
+                        .catch(error => {
+                            console.error('Error getting location name:', error);
+                            locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        })
+                        .finally(() => {
+                            locationBtn.textContent = 'Get Location';
+                            locationBtn.disabled = false;
+                        });
+                },
+                function(error) {
+                    alert('Error getting location: ' + error.message);
+                    locationBtn.textContent = 'Get Location';
+                    locationBtn.disabled = false;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
         } else {
-            alert(result.message || 'Login failed');
+            alert('Geolocation is not supported by this browser.');
         }
-    } catch (error) {
-        console.error("Fetch error:", error);
-        alert("Network error occurred. Please try again.");
     }
-});
-	</script>
-    <?php endif; ?>
+</script>
 </body>
 </html>

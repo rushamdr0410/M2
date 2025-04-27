@@ -21,9 +21,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     if (!isset($_SESSION['user_email'])) {
         $_SESSION['user_email'] = $user_data['email'];
     }
-    if (!isset($_SESSION['profile_picture'])) {
-        $_SESSION['profile_picture'] = $user_data['profile_picture'] ?? 'img/default-profile.png';
-    }
     if (!isset($_SESSION['user_location'])) {
         $_SESSION['user_location'] = $user_data['location'] ?? '';
     }
@@ -33,9 +30,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     if (!isset($_SESSION['user_longitude'])) {
         $_SESSION['user_longitude'] = $user_data['longitude'] ?? '';
     }
-    if (!isset($_SESSION['user_bio'])) {
-        $_SESSION['user_bio'] = $user_data['bio'] ?? '';
-    }
 }
 
 // Handle form submission
@@ -43,26 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process the form data and update the database
     // This will be handled by update_profile.php
 }
-
-// Handle adding to watchlist
-if (isset($_POST['add_to_watchlist'])) {
-    $movie_id = $_POST['movie_id'];
-    $user_id = $_SESSION['user_id']; // Assuming you have user_id in session
-    
-    // Check if already in watchlist
-    $check_query = "SELECT * FROM watchlist WHERE user_id = '$user_id' AND movie_id = '$movie_id'";
-    $check_result = mysqli_query($connection, $check_query);
-    
-    if (mysqli_num_rows($check_result) == 0) {
-        // Add to watchlist
-        $insert_query = "INSERT INTO watchlist (user_id, movie_id) VALUES ('$user_id', '$movie_id')";
-        mysqli_query($connection, $insert_query);
-    }
-}
-
-// Query to fetch TV shows
-$query = "SELECT * FROM moviedetails WHERE type = 'Movie'";
-$result = mysqli_query($connection, $query);
 ?>
 
 <!DOCTYPE html>
@@ -961,34 +935,6 @@ $result = mysqli_query($connection, $query);
     </form>
   </div>
 
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Profile Picture</h3>
-            <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="upload-options">
-                <label class="upload-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Upload New Photo</span>
-                    <input type="file" id="profilePhoto" name="profile_picture" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                </label>
-                <button type="button" class="view-btn" onclick="viewCurrentPhoto()">
-                    <i class="fas fa-eye"></i>
-                    <span>View Current Photo</span>
-                </button>
-            </div>
-            <div class="photo-preview" id="photoPreview">
-                <img src="" alt="Preview">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="cancel-btn" id="cancelPhotoUpload">Cancel</button>
-        </div>
-    </div>
-</div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -996,65 +942,29 @@ $result = mysqli_query($connection, $query);
   <script src="js/profile_validation.js"></script>
   <script>
     function getCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
                     
-                    // Use reverse geocoding to get location name
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('location').value = data.display_name;
-                        })
-                        .catch(error => console.error('Error getting location name:', error));
-                },
-                function(error) {
-                    alert('Error getting location: ' + error.message);
-                }
-            );
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
+            // Use reverse geocoding to get location name
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+            .then(response => response.json())
+            .then(data => {
+              document.getElementById('location').value = data.display_name;
+            })
+            .catch(error => console.error('Error getting location name:', error));
+          },
+          function(error) {
+            alert('Error getting location: ' + error.message);
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by this browser.');
+      }
     }
-
-    function openProfileModal() {
-        document.getElementById('profileModal').style.display = 'block';
-    }
-
-    function closeProfileModal() {
-        document.getElementById('profileModal').style.display = 'none';
-        document.getElementById('photoPreview').style.display = 'none';
-        document.getElementById('profilePhoto').value = '';
-    }
-
-    function viewCurrentPhoto() {
-        const currentPhoto = document.getElementById('profileImage').src;
-        const preview = document.getElementById('photoPreview');
-        preview.querySelector('img').src = currentPhoto;
-        preview.style.display = 'block';
-    }
-
-    // Event Listeners
-    document.querySelector('.close-modal').addEventListener('click', closeProfileModal);
-    document.getElementById('cancelPhotoUpload').addEventListener('click', closeProfileModal);
-    document.querySelector('.change-photo button').addEventListener('click', function(e) {
-        e.preventDefault();
-        openProfileModal();
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('profileModal');
-        if (event.target == modal) {
-            closeProfileModal();
-        }
-    });
-    document.getElementById('profilePhoto').addEventListener('change', function() {
-        document.getElementById('profile_changed').value = "1";
-    });
-    </script>
+  </script>
 </body>
 </html>
 
