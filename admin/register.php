@@ -35,6 +35,18 @@ include('includes/navbar.php');
             <input type="password" id="adminConfirmPassword" name="confirmpassword" class="form-control" placeholder="Confirm Password">
             <small id="adminConfirmPasswordError" class="text-danger"></small>
         </div>
+        <div class="form-group">
+            <label> Latitude </label>
+            <input type="text" name="latitude" class="form-control" placeholder="Enter Latitude">
+        </div>
+        <div class="form-group">
+            <label> Longitude </label>
+            <input type="text" name="longitude" class="form-control" placeholder="Enter Longitude">
+        </div>
+        <div class="form-group">
+            <label> Last Location Updated </label>
+            <input type="datetime-local" name="last_location_update" class="form-control">
+        </div>
         <input type="hidden" name="usertype" value="admin">
       </div>
       <div class="modal-footer">
@@ -79,6 +91,9 @@ include('includes/navbar.php');
                             <th>EMAIL</th>
                             <th>PASSWORD</th>
                             <th>User-Type</th>
+                            <th>LATITUDE</th>
+                            <th>LONGITUDE</th>
+                            <th>LAST LOCATION UPDATED</th>
                             <th>EDIT</th>
                             <th>DELETE</th>
                         </tr>
@@ -94,6 +109,9 @@ include('includes/navbar.php');
                                     <td><?php echo $row['email']; ?></td>
                                     <td><?php echo $row['password']; ?></td>
                                     <td><?php echo $row['usertype']; ?></td>
+                                    <td><span class="<?php echo !isset($row['latitude']) ? 'not-set' : ''; ?>"><?php echo isset($row['latitude']) ? $row['latitude'] : 'Not Set'; ?></span></td>
+                                    <td><span class="<?php echo !isset($row['longitude']) ? 'not-set' : ''; ?>"><?php echo isset($row['longitude']) ? $row['longitude'] : 'Not Set'; ?></span></td>
+                                    <td><span class="<?php echo !isset($row['last_location_updated']) ? 'not-updated' : ''; ?>"><?php echo isset($row['last_location_update']) ? $row['last_location_update'] : 'Not Updated'; ?></span></td>
                                     <td>
                                         <form action="register_edit.php" method="POST">
                                             <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
@@ -130,6 +148,13 @@ include('includes/navbar.php');
 .small {
     font-size: 80%;
     font-weight: normal;
+}
+.not-set {
+    color: #e74a3b;
+    font-style: italic;
+}
+.not-updated {
+    font-style: italic;
 }
 </style>
 

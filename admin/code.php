@@ -1,6 +1,4 @@
 <?php
-
-session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -57,26 +55,100 @@ if(isset($_POST['registerbtn']))
 
 if(isset($_POST['userupdatebtn']))
 {
-    $id=$_POST['edit_id'];
-    $username=$_POST['edit_username'];
-    $email=$_POST['edit_email'];
-    $password=$_POST['edit_password'];
+    $id = $_POST['edit_id'];
+    $username = $_POST['edit_username'];
+    $email = $_POST['edit_email'];
+    $password = $_POST['edit_password'];
     $usertype = $_POST['update_usertype'];
+    $location = $_POST['location'] ?? null;
+    $latitude = $_POST['edit_latitude'] ?? null;
+    $longitude = $_POST['edit_longitude'] ?? null;
+    $last_location_updated = $_POST['edit_last_location_updated'] ?? null;
 
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    // Initialize the SET part of the query
+    $setParts = [];
+    $params = [];
+    $types = '';
 
-    $query=  "UPDATE register SET username='$username', email='$email', password='$hashed_password', usertype='$usertype' WHERE id ='$id'";
-    $result=mysqli_query($connection, $query);
-    if($result)
-    {
-        $_SESSION['success']="Your Data is Updated";
-        header('Location: register.php');
+    // Always update these fields
+    $setParts[] = "username = ?";
+    $params[] = $username;
+    $types .= 's';
+
+    $setParts[] = "email = ?";
+    $params[] = $email;
+    $types .= 's';
+
+    $setParts[] = "usertype = ?";
+    $params[] = $usertype;
+    $types .= 's';
+
+    // Handle password update if provided
+    if (!empty($password)) {
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        $setParts[] = "password = ?";
+        $params[] = $hashed_password;
+        $types .= 's';
     }
-    else
-    {
-        $_SESSION['status']="Your Data is not Updated";
-        header('Location: register.php');
+
+    // Handle location fields if provided
+    if (!empty($location)) {
+        $setParts[] = "location = ?";
+        $params[] = $location;
+        $types .= 's';
     }
+
+    if (!empty($latitude)) {
+        $setParts[] = "latitude = ?";
+        $params[] = $latitude;
+        $types .= 's';
+    }
+
+    if (!empty($longitude)) {
+        $setParts[] = "longitude = ?";
+        $params[] = $longitude;
+        $types .= 's';
+    }
+
+    if (!empty($last_location_updated)) {
+        $setParts[] = "last_location_update = ?";
+        $params[] = $last_location_updated;
+        $types .= 's';
+    }
+
+    // Build the final query
+    $query = "UPDATE register SET " . implode(', ', $setParts) . " WHERE id = ?";
+    $params[] = $id;
+    $types .= 'i';
+
+    // Prepare and execute the statement
+    $stmt = mysqli_prepare($connection, $query);
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+        $result = mysqli_stmt_execute($stmt);
+        
+        if($result) {
+            $_SESSION['success'] = "Your Data is Updated";
+            
+            // Update session variables if editing own profile
+            if ($id == $_SESSION['user_id']) {
+                $_SESSION['user_username'] = $username;
+                $_SESSION['user_email'] = $email;
+                $_SESSION['usertype'] = $usertype;
+                $_SESSION['user_location'] = $location;
+                $_SESSION['user_latitude'] = $latitude;
+                $_SESSION['user_longitude'] = $longitude;
+            }
+        } else {
+            $_SESSION['status'] = "Your Data is not Updated: " . mysqli_error($connection);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $_SESSION['status'] = "Database error: " . mysqli_error($connection);
+    }
+
+    header('Location: register.php');
+    exit();
 }
 
 if(isset($_POST['delete_btn']))

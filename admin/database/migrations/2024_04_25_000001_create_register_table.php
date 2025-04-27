@@ -9,7 +9,6 @@ class CreateRegisterTable extends Migration {
                 email varchar(150) DEFAULT NULL,
                 password varchar(60) DEFAULT NULL,
                 usertype varchar(20) NOT NULL,
-                reset_token varchar(100) DEFAULT NULL,
                 latitude decimal(10,8) DEFAULT NULL,
                 longitude decimal(11,8) DEFAULT NULL,
                 PRIMARY KEY (id)

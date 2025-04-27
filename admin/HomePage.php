@@ -1033,7 +1033,7 @@ $result = mysqli_query($connection, $query);
 <?php endif; ?>
 
 <div class="trending-section">
-    <h2>Trending in Your Area</h2>
+    <h2>Trending</h2>
     <div class="trending-grid">
       <?php foreach ($trending_content as $content): ?>
         <div class="trending-item">

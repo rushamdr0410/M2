@@ -1,9 +1,47 @@
 <?php
-include('user_auth.php');
+include('security.php');
 
-if (!isset($_SESSION['user_username'])) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: userlogin.php");
     exit();
+}
+
+// Fetch user data from database
+$user_id = $_SESSION['user_id'];
+$query = "SELECT * FROM register WHERE id = '$user_id'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $user_data = mysqli_fetch_assoc($result);
+    
+    // Store user data in session variables if not already set
+    if (!isset($_SESSION['user_username'])) {
+        $_SESSION['user_username'] = $user_data['username'];
+    }
+    if (!isset($_SESSION['user_email'])) {
+        $_SESSION['user_email'] = $user_data['email'];
+    }
+    if (!isset($_SESSION['profile_picture'])) {
+        $_SESSION['profile_picture'] = $user_data['profile_picture'] ?? 'img/default-profile.png';
+    }
+    if (!isset($_SESSION['user_location'])) {
+        $_SESSION['user_location'] = $user_data['location'] ?? '';
+    }
+    if (!isset($_SESSION['user_latitude'])) {
+        $_SESSION['user_latitude'] = $user_data['latitude'] ?? '';
+    }
+    if (!isset($_SESSION['user_longitude'])) {
+        $_SESSION['user_longitude'] = $user_data['longitude'] ?? '';
+    }
+    if (!isset($_SESSION['user_bio'])) {
+        $_SESSION['user_bio'] = $user_data['bio'] ?? '';
+    }
+}
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Process the form data and update the database
+    // This will be handled by update_profile.php
 }
 
 // Handle adding to watchlist
@@ -352,25 +390,36 @@ $result = mysqli_query($connection, $query);
 
         .edit-profile-container{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            margin-top:100px;
+            max-width: 800px;
+            margin: -50px auto;
+            padding: 20px;
+            background-color: #232323;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
         
         .profile-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
         }
         
         .profile-pic {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            background-color: #ddd;
-            margin-right: 20px;
-            position: relative;
-            margin-top: -37px;
+            overflow: hidden;
+            margin-right: 30px;
+            border: 3px solid #61DAFB;
+        }
+        
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .change-photo {
@@ -391,10 +440,10 @@ $result = mysqli_query($connection, $query);
         }
         
         hr {
-            border: 0;
+            border: none;
             height: 1px;
-            background-color: #dbdbdb;
-            margin: 20px 0;
+            background-color: #444;
+            margin: 30px 0;
         }
         
         h2 {
@@ -412,6 +461,9 @@ $result = mysqli_query($connection, $query);
         
         .section {
             margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
         }
         
         .bio-text {
@@ -469,11 +521,12 @@ $result = mysqli_query($connection, $query);
         background-color: #61DAFB;
         color: #131418;
         border: none;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border-radius: 4px;
         cursor: pointer;
         font-weight: 600;
-        margin-top: 20px;
+        transition: background-color 0.3s;
+        margin-right: 10px;
     }
     
     .save-btn:hover {
@@ -535,141 +588,225 @@ $result = mysqli_query($connection, $query);
         margin-bottom: 20px;
     }
     
-    .radio-option {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #f2f5f7;
+        font-weight: 500;
     }
     
-    .radio-option input {
-        margin-right: 10px;
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        background-color: #1a1a1a;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #f2f5f7;
+        font-size: 14px;
+        transition: border-color 0.3s;
     }
+    
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="password"]:focus,
+    .form-group textarea:focus {
+        border-color: #61DAFB;
+        outline: none;
+    }
+    
+    .form-group textarea {
+        height: 120px;
+        resize: vertical;
+    }
+    
+    .location-btn {
+        background-color: #61DAFB;
+        color: #131418;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+    }
+    
+    .location-btn:hover {
+        background-color: #4fa8c7;
+    }
+    
+    input[type="file"] {
+        display: none;
+    }
+    
+    .error-message {
+        color: #ff6b6b;
+        font-size: 12px;
+        margin-top: 5px;
+        display: none;
+    }
+    
+    .error-message:not(:empty) {
+        display: block;
+    }
+    
+    .form-group input.error,
+    .form-group textarea.error {
+        border-color: #ff6b6b;
+    }
+    
+    .form-group input.success,
+    .form-group textarea.success {
+        border-color: #61DAFB;
+    }
+    
+    .success-message {
+        color: #61DAFB;
+        font-size: 14px;
+        margin-top: 10px;
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-pic {
+            margin: 0 auto 20px;
+        }
+        
+        .edit-profile-container {
+            margin: 80px 20px;
+        }
+    }
+
+    /* Add these styles to your existing CSS */
     .modal {
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-content {
-    background-color: #232323;
-    border-radius: 12px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-  }
-  
-  .modal-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #444;
-    position: relative;
-  }
-  
-  .modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    color: #f2f5f7;
-  }
-  
-  .close-modal {
-    position: absolute;
-    right: 20px;
-    top: 16px;
-    font-size: 24px;
-    color: #888;
-    cursor: pointer;
-  }
-  
-  .close-modal:hover {
-    color: #f2f5f7;
-  }
-  
-  .modal-body {
-    padding: 20px;
-  }
-  
-  .upload-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  
-  .upload-btn, .remove-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border: none;
-    width: 100%;
-  }
-  
-  .upload-btn {
-    background-color: #0095f6;
-    color: white;
-  }
-  
-  .upload-btn:hover {
-    background-color: #0077cc;
-  }
-  
-  .remove-btn {
-    background-color: #444;
-    color: #f2f5f7;
-  }
-  
-  .remove-btn:hover {
-    background-color: #555;
-  }
-  
-  .upload-btn i, .remove-btn i {
-    margin-right: 8px;
-    font-size: 18px;
-  }
-  
-  .modal-actions {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .cancel-btn {
-    background: none;
-    border: none;
-    color: #0095f6;
-    font-weight: 600;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .cancel-btn:hover {
-    color: #0077cc;
-  }
-  
-  /* Preview styles */
-  .photo-preview {
-    display: none;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .photo-preview img {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 8px;
-  }
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        overflow: auto;
+    }
+
+    .modal-content {
+        background-color: #232323;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #444;
+    }
+
+    .modal-header h3 {
+        color: #61DAFB;
+        margin: 0;
+    }
+
+    .close-modal {
+        color: #888;
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+        color: #f2f5f7;
+    }
+
+    .modal-body {
+        padding: 20px 0;
+    }
+
+    .upload-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .upload-btn, .view-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        width: 100%;
+    }
+
+    .upload-btn {
+        background-color: #61DAFB;
+        color: #131418;
+    }
+
+    .view-btn {
+        background-color: #444;
+        color: #f2f5f7;
+    }
+
+    .upload-btn:hover {
+        background-color: #4fa8c7;
+    }
+
+    .view-btn:hover {
+        background-color: #555;
+    }
+
+    .upload-btn i, .view-btn i {
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+    .photo-preview {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .photo-preview img {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
+    }
+
+    .modal-footer {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .cancel-btn {
+        background: none;
+        border: none;
+        color: #61DAFB;
+        cursor: pointer;
+        font-weight: 600;
+        padding: 8px 16px;
+    }
+
+    .cancel-btn:hover {
+        color: #4fa8c7;
+    }
   </style>
 </head>
 <body>
@@ -733,16 +870,40 @@ $result = mysqli_query($connection, $query);
   <div class="edit-profile-container">
     <h1>Edit profile</h1>
     
-    <form class="edit-form" method="POST" action="">
+    <?php if (isset($_SESSION['debug'])): ?>
+        <div class="debug-message" style="background: #333; color: #fff; padding: 10px; margin-bottom: 20px; white-space: pre-wrap;">
+            <?php 
+                echo $_SESSION['debug'];
+                unset($_SESSION['debug']);
+            ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="success-message" style="color: #61DAFB; margin-bottom: 20px;">
+            <?php 
+                echo $_SESSION['success'];
+                unset($_SESSION['success']);
+            ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="error-message" style="color: #ff6b6b; margin-bottom: 20px;">
+            <?php 
+                echo $_SESSION['error'];
+                unset($_SESSION['error']);
+            ?>
+        </div>
+    <?php endif; ?>
+    
+    <form class="edit-form" method="POST" action="update_profile.php" enctype="multipart/form-data">
         <div class="profile-header">
-            <div class="profile-pic"></div>
             <div>
                 <div class="form-group">
-                    <label for="username" style="display: block; margin-bottom: 5px;">Username</label>
-                    <input type="text" id="username" name="username" value="">
-                </div>
-                <div class="change-photo">
-                    <button type="submit" class="save-btn">Change Profile</button>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>
+                    <span class="error-message"></span>
                 </div>
             </div>
         </div>
@@ -750,220 +911,149 @@ $result = mysqli_query($connection, $query);
         <hr>
         
         <div class="section">
-            <h2>Website</h2>
+            <h2>Account Information</h2>
             <div class="form-group">
-                <label for="website" style="display: block; margin-bottom: 5px;">E-Mail</label>
-                <input type="text" id="website" name="website" value="">
-                <p class="note">Enter your e-mail (e.g., example@gmail.com)</p>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required>
+                <span class="error-message"></span>
             </div>
-        </div>
-        
-        <hr>
-        
-        <div class="section">
-            <h2>Bio</h2>
             <div class="form-group">
-                <label for="bio" style="display: block; margin-bottom: 5px;">About You</label>
-                <textarea id="bio" name="bio"></textarea>
+                <label for="current_password">Current Password</label>
+                <input type="password" id="current_password" name="current_password">
+                <span class="error-message"></span>
             </div>
-        </div>
-        
-        <hr>
-        
-        <div class="section">
-            <h2>Show Threads badge</h2>
-            <div class="toggle-container">
-                <span>Show Threads badge</span>
-                <label class="switch">
-                    <input type="checkbox" name="threads_badge" >
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-        
-        <hr>
-        
-        <div class="section">
-            <h2>Subscription/ Mermbership</h2>
             <div class="form-group">
-                <div class="radio-option">
-                    <input type="radio" id="male" name="gender" value="Male" >
-                    <label for="male">Male</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="female" name="gender" value="Female" >
-                    <label for="female">Female</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="prefer-not" name="gender" value="Prefer not to say" >
-                    <label for="prefer-not">Prefer not to say</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="other" name="gender" value="Other" >
-                    <label for="other">Other</label>
-                </div>
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password">
+                <span class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password">
+                <span class="error-message"></span>
             </div>
         </div>
+        
+        <hr>
+        
+        <div class="section">
+            <h2>Location</h2>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" value="<?php echo isset($user_data['location']) ? htmlspecialchars($user_data['location']) : ''; ?>" placeholder="Enter your location">
+                <span class="error-message"></span>
+                <button type="button" class="location-btn" onclick="getCurrentLocation()">
+                    <i class="fas fa-map-marker-alt"></i> Get Current Location
+                </button>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input type="text" id="latitude" name="latitude" value="<?php echo isset($user_data['latitude']) ? htmlspecialchars($user_data['latitude']) : ''; ?>" readonly>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input type="text" id="longitude" name="longitude" value="<?php echo isset($user_data['longitude']) ? htmlspecialchars($user_data['longitude']) : ''; ?>" readonly>
+            </div>
+        </div>
+        
         <button type="submit" class="save-btn">Save Changes</button>
-        <button type="submit" class="save-btn">Cancel</button>
+        <button type="button" class="save-btn" onclick="window.location.href='HomePage.php'">Cancel</button>
     </form>
   </div>
 
-  <div id="photoUploadModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Change Profile Photo</h3>
-      <span class="close-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="photoUploadForm" enctype="multipart/form-data">
-        <div class="upload-options">
-          <div class="upload-btn">
-            <label for="profilePhoto">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <span>Upload Photo</span>
-              <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" style="display: none;">
-            </label>
-          </div>
-          <button type="button" class="remove-btn" id="removePhotoBtn">
-            <i class="fas fa-trash-alt"></i>
-            <span>Remove Current Photo</span>
-          </button>
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Profile Picture</h3>
+            <span class="close-modal">&times;</span>
         </div>
-        <div class="modal-actions">
-          <button type="button" class="cancel-btn" id="cancelPhotoUpload">Cancel</button>
+        <div class="modal-body">
+            <div class="upload-options">
+                <label class="upload-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload New Photo</span>
+                    <input type="file" id="profilePhoto" name="profile_picture" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                </label>
+                <button type="button" class="view-btn" onclick="viewCurrentPhoto()">
+                    <i class="fas fa-eye"></i>
+                    <span>View Current Photo</span>
+                </button>
+            </div>
+            <div class="photo-preview" id="photoPreview">
+                <img src="" alt="Preview">
+            </div>
         </div>
-      </form>
+        <div class="modal-footer">
+            <button type="button" class="cancel-btn" id="cancelPhotoUpload">Cancel</button>
+        </div>
     </div>
-  </div>
 </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="Homepage.js"></script>
+  <script src="js/profile_validation.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('photoUploadModal');
-    const changePhotoBtn = document.querySelector('.change-photo');
-    const closeModal = document.querySelector('.close-modal');
-    const cancelBtn = document.getElementById('cancelPhotoUpload');
-    
-    // Show modal when change photo button is clicked
-    changePhotoBtn.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent default link behavior
-        e.stopPropagation(); // Stop event bubbling
-        modal.style.display = 'flex';
-    });
-    
-    // Close modal when X is clicked
-    closeModal.addEventListener('click', function(e) {
-        e.stopPropagation();
-        modal.style.display = 'none';
-        resetForm();
-    });
-    
-    // Close modal when cancel is clicked
-    cancelBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        modal.style.display = 'none';
-        resetForm();
-    });
-    
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            e.stopPropagation();
-            modal.style.display = 'none';
-            resetForm();
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    
+                    // Use reverse geocoding to get location name
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('location').value = data.display_name;
+                        })
+                        .catch(error => console.error('Error getting location name:', error));
+                },
+                function(error) {
+                    alert('Error getting location: ' + error.message);
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by this browser.');
         }
-    });
-    
-    // Prevent modal content from closing when clicking inside
-    document.querySelector('.modal-content').addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Modal functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('photoUploadModal');
-        const changePhotoBtn = document.querySelector('.change-photo');
-        const closeModal = document.querySelector('.close-modal');
-        const cancelBtn = document.getElementById('cancelPhotoUpload');
-        const removeBtn = document.getElementById('removePhotoBtn');
-        const fileInput = document.getElementById('profilePhoto');
-        const photoPreview = document.createElement('div');
-        photoPreview.className = 'photo-preview';
-        document.querySelector('.modal-body').prepend(photoPreview);
-        
-        // Show modal when change photo button is clicked
-        changePhotoBtn.addEventListener('click', function() {
-        modal.style.display = 'flex';
-        });
-        
-        // Close modal when X is clicked
-        closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-        resetForm();
-        });
-        
-        // Close modal when cancel is clicked
-        cancelBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-        resetForm();
-        });
-        
-        // Close modal when clicking outside
-        modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-            resetForm();
-        }
-        });
-        
-        // Handle file selection
-        fileInput.addEventListener('change', function(e) {
-        if (e.target.files.length > 0) {
-            const file = e.target.files[0];
-            if (file.type.match('image.*')) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                photoPreview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
-                photoPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            }
-        }
-        });
-        
-        // Handle remove photo
-        removeBtn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to remove your profile photo?')) {
-            // Here you would send an AJAX request to remove the photo
-            alert('Profile photo removed!');
-            modal.style.display = 'none';
-            resetForm();
-        }
-        });
-        
-        // Reset form function
-        function resetForm() {
-        fileInput.value = '';
-        photoPreview.innerHTML = '';
-        photoPreview.style.display = 'none';
-        }
-        
-        // Form submission (you would need to implement AJAX submission)
-        document.getElementById('photoUploadForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Implement AJAX file upload here
-        alert('Profile photo updated!');
-        modal.style.display = 'none';
-        resetForm();
-        });
-    });
-});
+    }
 
+    function openProfileModal() {
+        document.getElementById('profileModal').style.display = 'block';
+    }
+
+    function closeProfileModal() {
+        document.getElementById('profileModal').style.display = 'none';
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('profilePhoto').value = '';
+    }
+
+    function viewCurrentPhoto() {
+        const currentPhoto = document.getElementById('profileImage').src;
+        const preview = document.getElementById('photoPreview');
+        preview.querySelector('img').src = currentPhoto;
+        preview.style.display = 'block';
+    }
+
+    // Event Listeners
+    document.querySelector('.close-modal').addEventListener('click', closeProfileModal);
+    document.getElementById('cancelPhotoUpload').addEventListener('click', closeProfileModal);
+    document.querySelector('.change-photo button').addEventListener('click', function(e) {
+        e.preventDefault();
+        openProfileModal();
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('profileModal');
+        if (event.target == modal) {
+            closeProfileModal();
+        }
+    });
+    document.getElementById('profilePhoto').addEventListener('change', function() {
+        document.getElementById('profile_changed').value = "1";
+    });
     </script>
 </body>
 </html>
