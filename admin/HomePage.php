@@ -942,94 +942,98 @@ $result = mysqli_query($connection, $query);
     </div>
   </main>
   <?php if ($_SESSION['has_watched']): ?>
-<section class="movies" id="movies">
-  <div class="title">
-    <h2 class="heading">Recommendations</h2>
-  </div>
-  <div class="movies-container-wrapper">
-    <?php
-      $user_id = $_SESSION['user_id'];
-      
-      // Get user's watch history
-      $history_query = "SELECT movie_id, media_type FROM watch_history WHERE user_id = ? ORDER BY watch_date DESC LIMIT 10";
-      $stmt = $connection->prepare($history_query);
-      $stmt->bind_param("i", $user_id);
-      $stmt->execute();
-      $history_result = $stmt->get_result();
-      
-      $watched_ids = [];
-      $watched_movies = [];
-      
-      while ($row = $history_result->fetch_assoc()) {
-          $watched_ids[] = $row['movie_id'];
-          $watched_movies[] = [
-              'id' => $row['movie_id'],
-              'media_type' => $row['media_type']
-          ];
-      }
-      
-      if (!empty($watched_movies)) {
-          // Get recommendations based on watched content
-          $recommendations = [];
-          
-          foreach ($watched_movies as $watched) {
-              // Get similar movies from TMDb API
-              $similar_url = "$tmdb_base_url/{$watched['media_type']}/{$watched['id']}/similar?api_key=$tmdb_api_key&language=en-US&page=1";
-              $similar_data = json_decode(file_get_contents($similar_url), true);
-              
-              if (isset($similar_data['results'])) {
-                  foreach ($similar_data['results'] as $movie) {
-                      if (!in_array($movie['id'], $watched_ids)) {
-                          $recommendations[] = [
-                              'id' => $movie['id'],
-                              'title' => $movie['title'] ?? $movie['name'],
-                              'poster_path' => $movie['poster_path'],
-                              'vote_average' => $movie['vote_average'],
-                              'media_type' => $watched['media_type']
-                          ];
-                      }
-                  }
-              }
-          }
-          
-          // Sort recommendations by vote average
-          usort($recommendations, function($a, $b) {
-              return $b['vote_average'] <=> $a['vote_average'];
-          });
-          
-          // Display top 12 recommendations
-          $recommendations = array_slice($recommendations, 0, 12);
-          
-          if (!empty($recommendations)) {
-              foreach ($recommendations as $movie) {
-                  $image = $movie['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie['poster_path'] : 'placeholder.jpg';
-                  ?>
-                  <div class="movies-container">
-                    <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $movie['id']; ?>&media_type=<?php echo $movie['media_type']; ?>" class="movie-link">
-                      <div class="card">
-                        <div class="img">
-                          <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+  <section class="movies" id="movies">
+    <div class="title">
+      <h2 class="heading">Recommendations</h2>
+    </div>
+    <div class="movies-container-wrapper">
+      <?php
+        $user_id = $_SESSION['user_id'];
+        
+        // Get user's watch history (without ratings)
+        $history_query = "SELECT movie_id, media_type FROM watch_history WHERE user_id = ? ORDER BY watch_date DESC";
+        $stmt = $connection->prepare($history_query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $history_result = $stmt->get_result();
+        
+        $watched_ids = [];
+        $watched_movies = [];
+        
+        while ($row = $history_result->fetch_assoc()) {
+            $watched_ids[] = $row['movie_id'];
+            $watched_movies[] = [
+                'id' => $row['movie_id'],
+                'media_type' => $row['media_type']
+            ];
+        }
+        
+        if (!empty($watched_movies)) {
+            // Content-based recommendations only (since we don't have ratings)
+            $recommendations = [];
+            
+            foreach ($watched_movies as $watched) {
+                // Get similar movies from TMDb API
+                $similar_url = "$tmdb_base_url/{$watched['media_type']}/{$watched['id']}/similar?api_key=$tmdb_api_key&language=en-US&page=1";
+                $similar_data = json_decode(file_get_contents($similar_url), true);
+                
+                if (isset($similar_data['results'])) {
+                    foreach ($similar_data['results'] as $movie) {
+                        if (!in_array($movie['id'], $watched_ids)) {
+                            $key = $movie['id'] . '_' . $watched['media_type'];
+                            if (!isset($recommendations[$key])) {
+                                $recommendations[$key] = [
+                                    'id' => $movie['id'],
+                                    'title' => $movie['title'] ?? $movie['name'],
+                                    'poster_path' => $movie['poster_path'],
+                                    'vote_average' => $movie['vote_average'],
+                                    'media_type' => $watched['media_type']
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Sort by vote average
+            usort($recommendations, function($a, $b) {
+                return $b['vote_average'] <=> $a['vote_average'];
+            });
+            
+            // Display top 12 recommendations
+            $recommendations = array_slice($recommendations, 0, 12);
+            
+            if (!empty($recommendations)) {
+                foreach ($recommendations as $movie) {
+                    $image = $movie['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie['poster_path'] : 'placeholder.jpg';
+                    ?>
+                    <div class="movies-container">
+                      <a href="videoplayer_kungfu.php?tmdb_id=<?php echo $movie['id']; ?>&media_type=<?php echo $movie['media_type']; ?>" class="movie-link">
+                        <div class="card">
+                          <div class="img">
+                            <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+                          </div>
+                          <div class="movies-title">
+                            <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
+                            <div class="media-type"><?php echo strtoupper($movie['media_type']); ?></div>
+                          </div>
+                          <div class="rating-badge">
+                            <i class="fas fa-star"></i> <?php echo number_format($movie['vote_average'], 1); ?>
+                          </div>
                         </div>
-                        <div class="movies-title">
-                          <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
-                        </div>
-                        <div class="rating-badge">
-                          <i class="fas fa-star"></i> <?php echo number_format($movie['vote_average'], 1); ?>
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-                  <?php
-              }
-          } else {
-              echo "<p>No recommendations found based on your viewing history.</p>";
-          }
-      } else {
-          echo "<p>Watch some movies or TV shows to get recommendations!</p>";
-      }
-    ?>
-  </div>
-</section>
+                      </a>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo "<p>No recommendations found based on your viewing history.</p>";
+            }
+        } else {
+            echo "<p>Watch some movies or TV shows to get recommendations!</p>";
+        }
+      ?>
+    </div>
+  </section>
 <?php endif; ?>
 
 <div class="trending-section">
