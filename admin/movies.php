@@ -52,10 +52,6 @@ $current_page = isset($_GET['page']) ? max(1, min(10, (int)$_GET['page'])) : 1;
 $tmdb_movies_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=$current_page";
 $tmdb_data = fetch_tmdb_movies($tmdb_movies_url);
 $api_movies = $tmdb_data['results'] ?? [];
-
-// Query to fetch local movies
-$local_movies_query = "SELECT * FROM moviedetails WHERE type = 'Movie'";
-$local_movies_result = mysqli_query($connection, $local_movies_query);
 ?>
 
 <!DOCTYPE html>

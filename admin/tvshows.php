@@ -55,9 +55,6 @@ $tmdb_tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&p
 $tmdb_data = fetch_tmdb_tvshows($tmdb_tv_url);
 $api_tvshows = $tmdb_data['results'] ?? [];
 
-// Query to fetch local TV shows
-$local_tv_query = "SELECT * FROM moviedetails WHERE type = 'TV-Show'";
-$local_tv_result = mysqli_query($connection, $local_tv_query);
 ?>
 
 <!DOCTYPE html>
