@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_username'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the movie ID from the form
-    $tmdb_id = $_POST['movie_id'];
+    $tmdb_id = $_POST['tmdb_id'];
     
     // Remove 'tmdb_' prefix if it exists
     if (strpos($tmdb_id, 'tmdb_') === 0) {
