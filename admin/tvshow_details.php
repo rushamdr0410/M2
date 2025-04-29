@@ -424,6 +424,7 @@ $similar_tvshows = $similar_data['results'] ?? [];
         }
 
         .movie-poster img {
+            height: 100%;
             width: 100%;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
