@@ -46,6 +46,10 @@ if (isset($_POST['login_btn'])) {
 if (isset($_POST['userloginbtn'])) {
     $emaillogin = $_POST['u_email'];
     $passwordlogin = $_POST['u_password'];
+    
+    $location = mysqli_real_escape_string($connection, trim($_POST['location'] ?? ''));
+    $latitude = mysqli_real_escape_string($connection, trim($_POST['latitude'] ?? ''));
+    $longitude = mysqli_real_escape_string($connection, trim($_POST['longitude'] ?? ''));
 
     $query = "SELECT * FROM register WHERE email='$emaillogin'";
     $result = mysqli_query($connection, $query);
@@ -56,8 +60,28 @@ if (isset($_POST['userloginbtn'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_username'] = $user['username'];
             $_SESSION['usertype'] = $user['usertype'];
+            
+            // Update user's location if provided
+            if (!empty($latitude) && !empty($longitude)) {
+                $update_query = "UPDATE register SET 
+                    location = ?,
+                    latitude = ?,
+                    longitude = ?,
+                    last_location_update = NOW()
+                    WHERE id = ?";
+                    
+                $stmt = mysqli_prepare($connection, $update_query);
+                mysqli_stmt_bind_param($stmt, "sssi", $location, $latitude, $longitude, $user['id']);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+                
+                // Update session variables with new location
+                $_SESSION['user_location'] = $location;
+                $_SESSION['user_latitude'] = $latitude;
+                $_SESSION['user_longitude'] = $longitude;
+            }
 
-            if ($user['usertype'] == 'user') {  // ✅ Removed extra space in 'user'
+            if ($user['usertype'] == 'user') {
                 header('Location: HomePage.php');
                 exit();
             } else if ($user['usertype'] == 'admin') {

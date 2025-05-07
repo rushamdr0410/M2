@@ -379,11 +379,16 @@ if (ob_get_length()) ob_end_clean();
 					<input type="password" name="u_password" required>
 					<label>Password</label>
 				</div>
+				<div class="location-container">
+					<input type="text" class="location-input" id="location" name="location" required>
+				</div>
+				<input type="text" id="latitude" name="latitude">
+				<input type="text" id="longitude" name="longitude">
 				<div class="remember-forgot">
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" name="userloginbtn" class="btn">Sign In</button>
+				<button type="submit" name="userloginbtn" class="btn" onclick="LocationFetch()">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -559,6 +564,63 @@ if (ob_get_length()) ob_end_clean();
 	</script>
 	<script>
     function getCurrentLocation() {
+        if (navigator.geolocation) {
+            // Show loading state
+            const locationBtn = document.querySelector('.location-btn');
+            const locationInput = document.getElementById('location');
+            locationBtn.textContent = 'Locating...';
+            locationBtn.disabled = true;
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Set the coordinates immediately
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                    
+                    // Show coordinates temporarily while fetching address
+                    locationInput.value = `Fetching address... (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                    
+                    // Use reverse geocoding to get location name
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.display_name) {
+                                locationInput.value = data.display_name;
+                            } else {
+                                locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                            }
+                            locationInput.focus(); // Trigger the label animation
+                        })
+                        .catch(error => {
+                            console.error('Error getting location name:', error);
+                            locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        })
+                        .finally(() => {
+                            locationBtn.textContent = 'Get Location';
+                            locationBtn.disabled = false;
+                        });
+                },
+                function(error) {
+                    alert('Error getting location: ' + error.message);
+                    locationBtn.textContent = 'Get Location';
+                    locationBtn.disabled = false;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+</script>
+<script>
+    function LocationFetch() {
         if (navigator.geolocation) {
             // Show loading state
             const locationBtn = document.querySelector('.location-btn');
