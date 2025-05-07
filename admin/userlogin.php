@@ -368,7 +368,7 @@ if (ob_get_length()) ob_end_clean();
                     unset($_SESSION['status']);
                 }
             ?>
-			<form action="logincode.php" method="POST">
+			<form action="logincode.php" method="POST" id="loginForm">
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
 					<input type="email" name="u_email" required>
@@ -379,16 +379,14 @@ if (ob_get_length()) ob_end_clean();
 					<input type="password" name="u_password" required>
 					<label>Password</label>
 				</div>
-				<div class="location-container">
-					<input type="text" class="location-input" id="location" name="location" required>
-				</div>
-				<input type="text" id="latitude" name="latitude">
-				<input type="text" id="longitude" name="longitude">
+				<input type="hidden" id="login_location" name="location">
+				<input type="hidden" id="login_latitude" name="latitude">
+				<input type="hidden" id="login_longitude" name="longitude">
 				<div class="remember-forgot">
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" name="userloginbtn" class="btn" onclick="LocationFetch()">Sign In</button>
+				<button type="submit" name="userloginbtn" value="1" class="btn" onclick="console.log('Login button clicked')">Sign In</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -400,34 +398,34 @@ if (ob_get_length()) ob_end_clean();
 				<div class="input-box">
 					<span class="icon"><ion-icon name="person"></ion-icon></span>
 					<input type="text" id="username" name="u_username" required>
-					<label >Username</label>
+					<label>Username</label>
 					<span class="error-message" id="username-error"></span>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="mail"></ion-icon></span>
 					<input type="email" id="email" name="u_email" required>
-					<label >E-mail</label>
+					<label>E-mail</label>
 					<span class="error-message" id="email-error"></span>
 				</div>
 				<div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
 					<input type="password" id="password" name="u_password" required>
-					<label >Password</label>
+					<label>Password</label>
 					<span class="error-message" id="password-error"></span>
 				</div>
                 <div class="input-box">
 					<span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
 					<input style="border-bottom: 2px solid #d8d2d2;" type="password" id="cpassword" name="u_cpassword" required>
-					<label >Confirm Password</label>
+					<label>Confirm Password</label>
 					<span class="error-message" id="cpassword-error"></span>
 				</div>
 				<div class="location-container">
-					<input type="text" class="location-input" id="location" name="location" required>
+					<input type="text" class="location-input" id="register_location" name="location" required>
 					<label class="location-label">Location</label>
-					<button type="button" class="location-btn" onclick="getCurrentLocation()">Get Location</button>
+					<button type="button" class="location-btn" onclick="getRegisterLocation()">Get Location</button>
 				</div>
-				<input type="hidden" id="latitude" name="latitude">
-				<input type="hidden" id="longitude" name="longitude">
+				<input type="hidden" id="register_latitude" name="latitude">
+				<input type="hidden" id="register_longitude" name="longitude">
 				<div class="remember-forgot">
 					<label><input type="checkbox" id="terms" required> I agree to the terms &conditions</label>
 				</div>
@@ -563,84 +561,126 @@ if (ob_get_length()) ob_end_clean();
         }
 	</script>
 	<script>
-    function getCurrentLocation() {
-        if (navigator.geolocation) {
-            // Show loading state
-            const locationBtn = document.querySelector('.location-btn');
-            const locationInput = document.getElementById('location');
-            locationBtn.textContent = 'Locating...';
-            locationBtn.disabled = true;
-            
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    // Set the coordinates immediately
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lng;
-                    
-                    // Show coordinates temporarily while fetching address
-                    locationInput.value = `Fetching address... (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-                    
-                    // Use reverse geocoding to get location name
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.display_name) {
-                                locationInput.value = data.display_name;
-                            } else {
-                                locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-                            }
-                            locationInput.focus(); // Trigger the label animation
-                        })
-                        .catch(error => {
+    function getLocationForLogin() {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                            const data = await response.json();
+                            
+                            document.getElementById('login_latitude').value = lat;
+                            document.getElementById('login_longitude').value = lng;
+                            document.getElementById('login_location').value = data.display_name || `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                            
+                            console.log('Location data set:', {
+                                location: document.getElementById('login_location').value,
+                                latitude: lat,
+                                longitude: lng
+                            });
+                            
+                            resolve();
+                        } catch (error) {
                             console.error('Error getting location name:', error);
-                            locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-                        })
-                        .finally(() => {
-                            locationBtn.textContent = 'Get Location';
-                            locationBtn.disabled = false;
-                        });
-                },
-                function(error) {
-                    alert('Error getting location: ' + error.message);
-                    locationBtn.textContent = 'Get Location';
-                    locationBtn.disabled = false;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
+                            document.getElementById('login_location').value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                            resolve();
+                        }
+                    },
+                    function(error) {
+                        console.error('Error getting location:', error);
+                        reject(error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                reject(new Error('Geolocation is not supported by this browser.'));
+            }
+        });
     }
-</script>
-<script>
-    function LocationFetch() {
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded');
+        const loginForm = document.getElementById('loginForm');
+        console.log('Login form found:', loginForm);
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(e) {
+                console.log('Form submit event triggered');
+                e.preventDefault();
+                
+                try {
+                    console.log('Getting location...');
+                    await getLocationForLogin();
+                    console.log('Location obtained, form data:', {
+                        location: document.getElementById('login_location').value,
+                        latitude: document.getElementById('login_latitude').value,
+                        longitude: document.getElementById('login_longitude').value,
+                        email: document.querySelector('input[name="u_email"]').value,
+                        password: document.querySelector('input[name="u_password"]').value,
+                        userloginbtn: '1'
+                    });
+                    
+                    // Submit the form after a short delay
+                    setTimeout(() => {
+                        console.log('Submitting form...');
+                        // Create a new FormData object
+                        const formData = new FormData(this);
+                        formData.append('userloginbtn', '1');
+                        
+                        // Submit using fetch
+                        fetch('logincode.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            console.log('Response received:', response);
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else {
+                                window.location.href = 'HomePage.php';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error submitting form:', error);
+                            this.submit(); // Fallback to regular form submission
+                        });
+                    }, 1000);
+                } catch (error) {
+                    console.error('Error during form submission:', error);
+                    this.submit(); // Fallback to regular form submission
+                }
+            });
+        } else {
+            console.error('Login form not found!');
+        }
+    });
+
+    function getRegisterLocation() {
         if (navigator.geolocation) {
-            // Show loading state
-            const locationBtn = document.querySelector('.location-btn');
-            const locationInput = document.getElementById('location');
-            locationBtn.textContent = 'Locating...';
+            const locationInput = document.getElementById('register_location');
+            const locationBtn = locationInput.nextElementSibling.nextElementSibling;
+            
+            locationBtn.textContent = 'Getting location...';
             locationBtn.disabled = true;
             
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    // Set the coordinates immediately
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lng;
+                    document.getElementById('register_latitude').value = lat;
+                    document.getElementById('register_longitude').value = lng;
                     
-                    // Show coordinates temporarily while fetching address
                     locationInput.value = `Fetching address... (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
                     
-                    // Use reverse geocoding to get location name
                     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                         .then(response => response.json())
                         .then(data => {
@@ -649,7 +689,7 @@ if (ob_get_length()) ob_end_clean();
                             } else {
                                 locationInput.value = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
                             }
-                            locationInput.focus(); // Trigger the label animation
+                            locationInput.focus();
                         })
                         .catch(error => {
                             console.error('Error getting location name:', error);
@@ -664,11 +704,6 @@ if (ob_get_length()) ob_end_clean();
                     alert('Error getting location: ' + error.message);
                     locationBtn.textContent = 'Get Location';
                     locationBtn.disabled = false;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
                 }
             );
         } else {

@@ -190,9 +190,9 @@ if(isset($_POST['userregistration']))
         $password = mysqli_real_escape_string($connection, $_POST['u_password']);
         $cpassword = mysqli_real_escape_string($connection, $_POST['u_cpassword']);
         $usertype = mysqli_real_escape_string($connection, $_POST['u_usertype']);
-        $location = mysqli_real_escape_string($connection, $_POST['location']);
-        $latitude = mysqli_real_escape_string($connection, $_POST['latitude']);
-        $longitude = mysqli_real_escape_string($connection, $_POST['longitude']);
+        $location = mysqli_real_escape_string($connection, trim($_POST['location'] ?? ''));
+        $latitude = mysqli_real_escape_string($connection, trim($_POST['latitude'] ?? ''));
+        $longitude = mysqli_real_escape_string($connection, trim($_POST['longitude'] ?? ''));
 
         // Validate required fields
         if(empty($username) || empty($email) || empty($password) || empty($cpassword)) {
@@ -229,11 +229,13 @@ if(isset($_POST['userregistration']))
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
         // Insert user data including location information
-        $query = "INSERT INTO register (username, email, password, usertype, location, latitude, longitude) 
-                  VALUES ('$username', '$email', '$hashed_password', '$usertype', '$location', '$latitude', '$longitude')";
-        $result = mysqli_query($connection, $query);
-
-        if($result) {
+        $query = "INSERT INTO register (username, email, password, usertype, location, latitude, longitude, last_location_update) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, "sssssss", $username, $email, $hashed_password, $usertype, $location, $latitude, $longitude);
+        
+        if(mysqli_stmt_execute($stmt)) {
             $_SESSION['success'] = "User Registered Successfully!";
             header("location: userlogin.php");
             exit();
@@ -242,6 +244,8 @@ if(isset($_POST['userregistration']))
             header("location: userlogin.php");
             exit();
         }
+        
+        mysqli_stmt_close($stmt);
     }   
 }
 

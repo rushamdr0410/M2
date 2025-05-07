@@ -611,9 +611,17 @@ $result = mysqli_query($connection, $query);
       overflow: hidden;
       text-overflow: ellipsis;
       transition: color 0.3s;
+      text-decoration: none;
     }
 
-    .movies-container:hover .movies-title {
+    .movies-title h3 {
+      margin: 0;
+      padding: 0;
+      text-decoration: none;
+      color: #f2f5f7;
+    }
+
+    .movies-container:hover .movies-title h3 {
       color: #61DAFB;
     }
 
@@ -846,6 +854,18 @@ $result = mysqli_query($connection, $query);
 
     .trending-item .watch-count i {
       font-size: 0.9rem;
+    }
+
+    .movies-container a {
+      text-decoration: none !important;
+      color: inherit !important;
+    }
+    .movies-title h3 {
+      text-decoration: none !important;
+      color: #f2f5f7 !important;
+    }
+    .movies-container:hover .movies-title h3 {
+      color: #61DAFB !important;
     }
   </style>
 </head>
@@ -1155,11 +1175,13 @@ $result = mysqli_query($connection, $query);
     <div class="trending-grid">
       <?php foreach ($trending_content as $content): ?>
         <div class="trending-item">
-          <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
-          <div class="overlay">
-            <div class="title"><?php echo $content['title']; ?></div>
-            <div class="watch-count"><?php echo $content['watch_count']; ?> views nearby</div>
-          </div>
+          <a href="<?php echo $content['media_type'] === 'movie' ? 'movie_details.php?tmdb_id=' . $content['id'] : 'tvshow_details.php?tmdb_id=' . $content['id']; ?>">
+            <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
+            <div class="overlay">
+              <div class="title"><?php echo $content['title']; ?></div>
+              <div class="watch-count"><?php echo $content['watch_count']; ?> views nearby</div>
+            </div>
+          </a>
         </div>
       <?php endforeach; ?>
     </div>

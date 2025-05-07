@@ -26,6 +26,12 @@
           $insert_query->bind_param("iis", $user_id, $tmdb_id, $media_type);
           $insert_query->execute();
           $insert_query->close();
+          
+          // Remove from watchlist if it exists
+          $delete_query = $connection->prepare("DELETE FROM watchlist WHERE user_id = ? AND tmdb_id = ?");
+          $delete_query->bind_param("is", $user_id, $tmdb_id);
+          $delete_query->execute();
+          $delete_query->close();
       } else {
           // Movie already in history, update the watch date
           $update_query = $connection->prepare("UPDATE watch_history SET watch_date = NOW() WHERE user_id = ? AND movie_id = ?");

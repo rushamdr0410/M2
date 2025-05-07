@@ -50,6 +50,18 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 $stmt->close();
+
+// Handle clear history action
+if (isset($_POST['clear_history'])) {
+    $delete_query = "DELETE FROM watch_history WHERE user_id = ?";
+    $delete_stmt = $connection->prepare($delete_query);
+    $delete_stmt->bind_param("i", $user_id);
+    $delete_stmt->execute();
+    $delete_stmt->close();
+    // Refresh the page to update the history
+    header("Location: history.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -488,6 +500,32 @@ $stmt->close();
                 height: 225px;
             }
         }
+
+        .titlebtn {
+            background: transparent;
+            border: 1px solid rgba(97, 218, 251, 0.3);
+            color: #61DAFB;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .titlebtn:hover {
+            background: rgba(97, 218, 251, 0.1);
+            transform: translateY(-2px);
+        }
+        .titlebtn i {
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .titlebtn:hover i {
+            transform: translateX(3px);
+        }
     </style>
 </head>
 <body>
@@ -551,6 +589,11 @@ $stmt->close();
         <div class="history-header">
             <h1>Your Watch History</h1>
             <p>Movies and shows you've watched</p>
+        </div>
+        <div style="display: flex; justify-content: flex-end; align-items: center; max-width: 1200px; margin: 0 auto 20px auto;">
+            <form method="POST">
+                <button type="submit" name="clear_history" class="titlebtn">Clear History <i class="fas fa-trash-alt"></i></button>
+            </form>
         </div>
 
         <div class="history-container">
