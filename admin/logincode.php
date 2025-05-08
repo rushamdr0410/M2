@@ -126,7 +126,7 @@ if (isset($_POST['userloginbtn'])) {
             $_SESSION['user_location'] = $location;
             $_SESSION['user_latitude'] = $latitude;
             $_SESSION['user_longitude'] = $longitude;
-
+            
             // Add a small delay to see the debug output
             sleep(2);
 
