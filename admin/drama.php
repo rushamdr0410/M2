@@ -552,9 +552,11 @@ $local_result = mysqli_query($connection, $local_query);
       <li><a href="movies.php">Movies</a></li>
       <li><a href="tvshows.php">TV-Shows</a></li>
       <li class="search-bar">
-        <form action="#">
-          <input type="text" placeholder="Search">
-          <button type="submit"><ion-icon name="search"></ion-icon></button>
+        <form class="search-form" action="#" method="GET">
+          <input type="text" class="search-input" placeholder="Search movies and TV shows..." aria-label="Search">
+          <button type="submit" class="search-button">
+            <i class="fas fa-search"></i>
+          </button>
         </form>
       </li>
     </ul>
@@ -581,6 +583,9 @@ $local_result = mysqli_query($connection, $local_query);
       <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
     </div>
   </nav>
+
+  <script src="js/search-optimization.js"></script>
+  <script src="js/search-handler.js"></script>
 
   <div class="watchlist-container">
     <h1 class="watchlist-header">Dramatic Movies & TV Shows</h1>
