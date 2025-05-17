@@ -716,7 +716,7 @@ $similar_tvshows = $similar_data['results'] ?? [];
                     <i class="fas fa-film"></i> Watch Trailer
                 </a>
                 <form action="add_to_watchlist.php" method="POST" class="watchlist-form">
-                    <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
+                    <input type="hidden" name="tmdb_id" value="<?php echo htmlspecialchars($tmdb_id); ?>">
                     <input type="hidden" name="media_type" value="tv">
                     <button type="submit" class="watchlist-btn">
                         <i class="fas fa-plus"></i> Add to Watchlist
@@ -726,11 +726,21 @@ $similar_tvshows = $similar_data['results'] ?? [];
             <?php
                 if (isset($_GET['status'])) {
                     if ($_GET['status'] === 'added') {
-                        echo '<p style="color: green;">TV show added to watchlist successfully!</p>';
+                        echo '<p style="color: green; background-color: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <i class="fas fa-check-circle"></i> TV show added to watchlist successfully!
+                        </p>';
                     } elseif ($_GET['status'] === 'error') {
-                        echo '<p style="color: red;">Failed to add TV show to watchlist. Please try again.</p>';
+                        echo '<p style="color: #ff6b6b; background-color: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <i class="fas fa-exclamation-circle"></i> Failed to add TV show to watchlist. Please try again.
+                        </p>';
+                    } elseif ($_GET['status'] === 'exists') {
+                        echo '<p style="color: #ffd700; background-color: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <i class="fas fa-info-circle"></i> This TV show is already in your watchlist.
+                        </p>';
                     } elseif ($_GET['status'] === 'invalid') {
-                        echo '<p style="color: red;">Invalid request.</p>';
+                        echo '<p style="color: #ff6b6b; background-color: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <i class="fas fa-exclamation-circle"></i> Invalid request.
+                        </p>';
                     }
                 }
             ?>
