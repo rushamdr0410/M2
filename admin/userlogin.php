@@ -13,85 +13,115 @@ if (ob_get_length()) ob_end_clean();
 	<link rel="website icon" type="JPG" href="C:\xampp\htdocs\MovieMagic\Images and Videos\Icon.jpeg">
 	<style>
 		@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
-		*{
-			margin:0;
-			padding:0;
+		
+		* {
+			margin: 0;
+			padding: 0;
 			box-sizing: border-box;
-			font-family: 'Poppins',sans-serif;
+			font-family: 'Poppins', sans-serif;
 		}
-		body{
+		
+		body {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			min-height: 100vh;
-			background: url("ImagesandVideos/Backgroud_Images/BG7.jpg") no-repeat;
-			background-size: cover;
-			background-position: center;
-
+			background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+						url("ImagesandVideos/Backgroud_Images/BG7.jpg") no-repeat center/cover fixed;
 		}
-		header{
+
+		/* Navigation Bar - Floating Style */
+		header {
 			position: fixed;
-			top: 0;
-			left: 0;
+			top: 12px;
+			left: 50%;
+			transform: translateX(-50%);
 			width: 100%;
-			padding: 20px 100px;
-			margin-top: 20px;
+			padding: 15px 40px;
 			height: 70px;
 			display: flex;
-			background: transparent;
-			background-color: rgba(59, 57, 57, 0.5);
 			justify-content: space-between;
 			align-items: center;
 			z-index: 99;
+			background: rgba(30, 30, 30, 0.9);
+			backdrop-filter: blur(8px);
+			box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+			border: 1px solid rgba(60, 178, 233, 0.2);
+			transition: all 0.3s ease;
+			margin: 0 auto;
 		}
-		.logo{
-			font-size: 2em;
-			color: #01939c;
-			user-select: none;
-		}
-		.navigation a{
-			position: relative;
-			font-size: 1.1rem;
+
+		.logo {
+			font-size: 1.8em;
 			color: #3cb2e9;
+			font-weight: 700;
+			letter-spacing: 1px;
 			text-decoration: none;
-			font-weight: 500;
-			margin-left: 40px;
+			transition: all 0.3s ease;
 		}
-		.navigation .btnLogin-popup{
-			width: 90px;
-			height: 50px;
-			background: transparent;
-			border: .5px solid #3cb2e9;
-			outline: none;
-			border-radius: 40px;
-			cursor: pointer;
-			font-size: 1.1em;
+
+		.logo:hover {
+			color: #fff;
+			text-shadow: 0 0 8px rgba(60, 178, 233, 0.6);
+		}
+
+		.navigation {
+			display: flex;
+			align-items: center;
+			gap: 30px;
+		}
+
+		.navigation a {
+			color: rgba(255, 255, 255, 0.8);
+			font-size: 1em;
+			font-weight: 500;
+			text-decoration: none;
+			position: relative;
+			padding: 5px 0;
+			transition: all 0.3s ease;
+		}
+
+		.navigation a:hover {
 			color: #3cb2e9;
-			font-weight: 500;
-			margin-left: 40px;
-			transition: .5s;
 		}
-		.navigation a::after{
+
+		.navigation a::after {
 			content: '';
 			position: absolute;
+			bottom: 0;
 			left: 0;
-			bottom: -6px;
+			width: 0;
+			height: 2px;
+			background: #3cb2e9;
+			transition: width 0.3s ease;
+		}
+
+		.navigation a:hover::after {
 			width: 100%;
-			height: 3px;
+		}
+
+		.btnLogin-popup {
+			padding: 8px 20px;
+			background: transparent;
+			border: 2px solid #3cb2e9;
+			border-radius: 30px;
+			color: #3cb2e9;
+			font-size: 1em;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+
+		.btnLogin-popup:hover {
 			background: #3cb2e9;
-			border-radius: 5px;
-			transform: scaleX(0);
-			transform: transform .5s;
+			color: #111;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(60, 178, 233, 0.3);
 		}
-		.navigation a:hover:after{
-			transform: scaleX(1);
-		}
-		.navigation .btnLogin-popup:hover{
-			background: #3cb2e9;
-			color: #162938;
-		}
+
+		/* Keep existing wrapper and form styles */
 		.wrapper {
-    		position: relative;
+			position: relative;
 			margin-top: 60px;
 			width: 450px;
 			height: 440px;
@@ -103,8 +133,8 @@ if (ob_get_length()) ob_end_clean();
 			box-shadow: 0 0 30px rgba(0, 0, 0, .5);
 			display: flex;
 			justify-content: center;
-			align-items: flex-start; /* Changed from center to flex-start */
-			padding-top: 30px; /* Added padding to push content down */
+			align-items: flex-start;
+			padding-top: 30px;
 			overflow: hidden;
 			transform: scale(0);
 			transition: transform .5s ease, height .2s ease;
@@ -711,5 +741,37 @@ if (ob_get_length()) ob_end_clean();
         }
     }
 </script>
+<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const particlesContainer = document.createElement('div');
+			particlesContainer.className = 'particles';
+			document.body.appendChild(particlesContainer);
+			
+			const particleCount = 30;
+			
+			for (let i = 0; i < particleCount; i++) {
+				const particle = document.createElement('div');
+				particle.className = 'particle';
+				
+				// Random properties
+				const size = Math.random() * 10 + 5;
+				const posX = Math.random() * window.innerWidth;
+				const posY = Math.random() * window.innerHeight;
+				const delay = Math.random() * 5;
+				const duration = Math.random() * 20 + 10;
+				const opacity = Math.random() * 0.5 + 0.1;
+				
+				particle.style.width = `${size}px`;
+				particle.style.height = `${size}px`;
+				particle.style.left = `${posX}px`;
+				particle.style.top = `${posY}px`;
+				particle.style.animationDelay = `${delay}s`;
+				particle.style.animationDuration = `${duration}s`;
+				particle.style.opacity = opacity;
+				
+				particlesContainer.appendChild(particle);
+			}
+		});
+	</script>
 </body>
 </html>
