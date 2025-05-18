@@ -408,9 +408,56 @@ if (ob_get_length()) ob_end_clean();
 				transform: rotate(360deg);
 			}
 		}
+
+		/* Full Page Spinner Styles */
+		.full-page-spinner {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.8);
+			backdrop-filter: blur(5px);
+			z-index: 9999;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.full-page-spinner.active {
+			display: flex;
+		}
+
+		.spinner-container {
+			text-align: center;
+		}
+
+		.spinner-container .spinner {
+			width: 50px;
+			height: 50px;
+			border: 5px solid rgba(255, 255, 255, 0.3);
+			border-radius: 50%;
+			border-top-color: #3cb2e9;
+			animation: spin 1s ease-in-out infinite;
+			margin: 0 auto 20px;
+		}
+
+		.spinner-container p {
+			color: #fff;
+			font-size: 1.2em;
+			margin: 0;
+		}
 	</style>
 </head>
 <body>
+    <!-- Add the full page spinner HTML -->
+    <div class="full-page-spinner">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>Signing in...</p>
+        </div>
+    </div>
+
     <header>
 		<h2 class="logo">MovieMagic</h2>
 		<nav class="navigation">
@@ -678,6 +725,7 @@ if (ob_get_length()) ob_end_clean();
         console.log('DOM loaded');
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
+        const fullPageSpinner = document.querySelector('.full-page-spinner');
         console.log('Login form found:', loginForm);
         
         if (loginForm) {
@@ -685,8 +733,8 @@ if (ob_get_length()) ob_end_clean();
                 console.log('Form submit event triggered');
                 e.preventDefault();
                 
-                // Add loading state to button
-                loginBtn.classList.add('loading');
+                // Show full page spinner
+                fullPageSpinner.classList.add('active');
                 
                 try {
                     console.log('Getting location...');
@@ -722,13 +770,13 @@ if (ob_get_length()) ob_end_clean();
                         })
                         .catch(error => {
                             console.error('Error submitting form:', error);
-                            loginBtn.classList.remove('loading'); // Remove loading state on error
+                            fullPageSpinner.classList.remove('active'); // Hide spinner on error
                             this.submit(); // Fallback to regular form submission
                         });
                     }, 1000);
                 } catch (error) {
                     console.error('Error during form submission:', error);
-                    loginBtn.classList.remove('loading'); // Remove loading state on error
+                    fullPageSpinner.classList.remove('active'); // Hide spinner on error
                     this.submit(); // Fallback to regular form submission
                 }
             });
