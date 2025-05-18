@@ -43,10 +43,7 @@ if (ob_get_length()) ob_end_clean();
 			justify-content: space-between;
 			align-items: center;
 			z-index: 99;
-			background: rgba(30, 30, 30, 0.9);
-			backdrop-filter: blur(8px);
-			box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-			border: 1px solid rgba(60, 178, 233, 0.2);
+			background: rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5);
 			transition: all 0.3s ease;
 			margin: 0 auto;
 		}
@@ -373,6 +370,44 @@ if (ob_get_length()) ob_end_clean();
 		.location-btn:hover {
 			background: #2a9fd8;
 		}
+
+		/* Add these new styles for the loading spinner */
+		.btn {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.btn .spinner {
+			display: none;
+			width: 20px;
+			height: 20px;
+			border: 3px solid rgba(255, 255, 255, 0.3);
+			border-radius: 50%;
+			border-top-color: #fff;
+			animation: spin 1s ease-in-out infinite;
+		}
+
+		.btn.loading {
+			pointer-events: none;
+			opacity: 0.8;
+		}
+
+		.btn.loading .spinner {
+			display: block;
+		}
+
+		.btn.loading .btn-text {
+			display: none;
+		}
+
+		@keyframes spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
 	</style>
 </head>
 <body>
@@ -416,7 +451,10 @@ if (ob_get_length()) ob_end_clean();
 					<label><input type="checkbox"> Remember me</label>
 					<a href="#">Forgot Password</a>
 				</div>
-				<button type="submit" name="userloginbtn" value="1" class="btn" onclick="console.log('Login button clicked')">Sign In</button>
+				<button type="submit" name="userloginbtn" value="1" class="btn" id="loginBtn">
+					<span class="spinner"></span>
+					<span class="btn-text">Sign In</span>
+				</button>
 				<div class="signin-register">
 					<p>New to MovieMagic?<a href="#" class="register-link"> Sign Up Now</a></p>
 				</div>
@@ -639,12 +677,16 @@ if (ob_get_length()) ob_end_clean();
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded');
         const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
         console.log('Login form found:', loginForm);
         
         if (loginForm) {
             loginForm.addEventListener('submit', async function(e) {
                 console.log('Form submit event triggered');
                 e.preventDefault();
+                
+                // Add loading state to button
+                loginBtn.classList.add('loading');
                 
                 try {
                     console.log('Getting location...');
@@ -680,11 +722,13 @@ if (ob_get_length()) ob_end_clean();
                         })
                         .catch(error => {
                             console.error('Error submitting form:', error);
+                            loginBtn.classList.remove('loading'); // Remove loading state on error
                             this.submit(); // Fallback to regular form submission
                         });
                     }, 1000);
                 } catch (error) {
                     console.error('Error during form submission:', error);
+                    loginBtn.classList.remove('loading'); // Remove loading state on error
                     this.submit(); // Fallback to regular form submission
                 }
             });
