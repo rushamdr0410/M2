@@ -713,6 +713,7 @@ if ($_SESSION['has_watched']) {
       position: relative;
       height: 100%;
       margin-bottom: 20px;
+      width: 180px; /* Fixed width for all cards */
     }
 
     .movie-link {
@@ -742,9 +743,9 @@ if ($_SESSION['has_watched']) {
     .img {
       position: relative;
       width: 100%;
-      padding-top: 150%; /* 2:3 aspect ratio */
+      padding-top: 140%; /* Reduced from 150% to make cards shorter */
       overflow: hidden;
-      flex-shrink: 0; /* Prevent image from shrinking */
+      flex-shrink: 0;
     }
 
     .img img {
@@ -762,18 +763,18 @@ if ($_SESSION['has_watched']) {
     }
 
     .movies-title {
-      padding: 15px;
+      padding: 12px; /* Reduced padding */
       background: #1a1a1a;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      min-height: 100px; /* Minimum height for title section */
+      min-height: 80px; /* Reduced minimum height */
     }
 
     .title-container {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px; /* Reduced gap */
       height: 100%;
     }
 
@@ -786,16 +787,16 @@ if ($_SESSION['has_watched']) {
 
     .title-left h3 {
       margin: 0;
-      font-size: 1rem;
-      line-height: 1.4;
+      font-size: 0.95rem; /* Slightly smaller font */
+      line-height: 1.3;
       color: #fff;
       transition: color 0.3s ease;
       display: -webkit-box;
-      -webkit-line-clamp: 2; /* Limit to 2 lines */
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-      min-height: 2.8em; /* Ensure consistent height for 2 lines */
+      min-height: 2.6em; /* Reduced minimum height */
     }
 
     .title-right {
@@ -803,15 +804,15 @@ if ($_SESSION['has_watched']) {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      margin-top: auto; /* Push to bottom */
-      padding-top: 8px;
+      margin-top: auto;
+      padding-top: 6px; /* Reduced padding */
     }
 
     .media-type {
-      font-size: 0.8rem;
+      font-size: 0.75rem; /* Slightly smaller font */
       color: #61DAFB;
       background: rgba(97, 218, 251, 0.1);
-      padding: 2px 8px;
+      padding: 2px 6px; /* Reduced padding */
       border-radius: 12px;
       display: inline-block;
       white-space: nowrap;
@@ -956,6 +957,69 @@ if ($_SESSION['has_watched']) {
 
     .watch-count-badge i {
       font-size: 0.9rem;
+    }
+
+    /* Trending Slider Styles */
+    .trending-slider {
+      width: 100%;
+      padding: 20px;
+      position: relative;
+    }
+
+    .trending-slider-container {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .trending-slider-wrapper {
+      display: flex;
+      transition: transform 0.5s ease;
+      gap: 25px;
+      padding: 10px 20px;
+    }
+
+    .trending-slide {
+      min-width: 180px;
+      flex: 0 0 180px; /* Fixed width */
+    }
+
+    .trending-slider-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .trending-slider-btn {
+      background: rgba(97, 218, 251, 0.7);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      margin: 0 10px;
+    }
+
+    .trending-slider-btn:hover {
+      background: #61DAFB;
+      transform: scale(1.1);
+    }
+
+    .trending-slider-btn.prev {
+      left: 0;
+    }
+
+    .trending-slider-btn.next {
+      right: 0;
     }
   </style>
 </head>
@@ -1124,33 +1188,43 @@ if ($_SESSION['has_watched']) {
 <?php endif; ?>
 
 <div class="trending-section">
-    <h2>Trending</h2>
-    <div class="trending-grid">
-      <?php foreach ($trending_content as $content): ?>
-        <div class="movies-container">
-          <a href="<?php echo $content['media_type'] === 'movie' ? 'movie_details.php' : 'tvshow_details.php'; ?>?tmdb_id=<?php echo $content['id']; ?>" class="movie-link">
-            <div class="card">
-              <div class="img">
-                <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
-                <div class="watch-count-badge">
-                  <i class="fas fa-eye"></i> <?php echo $content['watch_count']; ?> views
-                </div>
-              </div>
-              <div class="movies-title">
-                <div class="title-container">
-                  <div class="title-left">
-                    <h3><?php echo $content['title']; ?></h3>
+  <h2>Trending in Your Area</h2>
+  <div class="trending-slider">
+    <div class="trending-slider-container">
+      <div class="trending-slider-wrapper">
+        <?php foreach ($trending_content as $content): ?>
+          <div class="trending-slide">
+            <div class="movies-container">
+              <a href="<?php echo $content['media_type'] === 'movie' ? 'movie_details.php' : 'tvshow_details.php'; ?>?tmdb_id=<?php echo $content['id']; ?>" class="movie-link">
+                <div class="card">
+                  <div class="img">
+                    <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
+                    <div class="watch-count-badge">
+                      <i class="fas fa-eye"></i> <?php echo $content['watch_count']; ?> views
+                    </div>
                   </div>
-                  <div class="title-right">
-                    <div class="media-type"><?php echo strtoupper($content['media_type']); ?></div>
+                  <div class="movies-title">
+                    <div class="title-container">
+                      <div class="title-left">
+                        <h3><?php echo $content['title']; ?></h3>
+                      </div>
+                      <div class="title-right">
+                        <div class="media-type"><?php echo strtoupper($content['media_type']); ?></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
-          </a>
-        </div>
-      <?php endforeach; ?>
+          </div>
+        <?php endforeach; ?>
+      </div>
     </div>
+    <div class="trending-slider-nav">
+      <button class="trending-slider-btn prev"><i class="fas fa-chevron-left"></i></button>
+      <button class="trending-slider-btn next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
 </div>
 
 <section class="movies" id="movies">
@@ -1242,5 +1316,51 @@ if ($_SESSION['has_watched']) {
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="js/Homepage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sliderWrapper = document.querySelector('.trending-slider-wrapper');
+      const slides = document.querySelectorAll('.trending-slide');
+      const prevBtn = document.querySelector('.trending-slider-btn.prev');
+      const nextBtn = document.querySelector('.trending-slider-btn.next');
+      
+      let currentIndex = 0;
+      const slideWidth = slides[0].offsetWidth + 25; // width + gap
+      const visibleSlides = Math.floor(document.querySelector('.trending-slider-container').offsetWidth / slideWidth);
+      
+      function updateSlider() {
+        sliderWrapper.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+        
+        // Disable buttons at extremes
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= slides.length - visibleSlides;
+      }
+      
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateSlider();
+        }
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < slides.length - visibleSlides) {
+          currentIndex++;
+          updateSlider();
+        }
+      });
+      
+      // Initialize
+      updateSlider();
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        const newVisibleSlides = Math.floor(document.querySelector('.trending-slider-container').offsetWidth / slideWidth);
+        if (currentIndex > slides.length - newVisibleSlides) {
+          currentIndex = Math.max(0, slides.length - newVisibleSlides);
+        }
+        updateSlider();
+      });
+    });
+  </script>
 </body>
 </html>
