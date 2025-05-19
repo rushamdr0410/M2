@@ -597,6 +597,21 @@ if ($_SESSION['has_watched']) {
       position: relative;
     }
 
+    /* Add styles to prevent interaction with non-centered slides */
+    .swiper-slide:not(.swiper-slide-active) {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .swiper-slide:not(.swiper-slide-active) a {
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .swiper-slide:not(.swiper-slide-active) .swiper-slide-content {
+      pointer-events: none;
+    }
+
     .swiper-slide::before {
       content: '';
       position: absolute;
