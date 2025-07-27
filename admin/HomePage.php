@@ -1,43 +1,74 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Enable output buffering and set timeouts
+ob_start();
+ini_set('default_socket_timeout', 5);
+stream_context_set_default([
+    'http' => ['timeout' => 3],
+    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]
+]);
+
 include('user_auth.php');
 
+// Check session and redirect if not logged in
 if (!isset($_SESSION['user_username'])) {
   header("Location: userlogin.php");
   exit();
 }
 
-if (!isset($_SESSION['has_watched'])) {
-  $_SESSION['has_watched'] = false;
+// Initialize cache
+$cache_enabled = true;
+$cache_dir = __DIR__ . '/cache/';
+if (!file_exists($cache_dir)) {
+    mkdir($cache_dir, 0755, true);
 }
 
-$_SESSION['has_watched'] = false; 
+// Cache function
+function get_cached_data($url, $cache_file, $expiry = 3600) {
+    global $cache_dir;
+    $full_path = $cache_dir . $cache_file;
+    
+    if (file_exists($full_path)) {
+        $filemtime = filemtime($full_path);
+        if (time() - $filemtime < $expiry) {
+            return file_get_contents($full_path);
+        }
+    }
+    
+    $data = @file_get_contents($url);
+    if ($data) {
+        file_put_contents($full_path, $data);
+    }
+    return $data;
+}
+
+// Initialize has_watched
+if (!isset($_SESSION['has_watched'])) {
+    $_SESSION['has_watched'] = false;
+}
+
+// Get user data in a single query
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $watched_query = "SELECT COUNT(*) as count FROM watch_history WHERE user_id = $user_id";
-    $watched_result = mysqli_query($connection, $watched_query);
-    $watched_data = mysqli_fetch_assoc($watched_result);
+    $user_data_query = "SELECT r.latitude, r.longitude, 
+                       (SELECT COUNT(*) FROM watch_history WHERE user_id = r.id) as watch_count
+                       FROM register r WHERE r.id = ?";
+    $stmt = $connection->prepare($user_data_query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $user_data = $stmt->get_result()->fetch_assoc();
     
-    if ($watched_data['count'] > 0) {
-        $_SESSION['has_watched'] = true;
-    }
+    $_SESSION['has_watched'] = ($user_data['watch_count'] > 0);
+    $user_location = ['latitude' => $user_data['latitude'], 'longitude' => $user_data['longitude']];
 }
 
+// TMDb API configuration
 $tmdb_api_key = '99e2fa37c0f75b95a971c97b093025cc'; 
 $tmdb_base_url = 'https://api.themoviedb.org/3';
 
-// Get user's location
-$user_id = $_SESSION['user_id'];
-$location_query = "SELECT latitude, longitude FROM register WHERE id = ?";
-$location_stmt = $connection->prepare($location_query);
-$location_stmt->bind_param("i", $user_id);
-$location_stmt->execute();
-$location_result = $location_stmt->get_result();
-$user_location = $location_result->fetch_assoc();
-$location_stmt->close();
-
-// Function to calculate distance using Haversine formula
+// Function to calculate distance
 function calculateDistance($lat1, $lon1, $lat2, $lon2) {
     $earthRadius = 6371; // Earth's radius in kilometers
 
@@ -51,15 +82,25 @@ function calculateDistance($lat1, $lon1, $lat2, $lon2) {
 
     $a = sin($dlat/2) * sin($dlat/2) + cos($lat1) * cos($lat2) * sin($dlon/2) * sin($dlon/2);
     $c = 2 * atan2(sqrt($a), sqrt(1-$a));
-    $distance = $earthRadius * $c;
-
-    return $distance;
+    return $earthRadius * $c;
 }
 
-// Get nearby users and their watched content
-$nearby_users = [];
-if ($user_location && $user_location['latitude'] && $user_location['longitude']) {
-    $users_query = "SELECT id, latitude, longitude FROM register WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND id != ?";
+// Get nearby users with caching
+function getNearbyUsers($user_id, $user_location, $connection) {
+    if (!$user_location || !$user_location['latitude'] || !$user_location['longitude']) {
+        return [];
+    }
+
+    // Cache nearby users in session for 1 hour
+    if (isset($_SESSION['nearby_users_cache']) && 
+        isset($_SESSION['nearby_users_time']) && 
+        time() - $_SESSION['nearby_users_time'] < 3600) {
+        return $_SESSION['nearby_users_cache'];
+    }
+
+    $nearby_users = [];
+    $users_query = "SELECT id, latitude, longitude FROM register 
+                   WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND id != ?";
     $users_stmt = $connection->prepare($users_query);
     $users_stmt->bind_param("i", $user_id);
     $users_stmt->execute();
@@ -73,15 +114,21 @@ if ($user_location && $user_location['latitude'] && $user_location['longitude'])
             $user['longitude']
         );
 
-        if ($distance <= 50) { // Within 50km
+        if ($distance <= 50) {
             $nearby_users[] = $user['id'];
         }
     }
-    $users_stmt->close();
+    
+    $_SESSION['nearby_users_cache'] = $nearby_users;
+    $_SESSION['nearby_users_time'] = time();
+    
+    return $nearby_users;
 }
 
 // Get trending content from nearby users
 $trending_content = [];
+$nearby_users = getNearbyUsers($user_id, $user_location, $connection);
+
 if (!empty($nearby_users)) {
     $user_ids = implode(',', $nearby_users);
     $trending_query = "SELECT movie_id, media_type, COUNT(*) as watch_count 
@@ -94,7 +141,7 @@ if (!empty($nearby_users)) {
 
     while ($row = $trending_result->fetch_assoc()) {
         $content_url = "{$tmdb_base_url}/{$row['media_type']}/{$row['movie_id']}?api_key={$tmdb_api_key}";
-        $content_data = json_decode(file_get_contents($content_url), true);
+        $content_data = json_decode(get_cached_data($content_url, "content_{$row['media_type']}_{$row['movie_id']}.json"), true);
         
         if ($content_data && !isset($content_data['status_code'])) {
             $trending_content[] = [
@@ -108,162 +155,171 @@ if (!empty($nearby_users)) {
     }
 }
 
-// Fetch popular movies for swiper from TMDb
+// Fetch popular movies for swiper with caching
 $swiper_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
-$swiper_data = json_decode(file_get_contents($swiper_url), true);
+$swiper_data = json_decode(get_cached_data($swiper_url, 'swiper_movies.json'), true);
 $swiper_movies = $swiper_data['results'] ?? [];
 
-$query = "SELECT * FROM moviedetails";
+// Get local movies as fallback
+$query = "SELECT * FROM moviedetails LIMIT 5";
 $result = mysqli_query($connection, $query);
 
+// Recommendations logic (only if user has watched content)
+$content_recommendations = [];
+$collab_recommendations = [];
+
 if ($_SESSION['has_watched']) {
-  // Get user's watch history with ratings
-  $user_id = $_SESSION['user_id'];
-  $history_query = "SELECT wh.movie_id, wh.media_type, r.rating 
-                   FROM watch_history wh
-                   LEFT JOIN reviews r ON wh.user_id = r.user_id AND wh.movie_id = r.movie_id
-                   WHERE wh.user_id = ? 
-                   ORDER BY wh.watch_date DESC";
-  $stmt = $connection->prepare($history_query);
-  $stmt->bind_param("i", $user_id);
-  $stmt->execute();
-  $history_result = $stmt->get_result();
-  
-  $watched_ids = [];
-  $watched_movies = [];
-  $user_ratings = [];
-  
-  while ($row = $history_result->fetch_assoc()) {
-    $watched_ids[] = $row['movie_id'];
-    $watched_movies[] = [
-      'id' => $row['movie_id'],
-      'media_type' => $row['media_type']
-    ];
-    if ($row['rating'] > 0) {
-      $user_ratings[$row['movie_id']] = $row['rating'];
-    }
-  }
-  
-  // Initialize recommendation arrays
-  $content_recommendations = [];
-  $collab_recommendations = [];
-  
-  if (!empty($watched_movies)) {
-    // Content-based recommendations
-    foreach ($watched_movies as $watched) {
-      $similar_url = "$tmdb_base_url/{$watched['media_type']}/{$watched['id']}/similar?api_key=$tmdb_api_key&language=en-US&page=1";
-      $similar_data = json_decode(file_get_contents($similar_url), true);
-          
-      if (isset($similar_data['results'])) {
-        foreach ($similar_data['results'] as $movie) {
-          if (!in_array($movie['id'], $watched_ids)) {
-            $key = $movie['id'] . '_' . $watched['media_type'];
-            if (!isset($content_recommendations[$key])) {
-              $content_recommendations[$key] = [
-                'id' => $movie['id'],
-                'title' => $movie['title'] ?? $movie['name'],
-                'poster_path' => $movie['poster_path'],
-                'vote_average' => $movie['vote_average'],
-                'media_type' => $watched['media_type'],
-                'score' => 0.7 * ($movie['vote_average'] / 10)
-              ];
-            }
-          }
+    // Get user's watch history with ratings
+    $history_query = "SELECT wh.movie_id, wh.media_type, r.rating 
+                     FROM watch_history wh
+                     LEFT JOIN reviews r ON wh.user_id = r.user_id AND wh.movie_id = r.movie_id
+                     WHERE wh.user_id = ? 
+                     ORDER BY wh.watch_date DESC";
+    $stmt = $connection->prepare($history_query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $history_result = $stmt->get_result();
+    
+    $watched_ids = [];
+    $watched_movies = [];
+    $user_ratings = [];
+    
+    while ($row = $history_result->fetch_assoc()) {
+        $watched_ids[] = $row['movie_id'];
+        $watched_movies[] = [
+            'id' => $row['movie_id'],
+            'media_type' => $row['media_type']
+        ];
+        if ($row['rating'] > 0) {
+            $user_ratings[$row['movie_id']] = $row['rating'];
         }
-      }
     }
     
-    // Collaborative recommendations - only if user has rated at least 3 movies
-    if (count($user_ratings) >= 3) {
-      // Find similar users
-      $similar_users = [];
-      $all_users_query = "SELECT DISTINCT r.user_id 
-                          FROM reviews r
-                          WHERE r.user_id != ?";
-      $all_users_stmt = $connection->prepare($all_users_query);
-      $all_users_stmt->bind_param("i", $user_id);
-      $all_users_stmt->execute();
-      $all_users_result = $all_users_stmt->get_result();
-          
-      while ($other_user = $all_users_result->fetch_assoc()) {
-        $other_user_id = $other_user['user_id'];
+    // Content-based recommendations
+    if (!empty($watched_movies)) {
+        foreach ($watched_movies as $watched) {
+            $similar_url = "$tmdb_base_url/{$watched['media_type']}/{$watched['id']}/similar?api_key=$tmdb_api_key&language=en-US&page=1";
+            $similar_data = json_decode(get_cached_data($similar_url, "similar_{$watched['media_type']}_{$watched['id']}.json"), true);
                 
-        // Get ratings for this user
-        $other_ratings_query = "SELECT movie_id, rating FROM reviews WHERE user_id = ?";
-        $other_ratings_stmt = $connection->prepare($other_ratings_query);
-        $other_ratings_stmt->bind_param("i", $other_user_id);
-        $other_ratings_stmt->execute();
-        $other_ratings_result = $other_ratings_stmt->get_result();
-                
-        $other_ratings = [];
-        while ($rating = $other_ratings_result->fetch_assoc()) {
-          $other_ratings[$rating['movie_id']] = $rating['rating'];
-        }
-                
-        // Calculate similarity (adjusted cosine)
-        $common_movies = array_intersect(array_keys($user_ratings), array_keys($other_ratings));
-        if (count($common_movies) >= 2) {
-          $sum1 = $sum2 = $sum1Sq = $sum2Sq = $pSum = 0;
-          foreach ($common_movies as $movie_id) {
-            $sum1 += $user_ratings[$movie_id];
-            $sum2 += $other_ratings[$movie_id];
-            $sum1Sq += pow($user_ratings[$movie_id], 2);
-            $sum2Sq += pow($other_ratings[$movie_id], 2);
-            $pSum += $user_ratings[$movie_id] * $other_ratings[$movie_id];
-          }
-                    
-          $num = $pSum - ($sum1 * $sum2 / count($common_movies));
-          $den = sqrt(($sum1Sq - pow($sum1, 2) / count($common_movies)) * 
-          ($sum2Sq - pow($sum2, 2) / count($common_movies)));
-                    
-          if ($den != 0) {
-            $similarity = $num / $den;
-            if ($similarity > 0.3) {
-              $similar_users[$other_user_id] = $similarity;
+            if (isset($similar_data['results'])) {
+                foreach ($similar_data['results'] as $movie) {
+                    if (!in_array($movie['id'], $watched_ids)) {
+                        $key = $movie['id'] . '_' . $watched['media_type'];
+                        if (!isset($content_recommendations[$key])) {
+                            $content_recommendations[$key] = [
+                                'id' => $movie['id'],
+                                'title' => $movie['title'] ?? $movie['name'],
+                                'poster_path' => $movie['poster_path'],
+                                'vote_average' => $movie['vote_average'],
+                                'media_type' => $watched['media_type'],
+                                'score' => 0.7 * ($movie['vote_average'] / 10)
+                            ];
+                        }
+                    }
+                }
             }
-          }
         }
-      }
-            
-      // Get recommendations from similar users
-      if (!empty($similar_users)) {
-        $similar_users_str = implode(",", array_keys($similar_users));
-        $recommended_query = "SELECT r.movie_id, 'movie' as media_type, AVG(r.rating) as avg_rating 
-                              FROM reviews r
-                              WHERE r.user_id IN ($similar_users_str) 
-                              AND r.rating >= 3 
-                              AND r.movie_id NOT IN (
-                              SELECT wh.movie_id FROM watch_history wh WHERE wh.user_id = ?
-                              )
-                              GROUP BY r.movie_id
-                              HAVING COUNT(DISTINCT r.user_id) > 1
-                              ORDER BY avg_rating DESC
-                              LIMIT 20";
-        $recommended_stmt = $connection->prepare($recommended_query);
-        $recommended_stmt->bind_param("i", $user_id);
-        $recommended_stmt->execute();
-        $recommended_result = $recommended_stmt->get_result();
-                
-        while ($row = $recommended_result->fetch_assoc()) {
-          $movie_url = "$tmdb_base_url/movie/{$row['movie_id']}?api_key=$tmdb_api_key";
-          $movie_data = json_decode(file_get_contents($movie_url), true);
-                    
-          if ($movie_data && !isset($movie_data['status_code'])) {
-            $key = $row['movie_id'] . '_movie';
-            $collab_recommendations[$key] = [
-              'id' => $row['movie_id'],
-              'title' => $movie_data['title'],
-              'poster_path' => $movie_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie_data['poster_path'] : 'placeholder.jpg',
-              'vote_average' => $movie_data['vote_average'],
-              'media_type' => 'movie',
-              'score' => 0.3 * ($row['avg_rating'] / 5)
-            ];
-          }
-        }
-      }
     }
-  }
+    
+    // Collaborative recommendations (only if user has rated at least 3 movies)
+    if (count($user_ratings) >= 3) {
+        // Find similar users
+        $similar_users = [];
+        $all_users_query = "SELECT DISTINCT r.user_id 
+                            FROM reviews r
+                            WHERE r.user_id != ?";
+        $all_users_stmt = $connection->prepare($all_users_query);
+        $all_users_stmt->bind_param("i", $user_id);
+        $all_users_stmt->execute();
+        $all_users_result = $all_users_stmt->get_result();
+                
+        while ($other_user = $all_users_result->fetch_assoc()) {
+            $other_user_id = $other_user['user_id'];
+                    
+            // Get ratings for this user
+            $other_ratings_query = "SELECT movie_id, rating FROM reviews WHERE user_id = ?";
+            $other_ratings_stmt = $connection->prepare($other_ratings_query);
+            $other_ratings_stmt->bind_param("i", $other_user_id);
+            $other_ratings_stmt->execute();
+            $other_ratings_result = $other_ratings_stmt->get_result();
+                    
+            $other_ratings = [];
+            while ($rating = $other_ratings_result->fetch_assoc()) {
+                $other_ratings[$rating['movie_id']] = $rating['rating'];
+            }
+                    
+            // Calculate similarity (adjusted cosine)
+            $common_movies = array_intersect(array_keys($user_ratings), array_keys($other_ratings));
+            if (count($common_movies) >= 2) {
+                $sum1 = $sum2 = $sum1Sq = $sum2Sq = $pSum = 0;
+                foreach ($common_movies as $movie_id) {
+                    $sum1 += $user_ratings[$movie_id];
+                    $sum2 += $other_ratings[$movie_id];
+                    $sum1Sq += pow($user_ratings[$movie_id], 2);
+                    $sum2Sq += pow($other_ratings[$movie_id], 2);
+                    $pSum += $user_ratings[$movie_id] * $other_ratings[$movie_id];
+                }
+                            
+                $num = $pSum - ($sum1 * $sum2 / count($common_movies));
+                $den = sqrt(($sum1Sq - pow($sum1, 2) / count($common_movies)) * 
+                ($sum2Sq - pow($sum2, 2) / count($common_movies)));
+                            
+                if ($den != 0) {
+                    $similarity = $num / $den;
+                    if ($similarity > 0.3) {
+                        $similar_users[$other_user_id] = $similarity;
+                    }
+                }
+            }
+        }
+                
+        // Get recommendations from similar users
+        if (!empty($similar_users)) {
+            $similar_users_str = implode(",", array_keys($similar_users));
+            $recommended_query = "SELECT r.movie_id, 'movie' as media_type, AVG(r.rating) as avg_rating 
+                                  FROM reviews r
+                                  WHERE r.user_id IN ($similar_users_str) 
+                                  AND r.rating >= 3 
+                                  AND r.movie_id NOT IN (
+                                  SELECT wh.movie_id FROM watch_history wh WHERE wh.user_id = ?
+                                  )
+                                  GROUP BY r.movie_id
+                                  HAVING COUNT(DISTINCT r.user_id) > 1
+                                  ORDER BY avg_rating DESC
+                                  LIMIT 20";
+            $recommended_stmt = $connection->prepare($recommended_query);
+            $recommended_stmt->bind_param("i", $user_id);
+            $recommended_stmt->execute();
+            $recommended_result = $recommended_stmt->get_result();
+                    
+            while ($row = $recommended_result->fetch_assoc()) {
+                $movie_url = "$tmdb_base_url/movie/{$row['movie_id']}?api_key=$tmdb_api_key";
+                $movie_data = json_decode(get_cached_data($movie_url, "movie_{$row['movie_id']}.json"), true);
+                            
+                if ($movie_data && !isset($movie_data['status_code'])) {
+                    $key = $row['movie_id'] . '_movie';
+                    $collab_recommendations[$key] = [
+                        'id' => $row['movie_id'],
+                        'title' => $movie_data['title'],
+                        'poster_path' => $movie_data['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $movie_data['poster_path'] : 'placeholder.jpg',
+                        'vote_average' => $movie_data['vote_average'],
+                        'media_type' => 'movie',
+                        'score' => 0.3 * ($row['avg_rating'] / 5)
+                    ];
+                }
+            }
+        }
+    }
 }
+
+// Fetch popular movies and TV shows with caching
+$popular_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+$popular_data = json_decode(get_cached_data($popular_url, 'popular_movies.json'), true);
+$popular_movies = $popular_data['results'] ?? [];
+
+$tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&page=1";
+$tv_data = json_decode(get_cached_data($tv_url, 'popular_tv.json'), true);
+$popular_tv = $tv_data['results'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -271,10 +327,12 @@ if ($_SESSION['has_watched']) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MovieMagic | Where Every Frame Tells A Story</title>
+  <link rel="preconnect" href="https://api.themoviedb.org">
+  <link rel="preconnect" href="https://image.tmdb.org">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    * {
+     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -1059,8 +1117,6 @@ if ($_SESSION['has_watched']) {
           <li><a href="romance.php" class="genre-link">Romance</a></li>
           <li><a href="sci-fi.php" class="genre-link">Sci-Fi</a></li>
           <li><a href="thriller.php" class="genre-link">Thriller</a></li>
-
-          
         </ul>
       </li>
       <li><a href="topimdb.php">Top IMdb</a></li>
@@ -1079,7 +1135,7 @@ if ($_SESSION['has_watched']) {
       <div class="profile-text-container">           
         <ul>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle"><?php echo $_SESSION['user_username']?></a>
+            <a href="#" class="dropdown-toggle"><?php echo htmlspecialchars($_SESSION['user_username']); ?></a>
             <ul class="dropdown-content">
             <li><a href="history.php" class="genre-link"><i class="fas fa-history"></i>History</a></li>
             <li><a href="watchlist.php" class="genre-link"><i class="fas fa-bookmark"></i>Watch-List</a></li>
@@ -1094,11 +1150,10 @@ if ($_SESSION['has_watched']) {
           </li>
         </ul>
       </div>
-      <img class="profile-picture" src="img/undraw_profile_3.svg" alt="" />  
+      <img class="profile-picture" src="img/undraw_profile_3.svg" alt="Profile" loading="lazy" />  
     </div>
   </nav>
-  <script src="js/search-optimization.js"></script>
-  <script src="js/search-handler.js"></script>
+
   <main>
     <div class="swiper">
       <div class="swiper-wrapper">
@@ -1113,7 +1168,6 @@ if ($_SESSION['has_watched']) {
             </div>
           <?php endforeach; ?>
         <?php else: ?>
-          <!-- Fallback to local database if API fails -->
           <?php if(mysqli_num_rows($result) > 0): ?>
             <?php while($row = mysqli_fetch_assoc($result)): ?>
               <div class="swiper-slide" style="background: url('<?php echo 'upload/'.$row['poster_img']; ?>'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 28.125rem; max-width: 58.75rem;">
@@ -1133,6 +1187,7 @@ if ($_SESSION['has_watched']) {
       </div>
     </div>
   </main>
+
   <?php if ($_SESSION['has_watched']): ?>
   <section class="movies" id="movies">
     <div class="title">
@@ -1170,7 +1225,7 @@ if ($_SESSION['has_watched']) {
             <a href="<?php echo $movie['media_type'] === 'movie' ? 'movie_details.php' : 'tvshow_details.php'; ?>?tmdb_id=<?php echo $movie['id']; ?>" class="movie-link">
               <div class="card">
                 <div class="img">
-                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>">
+                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>" loading="lazy">
                   <div class="rating-badge">
                     <i class="fas fa-star"></i> <?php echo number_format($movie['vote_average'], 1); ?>
                   </div>
@@ -1200,49 +1255,49 @@ if ($_SESSION['has_watched']) {
       ?>
     </div>
   </section>
-<?php endif; ?>
+  <?php endif; ?>
 
-<div class="trending-section">
-  <h2>Trending in Your Area</h2>
-  <div class="trending-slider">
-    <div class="trending-slider-container">
-      <div class="trending-slider-wrapper">
-        <?php foreach ($trending_content as $content): ?>
-          <div class="trending-slide">
-            <div class="movies-container">
-              <a href="<?php echo $content['media_type'] === 'movie' ? 'movie_details.php' : 'tvshow_details.php'; ?>?tmdb_id=<?php echo $content['id']; ?>" class="movie-link">
-                <div class="card">
-                  <div class="img">
-                    <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo $content['title']; ?>">
-                    <div class="watch-count-badge">
-                      <i class="fas fa-eye"></i> <?php echo $content['watch_count']; ?> views
-                    </div>
-                  </div>
-                  <div class="movies-title">
-                    <div class="title-container">
-                      <div class="title-left">
-                        <h3><?php echo $content['title']; ?></h3>
-                      </div>
-                      <div class="title-right">
-                        <div class="media-type"><?php echo strtoupper($content['media_type']); ?></div>
+  <div class="trending-section">
+    <h2>Trending in Your Area</h2>
+    <div class="trending-slider">
+      <div class="trending-slider-container">
+        <div class="trending-slider-wrapper">
+          <?php foreach ($trending_content as $content): ?>
+            <div class="trending-slide">
+              <div class="movies-container">
+                <a href="<?php echo $content['media_type'] === 'movie' ? 'movie_details.php' : 'tvshow_details.php'; ?>?tmdb_id=<?php echo $content['id']; ?>" class="movie-link">
+                  <div class="card">
+                    <div class="img">
+                      <img src="<?php echo $content['poster_path']; ?>" alt="<?php echo htmlspecialchars($content['title']); ?>" loading="lazy">
+                      <div class="watch-count-badge">
+                        <i class="fas fa-eye"></i> <?php echo $content['watch_count']; ?> views
                       </div>
                     </div>
+                    <div class="movies-title">
+                      <div class="title-container">
+                        <div class="title-left">
+                          <h3><?php echo htmlspecialchars($content['title']); ?></h3>
+                        </div>
+                        <div class="title-right">
+                          <div class="media-type"><?php echo strtoupper($content['media_type']); ?></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             </div>
-          </div>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <div class="trending-slider-nav">
+        <button class="trending-slider-btn prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="trending-slider-btn next"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
-    <div class="trending-slider-nav">
-      <button class="trending-slider-btn prev"><i class="fas fa-chevron-left"></i></button>
-      <button class="trending-slider-btn next"><i class="fas fa-chevron-right"></i></button>
-    </div>
   </div>
-</div>
 
-<section class="movies" id="movies">
+  <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Popular Movies</h2>
       <form action="movies.php" method="get">
@@ -1250,38 +1305,27 @@ if ($_SESSION['has_watched']) {
       </form>
     </div>
     <div class="movies-container-wrapper">
-    <?php
-        $popular_url = "$tmdb_base_url/movie/popular?api_key=$tmdb_api_key&language=en-US&page=1";
-        $popular_response = file_get_contents($popular_url);
-        $popular_data = json_decode($popular_response, true);
-
-        if (isset($popular_data['results'])) {
-            foreach (array_slice($popular_data['results'], 0, 12) as $movie) {
-                $image = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
-                $title = $movie['title'];
-                $id = $movie['id'];
-                ?>
+      <?php if (!empty($popular_movies)): ?>
+        <?php foreach (array_slice($popular_movies, 0, 12) as $movie): ?>
           <div class="movies-container">
             <a href="movie_details.php?tmdb_id=<?php echo $movie['id']; ?>" class="movie-link">
               <div class="card">
                 <div class="img">
-                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
+                  <img src="https://image.tmdb.org/t/p/w500<?php echo $movie['poster_path']; ?>" alt="<?php echo htmlspecialchars($movie['title']); ?>" loading="lazy">
                 </div>
                 <div class="movies-title">
-                  <h3><?php echo htmlspecialchars($title); ?></h3>
+                  <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
                 </div>
               </div>
             </a>
           </div>
-          <?php
-            }
-        } 
-        else {
-            echo "No Records Found!";
-        }
-    ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p>No popular movies found.</p>
+      <?php endif; ?>
     </div>
   </section>
+
   <section class="movies" id="movies">
     <div class="title">
       <h2 class="heading">Popular TV Shows</h2>
@@ -1290,41 +1334,26 @@ if ($_SESSION['has_watched']) {
       </form>
     </div>
     <div class="movies-container-wrapper">
-    <?php
-        $tv_url = "$tmdb_base_url/tv/popular?api_key=$tmdb_api_key&language=en-US&page=1";
-        $tv_response = file_get_contents($tv_url);
-        $tv_data = json_decode($tv_response, true);
-
-        if (isset($tv_data['results'])) {
-            foreach (array_slice($tv_data['results'], 0, 12) as $show) {
-                $image = "https://image.tmdb.org/t/p/w500" . $show['poster_path'];
-                $title = $show['name'];
-                $id = $show['id'];
-                ?>
+      <?php if (!empty($popular_tv)): ?>
+        <?php foreach (array_slice($popular_tv, 0, 12) as $show): ?>
           <div class="movies-container">
             <a href="tvshow_details.php?tmdb_id=<?php echo $show['id']; ?>" class="movie-link">
               <div class="card">
                 <div class="img">
-                  <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($title); ?>">
+                  <img src="https://image.tmdb.org/t/p/w500<?php echo $show['poster_path']; ?>" alt="<?php echo htmlspecialchars($show['name']); ?>" loading="lazy">
                 </div>
                 <div class="movies-title">
-                  <h3><?php echo htmlspecialchars($title); ?></h3>
+                  <h3><?php echo htmlspecialchars($show['name']); ?></h3>
                 </div>
               </div>
             </a>
           </div>
-          <?php
-            }
-        } 
-        else {
-            echo "No Records Found!";
-        }
-    ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p>No popular TV shows found.</p>
+      <?php endif; ?>
     </div>
   </section>
-  
-
-  
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
