@@ -1154,6 +1154,9 @@ $popular_tv = $tv_data['results'] ?? [];
     </div>
   </nav>
 
+  <script src="js/search-optimization.js"></script>
+  <script src="js/search-handler.js"></script>
+
   <main>
     <div class="swiper">
       <div class="swiper-wrapper">
